@@ -360,6 +360,12 @@ export default function MagazineViewer() {
   const [readingMode, setReadingMode] = useState<'page' | 'continuous'>('page');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
+  // Interactivity state
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>('todos');
+  const [filterPeriod, setFilterPeriod] = useState<string>('todos');
 
   const generatePDF = trpc.revista.generatePDF.useMutation({
     onSuccess: (data) => {
@@ -590,6 +596,10 @@ export default function MagazineViewer() {
               variant="ghost"
               size="sm"
               className="text-white/70 hover:text-white hover:bg-white/10"
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copiado para a área de transferência!');
+              }}
             >
               <Share2 className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Partilhar</span>
@@ -836,7 +846,19 @@ export default function MagazineViewer() {
                     transformOrigin: zoomLevel > 100 ? 'top left' : 'center',
                   }}
                 >
-                  <PageContent page={currentPageData} />
+                  <PageContent 
+                  page={currentPageData} 
+                  onItemClick={(item, type) => {
+                    setSelectedItem({ ...item, itemType: type });
+                    setShowDetailModal(true);
+                  }}
+                  onNavigateToSection={(section) => {
+                    const pageIndex = magazine.pages.findIndex(p => p.type === section);
+                    if (pageIndex >= 0) {
+                      goToPage(pageIndex);
+                    }
+                  }}
+                />
                 </motion.div>
               </AnimatePresence>
               </div>
@@ -969,6 +991,28 @@ export default function MagazineViewer() {
           )}
         </div>
       </footer>
+
+      {/* Modal de Detalhes */}
+      <AnimatePresence>
+        {showDetailModal && selectedItem && (
+          <DetailModal
+            item={selectedItem}
+            type={selectedItem.itemType}
+            onClose={() => {
+              setShowDetailModal(false);
+              setSelectedItem(null);
+            }}
+            onNavigate={(type, id) => {
+              // Navegar para a página correspondente
+              const pageIndex = magazine.pages.findIndex(p => p.type === type + 's' || p.type === type);
+              if (pageIndex >= 0) {
+                goToPage(pageIndex);
+              }
+              setShowDetailModal(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1020,20 +1064,20 @@ function getPageTitle(page: any): string {
   }
 }
 
-function PageContent({ page }: { page: any }) {
+function PageContent({ page, onItemClick, onNavigateToSection }: { page: any; onItemClick?: (item: any, type: string) => void; onNavigateToSection?: (section: string) => void }) {
   switch (page.type) {
     case "cover":
       return <CoverPage content={page.content} />;
     case "resumo_periodo":
-      return <ResumoPeriodoPage content={page.content} />;
+      return <ResumoPeriodoPage content={page.content} onNavigateToSection={onNavigateToSection} />;
     case "manutencoes":
-      return <ManutencoesPage content={page.content} />;
+      return <ManutencoesPage content={page.content} onItemClick={onItemClick} />;
     case "vistorias":
-      return <VistoriasPage content={page.content} />;
+      return <VistoriasPage content={page.content} onItemClick={onItemClick} />;
     case "ocorrencias":
-      return <OcorrenciasPage content={page.content} />;
+      return <OcorrenciasPage content={page.content} onItemClick={onItemClick} />;
     case "checklists":
-      return <ChecklistsPage content={page.content} />;
+      return <ChecklistsPage content={page.content} onItemClick={onItemClick} />;
     case "mensagem_sindico":
       return <MensagemSindicoPage content={page.content} />;
     case "avisos":
@@ -2149,8 +2193,11 @@ function PersonalizadoPage({ content }: { content: any }) {
 
 // ========== PÁGINAS DE MANUTENÇÃO ==========
 
-function ResumoPeriodoPage({ content }: { content: any }) {
+function ResumoPeriodoPage({ content, onNavigateToSection }: { content: any; onNavigateToSection?: (section: string) => void }) {
   const stats = content.estatisticas || {};
+  
+  // Dados para o gráfico de pizza simples
+  const total = (stats.manutencoes?.total || 0) + (stats.vistorias?.total || 0) + (stats.ocorrencias?.total || 0) + (stats.checklists?.total || 0);
   
   return (
     <div className="h-full flex flex-col p-6 overflow-auto">
@@ -2160,51 +2207,150 @@ function ResumoPeriodoPage({ content }: { content: any }) {
         <div className="w-16 h-1 bg-primary mx-auto mt-3" />
       </div>
 
+      {/* Cards Interativos */}
       <div className="grid grid-cols-2 gap-4 flex-1">
-        <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 text-center">
+        <motion.div 
+          className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+          onClick={() => onNavigateToSection?.('manutencoes')}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <Wrench className="w-8 h-8 mx-auto mb-2 text-slate-600" />
           <div className="text-3xl font-bold text-foreground">{stats.manutencoes?.total || 0}</div>
           <div className="text-sm text-muted-foreground">Manutenções</div>
           <div className="text-xs text-green-600 mt-1">{stats.manutencoes?.concluidas || 0} concluídas</div>
-        </div>
+          {/* Mini barra de progresso */}
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+            <div 
+              className="bg-green-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${stats.manutencoes?.total ? ((stats.manutencoes?.concluidas || 0) / stats.manutencoes.total) * 100 : 0}%` }}
+            />
+          </div>
+        </motion.div>
         
-        <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-xl p-4 text-center">
+        <motion.div 
+          className="bg-emerald-100 dark:bg-emerald-900/30 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+          onClick={() => onNavigateToSection?.('vistorias')}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <Search className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
           <div className="text-3xl font-bold text-foreground">{stats.vistorias?.total || 0}</div>
           <div className="text-sm text-muted-foreground">Vistorias</div>
           <div className="text-xs text-green-600 mt-1">{stats.vistorias?.aprovadas || 0} aprovadas</div>
-        </div>
+          {/* Mini barra de progresso */}
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+            <div 
+              className="bg-emerald-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${stats.vistorias?.total ? ((stats.vistorias?.aprovadas || 0) / stats.vistorias.total) * 100 : 0}%` }}
+            />
+          </div>
+        </motion.div>
         
-        <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-xl p-4 text-center">
+        <motion.div 
+          className="bg-yellow-100 dark:bg-yellow-900/30 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+          onClick={() => onNavigateToSection?.('ocorrencias')}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-yellow-600" />
           <div className="text-3xl font-bold text-foreground">{stats.ocorrencias?.total || 0}</div>
           <div className="text-sm text-muted-foreground">Ocorrências</div>
           <div className="text-xs text-orange-600 mt-1">{stats.ocorrencias?.abertas || 0} abertas</div>
-        </div>
+          {/* Mini barra de progresso (invertida - menos abertas é melhor) */}
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+            <div 
+              className="bg-orange-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${stats.ocorrencias?.total ? ((stats.ocorrencias?.abertas || 0) / stats.ocorrencias.total) * 100 : 0}%` }}
+            />
+          </div>
+        </motion.div>
         
-        <div className="bg-teal-100 dark:bg-teal-900/30 rounded-xl p-4 text-center">
+        <motion.div 
+          className="bg-teal-100 dark:bg-teal-900/30 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+          onClick={() => onNavigateToSection?.('checklists')}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <ClipboardCheck className="w-8 h-8 mx-auto mb-2 text-teal-600" />
           <div className="text-3xl font-bold text-foreground">{stats.checklists?.total || 0}</div>
           <div className="text-sm text-muted-foreground">Checklists</div>
           <div className="text-xs text-green-600 mt-1">{stats.checklists?.concluidos || 0} concluídos</div>
-        </div>
+          {/* Mini barra de progresso */}
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+            <div 
+              className="bg-teal-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${stats.checklists?.total ? ((stats.checklists?.concluidos || 0) / stats.checklists.total) * 100 : 0}%` }}
+            />
+          </div>
+        </motion.div>
       </div>
+
+      {/* Legenda interativa */}
+      <div className="mt-4 text-center text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-green-500"></span> Concluído/Aprovado
+        </span>
+        <span className="mx-3">|</span>
+        <span className="inline-flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-orange-500"></span> Pendente/Aberto
+        </span>
+      </div>
+      <p className="text-center text-xs text-muted-foreground mt-2">Clique num card para ver detalhes</p>
     </div>
   );
 }
 
-function ManutencoesPage({ content }: { content: any }) {
+function ManutencoesPage({ content, onItemClick, activeFilter, onFilterChange }: { 
+  content: any; 
+  onItemClick?: (item: any, type: string) => void;
+  activeFilter?: string;
+  onFilterChange?: (filter: string) => void;
+}) {
+  const [localFilter, setLocalFilter] = useState('todos');
+  const filter = activeFilter || localFilter;
+  const setFilter = onFilterChange || setLocalFilter;
+  
+  const filteredItems = content.manutencoes?.filter((item: any) => {
+    if (filter === 'todos') return true;
+    return item.status === filter;
+  }) || [];
+
   return (
     <div className="h-full flex flex-col p-6 overflow-auto">
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <Wrench className="w-10 h-10 mx-auto mb-2 text-slate-600" />
         <h2 className="text-2xl font-bold text-foreground">{content.titulo}</h2>
         <div className="w-16 h-1 bg-slate-600 mx-auto mt-3" />
       </div>
 
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-1 mb-4 justify-center">
+        {['todos', 'concluida', 'em_andamento', 'pendente'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            className={cn(
+              "px-2 py-1 rounded-full text-xs font-medium transition-all",
+              filter === status
+                ? "bg-slate-600 text-white shadow-md"
+                : "bg-white dark:bg-slate-700 text-muted-foreground hover:bg-gray-100"
+            )}
+          >
+            {status === 'todos' ? 'Todos' : status === 'concluida' ? 'Concluídas' : status === 'em_andamento' ? 'Em Andamento' : 'Pendentes'}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-3 flex-1">
-        {content.manutencoes?.map((item: any, index: number) => (
-          <div key={index} className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border-l-4 border-slate-600">
+        {filteredItems.map((item: any, index: number) => (
+          <motion.div 
+            key={index} 
+            className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border-l-4 border-slate-600 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+            onClick={() => onItemClick?.(item, 'manutencao')}
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <div className="flex justify-between items-start mb-1">
               <span className="text-xs font-mono text-muted-foreground">{item.protocolo}</span>
               <span className={cn(
@@ -2222,25 +2368,62 @@ function ManutencoesPage({ content }: { content: any }) {
               <span>{item.tipo === "preventiva" ? "Preventiva" : "Corretiva"}</span>
               <span>{item.data}</span>
             </div>
-          </div>
+          </motion.div>
         ))}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Wrench className="w-12 h-12 mx-auto mb-2 opacity-30" />
+            <p>Nenhuma manutenção encontrada com este filtro</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function VistoriasPage({ content }: { content: any }) {
+function VistoriasPage({ content, onItemClick }: { content: any; onItemClick?: (item: any, type: string) => void; }) {
+  const [filter, setFilter] = useState('todos');
+  
+  const filteredItems = content.vistorias?.filter((item: any) => {
+    if (filter === 'todos') return true;
+    return item.status === filter;
+  }) || [];
+
   return (
     <div className="h-full flex flex-col p-6 overflow-auto">
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <Search className="w-10 h-10 mx-auto mb-2 text-emerald-600" />
         <h2 className="text-2xl font-bold text-foreground">{content.titulo}</h2>
         <div className="w-16 h-1 bg-emerald-600 mx-auto mt-3" />
       </div>
 
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-1 mb-4 justify-center">
+        {['todos', 'aprovada', 'pendente', 'reprovada'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            className={cn(
+              "px-2 py-1 rounded-full text-xs font-medium transition-all",
+              filter === status
+                ? "bg-emerald-600 text-white shadow-md"
+                : "bg-white dark:bg-slate-700 text-muted-foreground hover:bg-gray-100"
+            )}
+          >
+            {status === 'todos' ? 'Todas' : status === 'aprovada' ? 'Aprovadas' : status === 'pendente' ? 'Pendentes' : 'Reprovadas'}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-3 flex-1">
-        {content.vistorias?.map((item: any, index: number) => (
-          <div key={index} className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 border-l-4 border-emerald-600">
+        {filteredItems.map((item: any, index: number) => (
+          <motion.div 
+            key={index} 
+            className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 border-l-4 border-emerald-600 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+            onClick={() => onItemClick?.(item, 'vistoria')}
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <div className="flex justify-between items-start mb-1">
               <span className="text-xs font-mono text-muted-foreground">{item.protocolo}</span>
               <span className={cn(
@@ -2255,30 +2438,66 @@ function VistoriasPage({ content }: { content: any }) {
             <h3 className="font-semibold text-foreground">{item.titulo}</h3>
             <p className="text-sm text-muted-foreground">{item.local}</p>
             <div className="text-right mt-2 text-xs text-muted-foreground">{item.data}</div>
-          </div>
+          </motion.div>
         ))}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Search className="w-12 h-12 mx-auto mb-2 opacity-30" />
+            <p>Nenhuma vistoria encontrada com este filtro</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function OcorrenciasPage({ content }: { content: any }) {
+function OcorrenciasPage({ content, onItemClick }: { content: any; onItemClick?: (item: any, type: string) => void; }) {
+  const [filter, setFilter] = useState('todos');
+  
+  const filteredItems = content.ocorrencias?.filter((item: any) => {
+    if (filter === 'todos') return true;
+    return item.status === filter;
+  }) || [];
   return (
     <div className="h-full flex flex-col p-6 overflow-auto">
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <AlertTriangle className="w-10 h-10 mx-auto mb-2 text-yellow-600" />
         <h2 className="text-2xl font-bold text-foreground">{content.titulo}</h2>
         <div className="w-16 h-1 bg-yellow-600 mx-auto mt-3" />
       </div>
 
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-1 mb-4 justify-center">
+        {['todos', 'resolvida', 'em_analise', 'aberta'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            className={cn(
+              "px-2 py-1 rounded-full text-xs font-medium transition-all",
+              filter === status
+                ? "bg-yellow-600 text-white shadow-md"
+                : "bg-white dark:bg-slate-700 text-muted-foreground hover:bg-gray-100"
+            )}
+          >
+            {status === 'todos' ? 'Todas' : status === 'resolvida' ? 'Resolvidas' : status === 'em_analise' ? 'Em Análise' : 'Abertas'}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-3 flex-1">
-        {content.ocorrencias?.map((item: any, index: number) => (
-          <div key={index} className={cn(
-            "rounded-lg p-3 border-l-4",
-            item.prioridade === "alta" ? "bg-red-50 dark:bg-red-900/20 border-red-600" :
-            item.prioridade === "media" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-600" :
-            "bg-blue-50 dark:bg-blue-900/20 border-blue-600"
-          )}>
+        {filteredItems.map((item: any, index: number) => (
+          <motion.div 
+            key={index} 
+            className={cn(
+              "rounded-lg p-3 border-l-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all",
+              item.prioridade === "alta" ? "bg-red-50 dark:bg-red-900/20 border-red-600" :
+              item.prioridade === "media" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-600" :
+              "bg-blue-50 dark:bg-blue-900/20 border-blue-600"
+            )}
+            onClick={() => onItemClick?.(item, 'ocorrencia')}
+            whileHover={{ x: 4 }}
+            whileTap={{ scale: 0.98 }}
+          >
             <div className="flex justify-between items-start mb-1">
               <span className="text-xs font-mono text-muted-foreground">{item.protocolo}</span>
               <span className={cn(
@@ -2293,14 +2512,20 @@ function OcorrenciasPage({ content }: { content: any }) {
             <h3 className="font-semibold text-foreground">{item.titulo}</h3>
             <p className="text-sm text-muted-foreground">{item.local}</p>
             <div className="text-right mt-2 text-xs text-muted-foreground">{item.data}</div>
-          </div>
+          </motion.div>
         ))}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <AlertTriangle className="w-12 h-12 mx-auto mb-2 opacity-30" />
+            <p>Nenhuma ocorrência encontrada com este filtro</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function ChecklistsPage({ content }: { content: any }) {
+function ChecklistsPage({ content, onItemClick }: { content: any; onItemClick?: (item: any, type: string) => void; }) {
   return (
     <div className="h-full flex flex-col p-6 overflow-auto">
       <div className="text-center mb-6">
@@ -2313,7 +2538,13 @@ function ChecklistsPage({ content }: { content: any }) {
         {content.checklists?.map((item: any, index: number) => {
           const percentual = Math.round((item.itensConcluidos / item.itensTotal) * 100);
           return (
-            <div key={index} className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border-l-4 border-teal-600">
+            <motion.div 
+              key={index} 
+              className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border-l-4 border-teal-600 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all"
+              onClick={() => onItemClick?.(item, 'checklist')}
+              whileHover={{ x: 4 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <h3 className="font-semibold text-foreground">{item.titulo}</h3>
               <p className="text-sm text-muted-foreground">Responsável: {item.responsavel}</p>
               <div className="mt-2">
@@ -2329,10 +2560,360 @@ function ChecklistsPage({ content }: { content: any }) {
                 </div>
               </div>
               <div className="text-right mt-2 text-xs text-muted-foreground">{item.data}</div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+
+// ========== COMPONENTES INTERATIVOS ==========
+
+// Modal de Detalhes
+function DetailModal({ 
+  item, 
+  type, 
+  onClose, 
+  onNavigate 
+}: { 
+  item: any; 
+  type: string; 
+  onClose: () => void;
+  onNavigate: (type: string, id: string) => void;
+}) {
+  if (!item) return null;
+
+  const getTypeIcon = () => {
+    switch (type) {
+      case 'manutencao': return <Wrench className="w-6 h-6 text-slate-600" />;
+      case 'vistoria': return <Search className="w-6 h-6 text-emerald-600" />;
+      case 'ocorrencia': return <AlertTriangle className="w-6 h-6 text-yellow-600" />;
+      case 'checklist': return <ClipboardCheck className="w-6 h-6 text-teal-600" />;
+      default: return null;
+    }
+  };
+
+  const getTypeColor = () => {
+    switch (type) {
+      case 'manutencao': return 'bg-slate-100 border-slate-600';
+      case 'vistoria': return 'bg-emerald-100 border-emerald-600';
+      case 'ocorrencia': return 'bg-yellow-100 border-yellow-600';
+      case 'checklist': return 'bg-teal-100 border-teal-600';
+      default: return 'bg-gray-100 border-gray-600';
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className={cn("bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full max-h-[80vh] overflow-auto shadow-2xl border-l-4", getTypeColor())}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-slate-900 p-4 border-b flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {getTypeIcon()}
+            <div>
+              <span className="text-xs font-mono text-muted-foreground">{item.protocolo}</span>
+              <h3 className="font-bold text-lg text-foreground">{item.titulo}</h3>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 space-y-4">
+          {/* Status e Data */}
+          <div className="flex justify-between items-center">
+            <span className={cn(
+              "px-3 py-1 rounded-full text-sm font-medium",
+              item.status === "concluida" || item.status === "aprovada" || item.status === "resolvida" 
+                ? "bg-green-100 text-green-700" 
+                : item.status === "em_andamento" || item.status === "pendente" || item.status === "em_analise"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-gray-100 text-gray-700"
+            )}>
+              {item.status?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+            </span>
+            <span className="text-sm text-muted-foreground">{item.data}</span>
+          </div>
+
+          {/* Informações */}
+          <div className="space-y-3">
+            {item.local && (
+              <div className="flex items-start gap-2">
+                <Building2 className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Local</span>
+                  <p className="text-foreground">{item.local}</p>
+                </div>
+              </div>
+            )}
+
+            {item.tipo && (
+              <div className="flex items-start gap-2">
+                <FileText className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Tipo</span>
+                  <p className="text-foreground capitalize">{item.tipo}</p>
+                </div>
+              </div>
+            )}
+
+            {item.prioridade && (
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Prioridade</span>
+                  <p className={cn(
+                    "font-medium capitalize",
+                    item.prioridade === "alta" ? "text-red-600" :
+                    item.prioridade === "media" ? "text-yellow-600" : "text-blue-600"
+                  )}>{item.prioridade}</p>
+                </div>
+              </div>
+            )}
+
+            {item.responsavel && (
+              <div className="flex items-start gap-2">
+                <Users className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Responsável</span>
+                  <p className="text-foreground">{item.responsavel}</p>
+                </div>
+              </div>
+            )}
+
+            {item.descricao && (
+              <div className="flex items-start gap-2">
+                <MessageSquare className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Descrição</span>
+                  <p className="text-foreground">{item.descricao}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Ações Rápidas */}
+          <div className="flex flex-wrap gap-2 pt-4 border-t">
+            <Button size="sm" variant="outline" className="gap-2">
+              <Download className="w-4 h-4" />
+              PDF
+            </Button>
+            <Button size="sm" variant="outline" className="gap-2">
+              <Share2 className="w-4 h-4" />
+              Partilhar
+            </Button>
+            <Button size="sm" variant="outline" className="gap-2">
+              <FileDown className="w-4 h-4" />
+              Exportar
+            </Button>
+          </div>
+
+          {/* Links Relacionados */}
+          {type === 'vistoria' && (
+            <div className="pt-4 border-t">
+              <h4 className="text-sm font-semibold mb-2">Registros Relacionados</h4>
+              <div className="space-y-2">
+                <button 
+                  onClick={() => onNavigate('ocorrencia', 'OCO-2026-001')}
+                  className="w-full text-left p-2 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors flex items-center gap-2"
+                >
+                  <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                  <span className="text-sm">Ver ocorrências geradas</span>
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </button>
+                <button 
+                  onClick={() => onNavigate('manutencao', 'MAN-2026-001')}
+                  className="w-full text-left p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors flex items-center gap-2"
+                >
+                  <Wrench className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm">Ver manutenções relacionadas</span>
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {type === 'ocorrencia' && (
+            <div className="pt-4 border-t">
+              <h4 className="text-sm font-semibold mb-2">Resolução</h4>
+              <button 
+                onClick={() => onNavigate('manutencao', 'MAN-2026-002')}
+                className="w-full text-left p-2 rounded-lg bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span className="text-sm">Ver manutenção que resolveu</span>
+                <ChevronRight className="w-4 h-4 ml-auto" />
+              </button>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Barra de Filtros
+function FilterBar({ 
+  activeFilter, 
+  onFilterChange,
+  filterPeriod,
+  onPeriodChange,
+  type 
+}: { 
+  activeFilter: string;
+  onFilterChange: (filter: string) => void;
+  filterPeriod: string;
+  onPeriodChange: (period: string) => void;
+  type: string;
+}) {
+  const statusOptions = type === 'manutencao' 
+    ? ['todos', 'concluida', 'em_andamento', 'pendente']
+    : type === 'vistoria'
+    ? ['todos', 'aprovada', 'pendente', 'reprovada']
+    : type === 'ocorrencia'
+    ? ['todos', 'resolvida', 'em_analise', 'aberta']
+    : ['todos'];
+
+  const statusLabels: Record<string, string> = {
+    todos: 'Todos',
+    concluida: 'Concluída',
+    em_andamento: 'Em Andamento',
+    pendente: 'Pendente',
+    aprovada: 'Aprovada',
+    reprovada: 'Reprovada',
+    resolvida: 'Resolvida',
+    em_analise: 'Em Análise',
+    aberta: 'Aberta',
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-4 p-2 bg-white/50 dark:bg-slate-800/50 rounded-lg">
+      <div className="flex gap-1">
+        {statusOptions.map((status) => (
+          <button
+            key={status}
+            onClick={() => onFilterChange(status)}
+            className={cn(
+              "px-3 py-1 rounded-full text-xs font-medium transition-all",
+              activeFilter === status
+                ? "bg-primary text-white shadow-md"
+                : "bg-white dark:bg-slate-700 text-muted-foreground hover:bg-gray-100"
+            )}
+          >
+            {statusLabels[status] || status}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-1 ml-auto">
+        <select
+          value={filterPeriod}
+          onChange={(e) => onPeriodChange(e.target.value)}
+          className="px-2 py-1 rounded-lg text-xs bg-white dark:bg-slate-700 border-0 focus:ring-2 focus:ring-primary"
+        >
+          <option value="todos">Todo Período</option>
+          <option value="semana">Última Semana</option>
+          <option value="mes">Último Mês</option>
+          <option value="trimestre">Último Trimestre</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+// Gráfico de Pizza Interativo (simples, sem dependências)
+function InteractivePieChart({ 
+  data, 
+  onSegmentClick 
+}: { 
+  data: { label: string; value: number; color: string }[];
+  onSegmentClick: (label: string) => void;
+}) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let currentAngle = 0;
+
+  return (
+    <div className="flex items-center gap-4">
+      <svg viewBox="0 0 100 100" className="w-24 h-24">
+        {data.map((item, index) => {
+          const angle = (item.value / total) * 360;
+          const startAngle = currentAngle;
+          currentAngle += angle;
+          
+          const x1 = 50 + 40 * Math.cos((startAngle - 90) * Math.PI / 180);
+          const y1 = 50 + 40 * Math.sin((startAngle - 90) * Math.PI / 180);
+          const x2 = 50 + 40 * Math.cos((startAngle + angle - 90) * Math.PI / 180);
+          const y2 = 50 + 40 * Math.sin((startAngle + angle - 90) * Math.PI / 180);
+          
+          const largeArc = angle > 180 ? 1 : 0;
+          
+          return (
+            <path
+              key={index}
+              d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
+              fill={item.color}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => onSegmentClick(item.label)}
+            />
+          );
+        })}
+      </svg>
+      <div className="space-y-1">
+        {data.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => onSegmentClick(item.label)}
+            className="flex items-center gap-2 text-xs hover:bg-gray-100 p-1 rounded transition-colors w-full text-left"
+          >
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+            <span>{item.label}: {item.value}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Botões de Ação Rápida
+function QuickActions({ onExportPDF, onShare, onExportExcel, onPrint }: {
+  onExportPDF: () => void;
+  onShare: () => void;
+  onExportExcel: () => void;
+  onPrint: () => void;
+}) {
+  return (
+    <div className="flex gap-2 p-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-lg shadow-sm">
+      <Button size="sm" variant="ghost" onClick={onExportPDF} className="gap-1 text-xs">
+        <Download className="w-3 h-3" />
+        PDF
+      </Button>
+      <Button size="sm" variant="ghost" onClick={onShare} className="gap-1 text-xs">
+        <Share2 className="w-3 h-3" />
+        Partilhar
+      </Button>
+      <Button size="sm" variant="ghost" onClick={onExportExcel} className="gap-1 text-xs">
+        <FileDown className="w-3 h-3" />
+        Excel
+      </Button>
+      <Button size="sm" variant="ghost" onClick={onPrint} className="gap-1 text-xs">
+        <FileText className="w-3 h-3" />
+        Imprimir
+      </Button>
     </div>
   );
 }
