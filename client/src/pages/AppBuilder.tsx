@@ -85,6 +85,8 @@ import {
   ClipboardPen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppAcessoConfig } from "@/components/AppAcessoConfig";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Tipos
 interface AppModule {
@@ -239,6 +241,8 @@ export default function AppBuilder() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [modules, setModules] = useState<AppModule[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [showAcessoConfig, setShowAcessoConfig] = useState(false);
+  const [savedAppId, setSavedAppId] = useState<number | null>(null);
   
   // Buscar condomínio do usuário
   const { data: condominios } = trpc.condominio.list.useQuery();
@@ -248,8 +252,10 @@ export default function AppBuilder() {
   const createApp = trpc.apps.create.useMutation({
     onSuccess: (data) => {
       toast.success("App salvo com sucesso!");
-      // Redirecionar para a lista de apps
-      setLocation(`/dashboard/apps`);
+      setSavedAppId(data.id);
+      setIsSaving(false);
+      // Mostrar opção de configurar acesso
+      setShowAcessoConfig(true);
     },
     onError: (error) => {
       toast.error(`Erro ao salvar: ${error.message}`);
@@ -569,6 +575,37 @@ export default function AppBuilder() {
           </div>
         </div>
       </div>
+      
+      {/* Dialog de Configuração de Acesso */}
+      <Dialog open={showAcessoConfig} onOpenChange={setShowAcessoConfig}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>App Salvo com Sucesso!</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              Agora configure quem pode aceder ao seu app. Pode gerar códigos de acesso rápido ou cadastrar utilizadores com email e senha.
+            </p>
+            {savedAppId && (
+              <AppAcessoConfig appId={savedAppId} appNome={appName} />
+            )}
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => {
+                setShowAcessoConfig(false);
+                setLocation('/dashboard/apps');
+              }}>
+                Configurar Depois
+              </Button>
+              <Button onClick={() => {
+                setShowAcessoConfig(false);
+                setLocation('/dashboard/apps');
+              }}>
+                Concluído
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

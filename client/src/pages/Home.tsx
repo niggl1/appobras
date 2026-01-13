@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { AppLoginModal } from "@/components/AppLoginModal";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { motion } from "framer-motion";
@@ -34,6 +36,7 @@ import { Link } from "wouter";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
+  const [showAppLogin, setShowAppLogin] = useState(false);
 
   return (
     <div className="min-h-screen bg-white">
@@ -60,6 +63,14 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              className="border-orange-500 text-orange-500 hover:bg-orange-50"
+              onClick={() => setShowAppLogin(true)}
+            >
+              <Smartphone className="w-4 h-4 mr-2" />
+              Aceder ao Meu App
+            </Button>
             {loading ? (
               <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
             ) : isAuthenticated ? (
@@ -487,6 +498,12 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      
+      {/* Modal de Login para Apps */}
+      <AppLoginModal 
+        open={showAppLogin} 
+        onOpenChange={setShowAppLogin} 
+      />
     </div>
   );
 }

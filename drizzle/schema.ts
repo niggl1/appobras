@@ -2037,3 +2037,112 @@ export const camposRapidosTemplates = mysqlTable("campos_rapidos_templates", {
 
 export type CampoRapidoTemplate = typeof camposRapidosTemplates.$inferSelect;
 export type InsertCampoRapidoTemplate = typeof camposRapidosTemplates.$inferInsert;
+
+
+// ==================== SISTEMA DE ACESSO AOS APPS ====================
+
+// Códigos de acesso para apps (acesso rápido sem email/senha)
+export const appCodigosAcesso = mysqlTable("app_codigos_acesso", {
+  id: int("id").autoincrement().primaryKey(),
+  appId: int("appId").references(() => apps.id).notNull(),
+  
+  codigo: varchar("codigo", { length: 50 }).notNull().unique(),
+  descricao: varchar("descricao", { length: 255 }),
+  
+  // Controle de validade
+  ativo: boolean("ativo").default(true),
+  validoAte: timestamp("validoAte"), // null = sem expiração
+  
+  // Permissões do código
+  permissao: mysqlEnum("permissao", ["visualizar", "editar", "administrar"]).default("visualizar"),
+  
+  // Estatísticas
+  vezesUsado: int("vezesUsado").default(0),
+  ultimoUso: timestamp("ultimoUso"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AppCodigoAcesso = typeof appCodigosAcesso.$inferSelect;
+export type InsertAppCodigoAcesso = typeof appCodigosAcesso.$inferInsert;
+
+// Utilizadores de apps (acesso com email/senha)
+export const appUsuarios = mysqlTable("app_usuarios", {
+  id: int("id").autoincrement().primaryKey(),
+  appId: int("appId").references(() => apps.id).notNull(),
+  
+  nome: varchar("nome", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  senhaHash: varchar("senhaHash", { length: 255 }).notNull(),
+  
+  // Permissões
+  permissao: mysqlEnum("permissao", ["visualizar", "editar", "administrar"]).default("visualizar"),
+  
+  // Controle de conta
+  ativo: boolean("ativo").default(true),
+  emailVerificado: boolean("emailVerificado").default(false),
+  
+  // Recuperação de senha
+  resetToken: varchar("resetToken", { length: 64 }),
+  resetTokenExpira: timestamp("resetTokenExpira"),
+  
+  // Estatísticas
+  ultimoAcesso: timestamp("ultimoAcesso"),
+  vezesAcesso: int("vezesAcesso").default(0),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AppUsuario = typeof appUsuarios.$inferSelect;
+export type InsertAppUsuario = typeof appUsuarios.$inferInsert;
+
+// Sessões de acesso aos apps
+export const appSessoes = mysqlTable("app_sessoes", {
+  id: int("id").autoincrement().primaryKey(),
+  appId: int("appId").references(() => apps.id).notNull(),
+  
+  // Pode ser vinculado a um usuário OU a um código de acesso
+  usuarioId: int("usuarioId").references(() => appUsuarios.id),
+  codigoAcessoId: int("codigoAcessoId").references(() => appCodigosAcesso.id),
+  
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  
+  // Informações da sessão
+  ip: varchar("ip", { length: 45 }),
+  userAgent: text("userAgent"),
+  
+  // Controle de validade
+  expiraEm: timestamp("expiraEm").notNull(),
+  ativo: boolean("ativo").default(true),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AppSessao = typeof appSessoes.$inferSelect;
+export type InsertAppSessao = typeof appSessoes.$inferInsert;
+
+// Log de acessos aos apps (para auditoria)
+export const appAcessosLog = mysqlTable("app_acessos_log", {
+  id: int("id").autoincrement().primaryKey(),
+  appId: int("appId").references(() => apps.id).notNull(),
+  
+  // Quem acessou
+  usuarioId: int("usuarioId").references(() => appUsuarios.id),
+  codigoAcessoId: int("codigoAcessoId").references(() => appCodigosAcesso.id),
+  
+  // Tipo de acesso
+  tipoAcesso: mysqlEnum("tipoAcesso", ["codigo", "email", "link_magico"]).notNull(),
+  
+  // Informações do acesso
+  ip: varchar("ip", { length: 45 }),
+  userAgent: text("userAgent"),
+  sucesso: boolean("sucesso").default(true),
+  motivoFalha: varchar("motivoFalha", { length: 255 }),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AppAcessoLog = typeof appAcessosLog.$inferSelect;
+export type InsertAppAcessoLog = typeof appAcessosLog.$inferInsert;

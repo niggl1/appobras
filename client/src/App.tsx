@@ -48,6 +48,7 @@ import OrdemServicoDetalhe from "@/pages/OrdemServicoDetalhe";
 import OrdensServicoConfig from "@/pages/OrdensServicoConfig";
 import CriarProjeto from "./pages/CriarProjeto";
 import AppViewer from "./pages/AppViewer";
+import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
 import WhatsAppButton from "./components/WhatsAppButton";
 
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/transicoes" component={TransitionEffects} />
       <Route path="/revista/:shareLink" component={MagazineViewer} />
       <Route path="/app/:shareLink" component={AppViewer} />
+      <Route path="/meuapp/:id" component={AppView} />
       
       {/* Voting route */}
       <Route path="/votar/:id" component={Votar} />

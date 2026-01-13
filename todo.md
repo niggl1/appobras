@@ -497,3 +497,56 @@
 - [x] Criar componentes de filtro e modal
 - [x] Testar todas as funcionalidades
 - [x] Salvar checkpoint
+
+
+## Fase 47: Sistema de Acesso Híbrido para Apps Criados
+
+### Schema da Base de Dados
+- [x] Criar tabela app_usuarios (email, senha_hash, app_id, permissoes)
+- [x] Criar tabela app_codigos_acesso (codigo, app_id, ativo, validade)
+- [x] Criar tabela app_sessoes (token, usuario_id, app_id, expira_em)
+- [x] Criar tabela app_acessos_log (para auditoria)
+
+### Backend (tRPC)
+- [x] Criar rota appAcesso.loginComCodigo
+- [x] Criar rota appAcesso.loginComEmail
+- [x] Criar rota appAcesso.gerarCodigo
+- [x] Criar rota appAcesso.cadastrarUsuario
+- [x] Criar rota appAcesso.validarSessao
+- [x] Criar rota appAcesso.logout
+- [ ] Criar rota appAcesso.registarUsuario
+- [ ] Criar rota appAcesso.recuperarSenha
+- [ ] Criar rota appAcesso.listarUsuarios
+- [ ] Criar rota appAcesso.removerUsuario
+- [ ] Criar rota appAcesso.gerarCodigo
+- [ ] Criar rota appAcesso.validarSessao
+
+### Frontend - Construtor de App (CONCLUÍDO)
+- [x] Adicionar aba "Configurar Acesso" no AppBuilder
+- [x] Campo para definir código de acesso único
+- [x] Lista de utilizadores cadastrados
+- [x] Formulário para adicionar novo utilizador (email + senha) (email + senha)
+- [x] Opção de permissões (visualizar, editar, administrar) (visualizar, editar, administrar)
+- [x] Botão para gerar novo código de acesso
+
+### Frontend - Página Inicial (CONCLUÍDO)
+- [x] Criar secção "Aceder ao Meu App" na Home na Home
+- [x] Campo para código do app
+- [x] Campos email + senha (alternativa) (alternativa)
+- [x] Botão "Entrar no App"
+- [x] Link "Esqueceu a senha?"
+- [x] Link "Primeiro acesso?"
+
+### Autenticação (CONCLUÍDO)
+- [x] Implementar hash de senhas (bcrypt) (bcrypt)
+- [x] Implementar geração de tokens para apps para apps
+- [x] Implementar middleware de validação de sessão de sessão
+- [x] Implementar logout
+
+### Testes (CONCLUÍDO)
+- [x] Criar testes Vitest para appAcesso (8 testes)
+- [x] Testar login com código APP-2026-CNVZ3O
+- [x] Testar login com email/senha
+- [ ] Testar recuperação de senha (pendente)
+- [x] Salvar checkpoint
+
