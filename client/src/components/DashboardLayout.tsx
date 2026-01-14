@@ -164,6 +164,7 @@ const menuSections = [
       { icon: AlertTriangle, iconName: "AlertTriangle", label: "Ocorrências", path: "/dashboard/ocorrencias", funcaoId: "ocorrencias" },
       { icon: CheckSquare, iconName: "CheckSquare", label: "Checklists", path: "/dashboard/checklists", funcaoId: "checklists" },
       { icon: ArrowLeftRight, iconName: "ArrowLeftRight", label: "Antes e Depois", path: "/dashboard/antes-depois", funcaoId: "antes-depois" },
+      { icon: CheckSquare, iconName: "CheckSquare", label: "Checklist Rápido", path: "#", funcaoId: "checklist-rapido", isChecklistRapido: true },
       { icon: CalendarClock, iconName: "CalendarClock", label: "Agenda de Vencimentos", path: "/dashboard/agenda-vencimentos", funcaoId: "agenda-vencimentos" },
     ]
   },
@@ -706,7 +707,13 @@ function DashboardLayoutContent({
                               <div className="flex items-center w-full">
                                 <SidebarMenuButton
                                   isActive={isItemActive}
-                                  onClick={() => setLocation(item.path)}
+                                  onClick={() => {
+                                    if (item.isChecklistRapido) {
+                                      setChecklistRapidoModalOpen(true);
+                                    } else {
+                                      setLocation(item.path);
+                                    }
+                                  }}
                                   tooltip={item.label}
                                   className={cn(
                                     "h-9 transition-all text-sm flex-1",
@@ -722,18 +729,20 @@ function DashboardLayoutContent({
                                   <span className="flex-1">{item.label}</span>
                                 </SidebarMenuButton>
                                 {/* Ícone de raio para adicionar às funções rápidas */}
-                                <button
-                                  onClick={(e) => handleZapClick(e, item)}
-                                  className={cn(
-                                    "h-7 w-7 flex items-center justify-center rounded-md transition-all",
-                                    isRapida 
-                                      ? "text-amber-500 bg-amber-100 hover:bg-amber-200" 
-                                      : "text-muted-foreground hover:text-amber-500 hover:bg-amber-50"
-                                  )}
-                                  title={isRapida ? "Remover das funções rápidas" : "Adicionar às funções rápidas"}
-                                >
-                                  <Zap className={cn("h-3.5 w-3.5", isRapida && "fill-amber-500")} />
-                                </button>
+                                {!item.isChecklistRapido && (
+                                  <button
+                                    onClick={(e) => handleZapClick(e, item)}
+                                    className={cn(
+                                      "h-7 w-7 flex items-center justify-center rounded-md transition-all",
+                                      isRapida 
+                                        ? "text-amber-500 bg-amber-100 hover:bg-amber-200" 
+                                        : "text-muted-foreground hover:text-amber-500 hover:bg-amber-50"
+                                    )}
+                                    title={isRapida ? "Remover das funções rápidas" : "Adicionar às funções rápidas"}
+                                  >
+                                    <Zap className={cn("h-3.5 w-3.5", isRapida && "fill-amber-500")} />
+                                  </button>
+                                )}
                               </div>
                             </SidebarMenuItem>
                           );
