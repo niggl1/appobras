@@ -1259,71 +1259,7 @@ function OverviewSection({ user }: { user: any }) {
       )}
 
 
-      {/* Quick stats - Cards focados em manutenções */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card Vistorias */}
-        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25">
-                <ClipboardCheck className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">0</span>
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">Vistorias</h3>
-            <p className="text-sm text-muted-foreground mb-4">Registre e acompanhe vistorias técnicas</p>
-            <button
-              onClick={() => window.location.href = '/dashboard/vistorias'}
-              className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nova Vistoria
-            </button>
-          </CardContent>
-        </Card>
 
-        {/* Card Manutenções */}
-        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-emerald-50/50 dark:from-gray-900 dark:to-emerald-950/30">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
-                <Wrench className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">0</span>
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">Manutenções</h3>
-            <p className="text-sm text-muted-foreground mb-4">Gerencie manutenções preventivas e corretivas</p>
-            <button
-              onClick={() => window.location.href = '/dashboard/manutencoes'}
-              className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-md shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nova Manutenção
-            </button>
-          </CardContent>
-        </Card>
-
-        {/* Card Ocorrências */}
-        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-red-50/50 dark:from-gray-900 dark:to-red-950/30">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/25">
-                <AlertTriangle className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">0</span>
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">Ocorrências</h3>
-            <p className="text-sm text-muted-foreground mb-4">Registre e resolva ocorrências rapidamente</p>
-            <button
-              onClick={() => window.location.href = '/dashboard/ocorrencias'}
-              className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Nova Ocorrência
-            </button>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Lista de Apps Criados */}
       {appsData && appsData.length > 0 && (

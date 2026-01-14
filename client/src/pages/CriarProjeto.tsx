@@ -38,17 +38,17 @@ export default function CriarProjeto() {
       textoBotao: "Criar Relatório"
     },
     {
-      id: "revista",
-      titulo: "Revistas Criadas",
-      descricao: "Crie revistas digitais interativas",
+      id: "livro",
+      titulo: "Livro de Manutenção",
+      descricao: "Crie livros interativos com funcionalidades de manutenção",
       icone: BookOpen,
       cor: "bg-purple-500",
       corBorda: "border-purple-200",
       corFundo: "bg-purple-50",
       corTexto: "text-purple-600",
       corBotao: "bg-purple-500 hover:bg-purple-600",
-      rota: "/dashboard/revistas",
-      textoBotao: "Criar Revista"
+      rota: "/dashboard/criar-projeto",
+      textoBotao: "Criar Livro"
     }
   ];
 
