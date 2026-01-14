@@ -50,6 +50,8 @@ import CriarProjeto from "./pages/CriarProjeto";
 import AppViewer from "./pages/AppViewer";
 import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
+import AppRedefinirSenha from "./pages/AppRedefinirSenha";
+import GestorRedefinirSenha from "./pages/GestorRedefinirSenha";
 import WhatsAppButton from "./components/WhatsAppButton";
 
 function Router() {
@@ -61,6 +63,7 @@ function Router() {
       <Route path="/registar" component={Registar} />
       <Route path="/recuperar-senha" component={RecuperarSenha} />
       <Route path="/redefinir-senha/:token" component={RedefinirSenha} />
+      <Route path="/app/recuperar-senha/:token" component={AppRedefinirSenha} />
       <Route path="/demo" component={Demo} />
       <Route path="/demo-layouts" component={DemoLayouts} />
       <Route path="/app" component={LandingApp} />
