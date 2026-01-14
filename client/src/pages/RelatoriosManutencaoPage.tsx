@@ -20,6 +20,12 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
+  exportManutencoesPDF,
+  exportOcorrenciasPDF,
+  exportVistoriasPDF,
+  exportChecklistsPDF,
+} from "@/lib/pdfRelatoriosManutencao";
+import {
   Download,
   Wrench,
   AlertTriangle,
@@ -508,7 +514,15 @@ export default function RelatoriosManutencaoPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toast.success("Exportação em desenvolvimento")}
+                    onClick={async () => {
+                      try {
+                        const org = condominios?.find(c => c.id === selectedCondominioId);
+                        await exportManutencoesPDF(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
+                        toast.success("Relatório exportado com sucesso!");
+                      } catch (error) {
+                        toast.error("Erro ao exportar relatório");
+                      }
+                    }}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     PDF
@@ -592,7 +606,15 @@ export default function RelatoriosManutencaoPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toast.success("Exportação em desenvolvimento")}
+                    onClick={async () => {
+                      try {
+                        const org = condominios?.find(c => c.id === selectedCondominioId);
+                        await exportOcorrenciasPDF(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
+                        toast.success("Relatório exportado com sucesso!");
+                      } catch (error) {
+                        toast.error("Erro ao exportar relatório");
+                      }
+                    }}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     PDF
@@ -664,7 +686,15 @@ export default function RelatoriosManutencaoPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toast.success("Exportação em desenvolvimento")}
+                    onClick={async () => {
+                      try {
+                        const org = condominios?.find(c => c.id === selectedCondominioId);
+                        await exportVistoriasPDF(filteredVistorias || [], org ? { nome: org.nome } : undefined);
+                        toast.success("Relatório exportado com sucesso!");
+                      } catch (error) {
+                        toast.error("Erro ao exportar relatório");
+                      }
+                    }}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     PDF
@@ -736,7 +766,15 @@ export default function RelatoriosManutencaoPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toast.success("Exportação em desenvolvimento")}
+                    onClick={async () => {
+                      try {
+                        const org = condominios?.find(c => c.id === selectedCondominioId);
+                        await exportChecklistsPDF(filteredChecklists || [], org ? { nome: org.nome } : undefined);
+                        toast.success("Relatório exportado com sucesso!");
+                      } catch (error) {
+                        toast.error("Erro ao exportar relatório");
+                      }
+                    }}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     PDF

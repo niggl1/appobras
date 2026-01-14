@@ -587,3 +587,15 @@
 - [ ] Criar testes para redefinirSenha
 - [ ] Testar fluxo completo no navegador
 - [ ] Salvar checkpoint
+
+
+## Fase 45: Implementação de Exportação PDF para Relatórios
+
+- [x] Verificar bibliotecas de PDF existentes no projeto
+- [x] Criar funções de exportação de PDF para Manutenções
+- [x] Criar funções de exportação de PDF para Ocorrências
+- [x] Criar funções de exportação de PDF para Vistorias
+- [x] Criar funções de exportação de PDF para Checklists
+- [x] Integrar funções de exportação na página RelatoriosManutencaoPage
+- [x] Testar exportações de PDF
+- [x] Salvar checkpoint final
