@@ -26,6 +26,12 @@ import {
   exportChecklistsPDF,
 } from "@/lib/pdfRelatoriosManutencao";
 import {
+  exportManutencoesExcel,
+  exportOcorrenciasExcel,
+  exportVistoriasExcel,
+  exportChecklistsExcel,
+} from "@/lib/excelExport";
+import {
   Download,
   Wrench,
   AlertTriangle,
@@ -511,22 +517,40 @@ export default function RelatoriosManutencaoPage() {
                     <CardTitle className="text-base">Manutenções</CardTitle>
                     <CardDescription>Histórico de manutenções</CardDescription>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        const org = condominios?.find(c => c.id === selectedCondominioId);
-                        await exportManutencoesPDF(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
-                        toast.success("Relatório exportado com sucesso!");
-                      } catch (error) {
-                        toast.error("Erro ao exportar relatório");
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          await exportManutencoesPDF(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Relatório exportado com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar relatório");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      PDF
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          exportManutencoesExcel(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Exportado para Excel com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar para Excel");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Excel
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -603,22 +627,40 @@ export default function RelatoriosManutencaoPage() {
                     <CardTitle className="text-base">Ocorrências</CardTitle>
                     <CardDescription>Histórico de ocorrências</CardDescription>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        const org = condominios?.find(c => c.id === selectedCondominioId);
-                        await exportOcorrenciasPDF(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
-                        toast.success("Relatório exportado com sucesso!");
-                      } catch (error) {
-                        toast.error("Erro ao exportar relatório");
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          await exportOcorrenciasPDF(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Relatório exportado com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar relatório");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      PDF
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          exportOcorrenciasExcel(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Exportado para Excel com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar para Excel");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Excel
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -683,22 +725,40 @@ export default function RelatoriosManutencaoPage() {
                     <CardTitle className="text-base">Vistorias</CardTitle>
                     <CardDescription>Histórico de vistorias</CardDescription>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        const org = condominios?.find(c => c.id === selectedCondominioId);
-                        await exportVistoriasPDF(filteredVistorias || [], org ? { nome: org.nome } : undefined);
-                        toast.success("Relatório exportado com sucesso!");
-                      } catch (error) {
-                        toast.error("Erro ao exportar relatório");
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          await exportVistoriasPDF(filteredVistorias || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Relatório exportado com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar relatório");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      PDF
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          exportVistoriasExcel(filteredVistorias || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Exportado para Excel com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar para Excel");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Excel
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -763,22 +823,40 @@ export default function RelatoriosManutencaoPage() {
                     <CardTitle className="text-base">Checklists</CardTitle>
                     <CardDescription>Histórico de checklists</CardDescription>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        const org = condominios?.find(c => c.id === selectedCondominioId);
-                        await exportChecklistsPDF(filteredChecklists || [], org ? { nome: org.nome } : undefined);
-                        toast.success("Relatório exportado com sucesso!");
-                      } catch (error) {
-                        toast.error("Erro ao exportar relatório");
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    PDF
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          await exportChecklistsPDF(filteredChecklists || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Relatório exportado com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar relatório");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      PDF
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        try {
+                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          exportChecklistsExcel(filteredChecklists || [], org ? { nome: org.nome } : undefined);
+                          toast.success("Exportado para Excel com sucesso!");
+                        } catch (error) {
+                          toast.error("Erro ao exportar para Excel");
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Excel
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>

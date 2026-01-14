@@ -613,3 +613,16 @@
 - [x] Integrar gráficos nas funções de exportação PDF de Vistorias
 - [x] Testar exportações com gráficos
 - [x] Salvar checkpoint final
+
+
+## Fase 47: Implementar Exportação para Excel/CSV
+
+- [x] Verificar bibliotecas de Excel (xlsx, papaparse) no projeto
+- [x] Instalar dependências necessárias
+- [x] Criar função de exportação Excel para Manutenções
+- [x] Criar função de exportação Excel para Ocorrências
+- [x] Criar função de exportação Excel para Vistorias
+- [x] Criar função de exportação Excel para Checklists
+- [x] Adicionar botões de exportação Excel na página RelatoriosManutencaoPage
+- [x] Testar exportações Excel
+- [x] Salvar checkpoint final
