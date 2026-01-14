@@ -1,5 +1,12 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  generatePieChartImage,
+  generateBarChartImage,
+  calculateStatusDistribution,
+  calculateResponsavelDistribution,
+  calculatePrioridadeDistribution,
+} from "./chartToPDF";
 
 interface Manutencao {
   id: number;
@@ -49,20 +56,61 @@ export async function exportManutencoesPDF(
     format: "a4",
   });
 
+  let yPosition = 20;
+
   // Cabeçalho
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Relatório de Manutenções", 14, 20);
+  doc.text("Relatório de Manutenções", 14, yPosition);
+  yPosition += 8;
 
   if (organizacao) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(organizacao.nome, 14, 28);
+    doc.text(organizacao.nome, 14, yPosition);
+    yPosition += 6;
   }
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, 35);
+  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, yPosition);
+  yPosition += 10;
+
+  // Gerar gráficos
+  const statusData = calculateStatusDistribution(manutencoes);
+  const responsavelData = calculateResponsavelDistribution(manutencoes);
+  const prioridadeData = calculatePrioridadeDistribution(manutencoes);
+
+  try {
+    // Gráfico de Status
+    const statusChart = await generatePieChartImage(statusData, "Distribuição por Status");
+    if (statusChart) {
+      doc.addImage(statusChart, "PNG", 14, yPosition, 80, 60);
+    }
+
+    // Gráfico de Prioridade
+    const prioridadeChart = await generatePieChartImage(prioridadeData, "Distribuição por Prioridade");
+    if (prioridadeChart) {
+      doc.addImage(prioridadeChart, "PNG", 104, yPosition, 80, 60);
+    }
+
+    yPosition += 70;
+
+    // Gráfico de Responsáveis
+    if (responsavelData.length > 0) {
+      const responsavelChart = await generateBarChartImage(
+        responsavelData,
+        "Top 10 Responsáveis",
+        "#FF8C00"
+      );
+      if (responsavelChart) {
+        doc.addImage(responsavelChart, "PNG", 14, yPosition, 120, 60);
+      }
+      yPosition += 70;
+    }
+  } catch (error) {
+    console.error("Erro ao gerar gráficos:", error);
+  }
 
   // Preparar dados da tabela
   const tableData = manutencoes.map((m) => [
@@ -79,7 +127,7 @@ export async function exportManutencoesPDF(
   autoTable(doc, {
     head: [["Protocolo", "Data", "Título", "Responsável", "Status", "Prioridade", "Descrição"]],
     body: tableData,
-    startY: 40,
+    startY: yPosition,
     styles: {
       fontSize: 8,
       cellPadding: 2,
@@ -108,20 +156,54 @@ export async function exportOcorrenciasPDF(
     format: "a4",
   });
 
+  let yPosition = 20;
+
   // Cabeçalho
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Relatório de Ocorrências", 14, 20);
+  doc.text("Relatório de Ocorrências", 14, yPosition);
+  yPosition += 8;
 
   if (organizacao) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(organizacao.nome, 14, 28);
+    doc.text(organizacao.nome, 14, yPosition);
+    yPosition += 6;
   }
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, 35);
+  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, yPosition);
+  yPosition += 10;
+
+  // Gerar gráficos
+  const statusData = calculateStatusDistribution(ocorrencias);
+  const responsavelData = calculateResponsavelDistribution(ocorrencias);
+
+  try {
+    // Gráfico de Status
+    const statusChart = await generatePieChartImage(statusData, "Distribuição por Status");
+    if (statusChart) {
+      doc.addImage(statusChart, "PNG", 14, yPosition, 80, 60);
+    }
+
+    yPosition += 70;
+
+    // Gráfico de Responsáveis
+    if (responsavelData.length > 0) {
+      const responsavelChart = await generateBarChartImage(
+        responsavelData,
+        "Top 10 Reportadores",
+        "#FF8C00"
+      );
+      if (responsavelChart) {
+        doc.addImage(responsavelChart, "PNG", 14, yPosition, 120, 60);
+      }
+      yPosition += 70;
+    }
+  } catch (error) {
+    console.error("Erro ao gerar gráficos:", error);
+  }
 
   // Preparar dados da tabela
   const tableData = ocorrencias.map((o) => [
@@ -137,7 +219,7 @@ export async function exportOcorrenciasPDF(
   autoTable(doc, {
     head: [["Protocolo", "Data", "Título", "Reportado Por", "Status", "Descrição"]],
     body: tableData,
-    startY: 40,
+    startY: yPosition,
     styles: {
       fontSize: 8,
       cellPadding: 2,
@@ -166,20 +248,54 @@ export async function exportVistoriasPDF(
     format: "a4",
   });
 
+  let yPosition = 20;
+
   // Cabeçalho
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Relatório de Vistorias", 14, 20);
+  doc.text("Relatório de Vistorias", 14, yPosition);
+  yPosition += 8;
 
   if (organizacao) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(organizacao.nome, 14, 28);
+    doc.text(organizacao.nome, 14, yPosition);
+    yPosition += 6;
   }
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, 35);
+  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, yPosition);
+  yPosition += 10;
+
+  // Gerar gráficos
+  const statusData = calculateStatusDistribution(vistorias);
+  const responsavelData = calculateResponsavelDistribution(vistorias);
+
+  try {
+    // Gráfico de Status
+    const statusChart = await generatePieChartImage(statusData, "Distribuição por Status");
+    if (statusChart) {
+      doc.addImage(statusChart, "PNG", 14, yPosition, 80, 60);
+    }
+
+    yPosition += 70;
+
+    // Gráfico de Responsáveis
+    if (responsavelData.length > 0) {
+      const responsavelChart = await generateBarChartImage(
+        responsavelData,
+        "Top 10 Responsáveis",
+        "#FF8C00"
+      );
+      if (responsavelChart) {
+        doc.addImage(responsavelChart, "PNG", 14, yPosition, 120, 60);
+      }
+      yPosition += 70;
+    }
+  } catch (error) {
+    console.error("Erro ao gerar gráficos:", error);
+  }
 
   // Preparar dados da tabela
   const tableData = vistorias.map((v) => [
@@ -195,7 +311,7 @@ export async function exportVistoriasPDF(
   autoTable(doc, {
     head: [["Protocolo", "Data", "Título", "Responsável", "Status", "Descrição"]],
     body: tableData,
-    startY: 40,
+    startY: yPosition,
     styles: {
       fontSize: 8,
       cellPadding: 2,
@@ -224,20 +340,25 @@ export async function exportChecklistsPDF(
     format: "a4",
   });
 
+  let yPosition = 20;
+
   // Cabeçalho
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Relatório de Checklists", 14, 20);
+  doc.text("Relatório de Checklists", 14, yPosition);
+  yPosition += 8;
 
   if (organizacao) {
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(organizacao.nome, 14, 28);
+    doc.text(organizacao.nome, 14, yPosition);
+    yPosition += 6;
   }
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, 35);
+  doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 14, yPosition);
+  yPosition += 10;
 
   // Preparar dados da tabela
   const tableData = checklists.map((c) => [
@@ -251,7 +372,7 @@ export async function exportChecklistsPDF(
   autoTable(doc, {
     head: [["ID", "Data", "Título", "Itens"]],
     body: tableData,
-    startY: 40,
+    startY: yPosition,
     styles: {
       fontSize: 10,
       cellPadding: 3,

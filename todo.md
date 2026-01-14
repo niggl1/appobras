@@ -599,3 +599,17 @@
 - [x] Integrar funções de exportação na página RelatoriosManutencaoPage
 - [x] Testar exportações de PDF
 - [x] Salvar checkpoint final
+
+
+## Fase 46: Adicionar Gráficos aos PDFs de Relatórios
+
+- [x] Verificar bibliotecas de gráficos (Chart.js) no projeto
+- [x] Instalar dependências necessárias (chartjs-node-canvas ou similar)
+- [x] Criar funções para gerar gráficos de distribuição por status
+- [x] Criar funções para gerar gráficos de distribuição por responsável
+- [x] Criar funções para gerar gráficos de distribuição por prioridade
+- [x] Integrar gráficos nas funções de exportação PDF de Manutenções
+- [x] Integrar gráficos nas funções de exportação PDF de Ocorrências
+- [x] Integrar gráficos nas funções de exportação PDF de Vistorias
+- [x] Testar exportações com gráficos
+- [x] Salvar checkpoint final
