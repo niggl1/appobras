@@ -71,6 +71,7 @@ export const allQuickFunctions = [
   { id: "manutencao-rapida", label: "Manutenção Rápida", icon: Wrench, gradient: "from-orange-500 to-red-600", path: "/dashboard/funcoes-simples?tipo=manutencao" },
   { id: "ocorrencia-rapida", label: "Ocorrência Rápida", icon: AlertTriangle, gradient: "from-red-500 to-rose-600", path: "/dashboard/funcoes-simples?tipo=ocorrencia" },
   { id: "antes-depois-rapido", label: "Antes/Depois Rápido", icon: ArrowLeftRight, gradient: "from-green-500 to-emerald-600", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
+  { id: "checklist-rapido", label: "Checklist Rápido", icon: ListChecks, gradient: "from-purple-500 to-pink-600", path: "/dashboard/funcoes-simples?tipo=checklist" },
 ];
 
 // Mapa de ícones para uso externo

@@ -96,6 +96,7 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { TarefasSimplesModal } from "@/components/TarefasSimplesModal";
+import { ChecklistRapidoModal } from "@/components/ChecklistRapidoModal";
 
 // Mapeamento de ícones por nome
 export const iconMap: Record<string, any> = {
@@ -295,6 +296,9 @@ function DashboardLayoutContent({
   // Estado para o modal de Funções Rápidas
   const [funcaoRapidaModalOpen, setFuncaoRapidaModalOpen] = useState(false);
   const [funcaoRapidaTipo, setFuncaoRapidaTipo] = useState<"vistoria" | "manutencao" | "ocorrencia" | "antes_depois">("vistoria");
+  
+  // Estado para o modal de Checklist Rápido
+  const [checklistRapidoModalOpen, setChecklistRapidoModalOpen] = useState(false);
 
   // Estado para o diálogo de confirmação de função rápida
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -591,6 +595,19 @@ function DashboardLayoutContent({
                   <ArrowLeftRight className="h-5 w-5" />
                   <span className="text-xs font-medium">Antes/Depois</span>
                 </button>
+                <button 
+                  onClick={() => {
+                    if (!condominioAtivo?.id) {
+                      toast.error("Selecione uma organização primeiro");
+                      return;
+                    }
+                    setChecklistRapidoModalOpen(true);
+                  }}
+                  className="flex flex-col items-center gap-1 p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-md"
+                >
+                  <CheckSquare className="h-5 w-5" />
+                  <span className="text-xs font-medium">Checklist</span>
+                </button>
               </div>
             </div>
 
@@ -812,6 +829,18 @@ function DashboardLayoutContent({
           tipoInicial={funcaoRapidaTipo}
           onSuccess={() => {
             toast.success("Registro criado com sucesso!");
+          }}
+        />
+      )}
+      
+      {/* Modal de Checklist Rápido */}
+      {condominioAtivo?.id && (
+        <ChecklistRapidoModal
+          open={checklistRapidoModalOpen}
+          onOpenChange={setChecklistRapidoModalOpen}
+          condominioId={condominioAtivo.id}
+          onSuccess={() => {
+            toast.success("Checklist criado com sucesso!");
           }}
         />
       )}
