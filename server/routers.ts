@@ -117,10 +117,12 @@ import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-or
 import { nanoid } from "nanoid";
 import { storagePut } from "./storage";
 import { appAcessoRouter } from "./appAcesso";
+import { recuperacaoSenhaRouter } from "./recuperacaoSenha";
 
 export const appRouter = router({
   system: systemRouter,
   appAcesso: appAcessoRouter,
+  recuperacaoSenha: recuperacaoSenhaRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

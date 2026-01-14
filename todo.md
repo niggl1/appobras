@@ -550,3 +550,40 @@
 - [ ] Testar recuperação de senha (pendente)
 - [x] Salvar checkpoint
 
+
+
+## Fase 48: Recuperação de Senha por Email para Apps Criados
+
+### Schema da Base de Dados
+- [ ] Criar tabela app_tokens_recuperacao (token, usuario_id, app_id, expira_em, usado)
+
+### Backend (tRPC)
+- [ ] Criar rota appAcesso.solicitarRecuperacaoSenha
+- [ ] Criar rota appAcesso.validarTokenRecuperacao
+- [ ] Criar rota appAcesso.redefinirSenha
+
+### Envio de Email
+- [ ] Integrar serviço de email (Resend, SendGrid ou similar)
+- [ ] Criar template de email de recuperação
+- [ ] Implementar função de envio de email
+
+### Frontend - Modal de Login
+- [ ] Adicionar link "Esqueceu a senha?" no modal de login
+- [ ] Criar modal/página de solicitação de recuperação
+- [ ] Campo para inserir email
+- [ ] Mensagem de confirmação após envio
+
+### Frontend - Página de Redefinição
+- [ ] Criar página /app/recuperar-senha/:token
+- [ ] Campo para nova senha
+- [ ] Campo para confirmar senha
+- [ ] Validação de força de senha
+- [ ] Botão "Redefinir Senha"
+- [ ] Mensagem de sucesso/erro
+
+### Testes
+- [ ] Criar testes para solicitarRecuperacaoSenha
+- [ ] Criar testes para validarTokenRecuperacao
+- [ ] Criar testes para redefinirSenha
+- [ ] Testar fluxo completo no navegador
+- [ ] Salvar checkpoint
