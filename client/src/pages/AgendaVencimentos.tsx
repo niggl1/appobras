@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import DashboardLayout from "@/components/DashboardLayout";
+import CalendarioVencimentos from "@/components/CalendarioVencimentos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +16,7 @@ import { toast } from "sonner";
 import { 
   Calendar, 
   FileText, 
+  FileSpreadsheet,
   Wrench, 
   Settings, 
   Plus, 
@@ -36,6 +38,7 @@ import {
   DollarSign,
   Activity
 } from "lucide-react";
+import { exportVencimentosExcel } from "@/lib/excelExport";
 
 type TipoVencimento = 'contrato' | 'servico' | 'manutencao';
 type TipoAlerta = 'na_data' | 'um_dia_antes' | 'uma_semana_antes' | 'quinze_dias_antes' | 'um_mes_antes';
@@ -144,6 +147,55 @@ function VencimentoForm({
   const [alertas, setAlertas] = useState<TipoAlerta[]>(
     vencimento?.alertas?.map((a: any) => a.tipoAlerta) || ['uma_semana_antes']
   );
+  const [arquivoUrl, setArquivoUrl] = useState(vencimento?.arquivoUrl || '');
+  const [arquivoNome, setArquivoNome] = useState(vencimento?.arquivoNome || '');
+  const [uploading, setUploading] = useState(false);
+
+  // Função para fazer upload do arquivo
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tamanho (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Arquivo muito grande. Máximo 10MB.');
+      return;
+    }
+
+    // Validar tipo (PDF, DOC, DOCX, XLS, XLSX, imagens)
+    const tiposPermitidos = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'image/jpeg', 'image/png', 'image/gif'];
+    if (!tiposPermitidos.includes(file.type)) {
+      toast.error('Tipo de arquivo não permitido. Use PDF, DOC, XLS ou imagens.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) throw new Error('Erro ao fazer upload');
+      
+      const data = await response.json();
+      setArquivoUrl(data.url);
+      setArquivoNome(file.name);
+      toast.success('Arquivo enviado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao enviar arquivo');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removerArquivo = () => {
+    setArquivoUrl('');
+    setArquivoNome('');
+  };
 
   const utils = trpc.useUtils();
   const createMutation = trpc.vencimentos.create.useMutation({
@@ -191,6 +243,8 @@ function VencimentoForm({
       proximaRealizacao: proximaRealizacao || undefined,
       periodicidade: periodicidade as any,
       observacoes: observacoes || undefined,
+      arquivoUrl: arquivoUrl || undefined,
+      arquivoNome: arquivoNome || undefined,
       alertas,
     };
 
@@ -324,6 +378,40 @@ function VencimentoForm({
             placeholder="Observações adicionais..."
             rows={2}
           />
+        </div>
+
+        <div className="col-span-2">
+          <Label className="mb-2 block">Anexar Arquivo (Contrato, Documento)</Label>
+          <div className="flex items-center gap-2">
+            {arquivoUrl ? (
+              <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg flex-1">
+                <FileText className="h-5 w-5 text-blue-600" />
+                <a 
+                  href={arquivoUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline truncate flex-1"
+                >
+                  {arquivoNome || 'Arquivo anexado'}
+                </a>
+                <Button type="button" variant="ghost" size="sm" onClick={removerArquivo}>
+                  <XCircle className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex-1">
+                <Input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                  className="cursor-pointer"
+                />
+                {uploading && <p className="text-sm text-gray-500 mt-1">Enviando arquivo...</p>}
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">PDF, DOC, XLS ou imagens. Máximo 10MB.</p>
         </div>
 
         <div className="col-span-2">
@@ -1163,8 +1251,32 @@ function EmailsConfig({ condominioId }: { condominioId: number }) {
   );
 }
 
+// Componente de Calendário que busca todos os vencimentos
+function CalendarioVencimentosTab({ condominioId }: { condominioId: number }) {
+  const { data: contratos } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'contrato' });
+  const { data: servicos } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'servico' });
+  const { data: manutencoes } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'manutencao' });
+
+  const todosVencimentos = [
+    ...(contratos || []),
+    ...(servicos || []),
+    ...(manutencoes || []),
+  ];
+
+  const handleVencimentoClick = (vencimento: any) => {
+    toast.info(`Vencimento: ${vencimento.titulo}`);
+  };
+
+  return (
+    <CalendarioVencimentos 
+      vencimentos={todosVencimentos} 
+      onVencimentoClick={handleVencimentoClick}
+    />
+  );
+}
+
 export default function AgendaVencimentos() {
-  const [activeTab, setActiveTab] = useState<TipoVencimento | 'dashboard'>('dashboard');
+  const [activeTab, setActiveTab] = useState<TipoVencimento | 'dashboard' | 'calendario'>('dashboard');
   const [showEmailConfig, setShowEmailConfig] = useState(false);
   const [showRelatorioDialog, setShowRelatorioDialog] = useState(false);
   const [relatorioTipo, setRelatorioTipo] = useState<'todos' | 'contrato' | 'servico' | 'manutencao'>('todos');
@@ -1345,6 +1457,22 @@ export default function AgendaVencimentos() {
               </DialogContent>
             </Dialog>
 
+            {/* Botão de Exportar Excel */}
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                if (vencimentosQuery.data && vencimentosQuery.data.length > 0) {
+                  exportVencimentosExcel(vencimentosQuery.data as any, 'Vencimentos');
+                  toast.success('Excel exportado com sucesso!');
+                } else {
+                  toast.error('Nenhum vencimento para exportar');
+                }
+              }}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exportar Excel
+            </Button>
+
             {/* Botão de Configurar E-mails */}
             <Button variant="outline" onClick={() => setShowEmailConfig(!showEmailConfig)}>
               <Mail className="h-4 w-4 mr-2" />
@@ -1405,8 +1533,8 @@ export default function AgendaVencimentos() {
         )}
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TipoVencimento | 'dashboard')}>
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TipoVencimento | 'dashboard' | 'calendario')}>
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 bg-gray-500 text-white hover:bg-gray-600 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
               <BarChart3 className="h-4 w-4" />
               Dashboard
@@ -1432,6 +1560,10 @@ export default function AgendaVencimentos() {
                 <Badge variant="secondary" className="ml-1 bg-green-700 text-white">{stats.manutencoes}</Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="calendario" className="flex items-center gap-2 bg-purple-500 text-white hover:bg-purple-600 data-[state=active]:bg-purple-700 data-[state=active]:text-white">
+              <Calendar className="h-4 w-4" />
+              Calendário
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="mt-6">
@@ -1448,6 +1580,10 @@ export default function AgendaVencimentos() {
 
           <TabsContent value="manutencao" className="mt-6">
             <VencimentosList tipo="manutencao" condominioId={condominioId} />
+          </TabsContent>
+
+          <TabsContent value="calendario" className="mt-6">
+            <CalendarioVencimentosTab condominioId={condominioId} />
           </TabsContent>
         </Tabs>
       </div>

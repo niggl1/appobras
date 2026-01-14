@@ -293,3 +293,103 @@ export function exportConsolidadoExcel(data: {
   const fileName = `relatorio-consolidado-${new Date().getTime()}.xlsx`;
   XLSX.writeFile(wb, fileName);
 }
+
+// ==================== EXPORTAÇÃO DE VENCIMENTOS ====================
+
+export interface VencimentoExport {
+  id: number;
+  tipo: string;
+  titulo: string;
+  descricao?: string | null;
+  fornecedor?: string | null;
+  valor?: string | null;
+  dataInicio?: Date | string | null;
+  dataVencimento: Date | string;
+  ultimaRealizacao?: Date | string | null;
+  proximaRealizacao?: Date | string | null;
+  periodicidade?: string | null;
+  status: string;
+  observacoes?: string | null;
+  arquivoUrl?: string | null;
+  arquivoNome?: string | null;
+}
+
+export function exportVencimentosExcel(
+  vencimentos: VencimentoExport[],
+  titulo: string = 'Vencimentos'
+): void {
+  try {
+    const tipoLabels: Record<string, string> = {
+      contrato: 'Contrato',
+      servico: 'Serviço',
+      manutencao: 'Manutenção',
+    };
+
+    const periodicidadeLabels: Record<string, string> = {
+      unico: 'Único',
+      mensal: 'Mensal',
+      bimestral: 'Bimestral',
+      trimestral: 'Trimestral',
+      semestral: 'Semestral',
+      anual: 'Anual',
+    };
+
+    const statusLabels: Record<string, string> = {
+      ativo: 'Ativo',
+      vencido: 'Vencido',
+      renovado: 'Renovado',
+      cancelado: 'Cancelado',
+    };
+
+    // Preparar dados para Excel
+    const data = vencimentos.map((v) => ({
+      'ID': v.id,
+      'Tipo': tipoLabels[v.tipo] || v.tipo,
+      'Título': v.titulo,
+      'Descrição': v.descricao || '',
+      'Fornecedor': v.fornecedor || '',
+      'Valor (R$)': v.valor || '',
+      'Data Início': v.dataInicio ? new Date(v.dataInicio).toLocaleDateString('pt-BR') : '',
+      'Data Vencimento': new Date(v.dataVencimento).toLocaleDateString('pt-BR'),
+      'Última Realização': v.ultimaRealizacao ? new Date(v.ultimaRealizacao).toLocaleDateString('pt-BR') : '',
+      'Próxima Realização': v.proximaRealizacao ? new Date(v.proximaRealizacao).toLocaleDateString('pt-BR') : '',
+      'Periodicidade': periodicidadeLabels[v.periodicidade || ''] || v.periodicidade || '',
+      'Status': statusLabels[v.status] || v.status,
+      'Observações': v.observacoes || '',
+      'Arquivo Anexo': v.arquivoNome || '',
+    }));
+
+    // Criar workbook e worksheet
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Vencimentos');
+
+    // Ajustar largura das colunas
+    ws['!cols'] = [
+      { wch: 8 },   // ID
+      { wch: 12 },  // Tipo
+      { wch: 30 },  // Título
+      { wch: 40 },  // Descrição
+      { wch: 25 },  // Fornecedor
+      { wch: 12 },  // Valor
+      { wch: 14 },  // Data Início
+      { wch: 16 },  // Data Vencimento
+      { wch: 18 },  // Última Realização
+      { wch: 18 },  // Próxima Realização
+      { wch: 14 },  // Periodicidade
+      { wch: 12 },  // Status
+      { wch: 40 },  // Observações
+      { wch: 30 },  // Arquivo Anexo
+    ];
+
+    // Gerar nome do arquivo
+    const dataAtual = new Date().toISOString().split('T')[0];
+    const nomeArquivo = `${titulo.replace(/\s+/g, '_')}_${dataAtual}.xlsx`;
+
+    // Fazer download
+    XLSX.writeFile(wb, nomeArquivo);
+  } catch (error) {
+    console.error('Erro ao exportar vencimentos para Excel:', error);
+    throw error;
+  }
+}

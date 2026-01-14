@@ -626,3 +626,31 @@
 - [x] Adicionar botões de exportação Excel na página RelatoriosManutencaoPage
 - [x] Testar exportações Excel
 - [x] Salvar checkpoint final
+
+
+## Fase 48: Melhorias na Agenda de Vencimentos
+
+### Cron Job Automático
+- [x] Criar endpoint para processar alertas automaticamente
+- [x] Configurar scheduler para executar diariamente às 8h
+- [x] Adicionar logs de execução do cron job
+- [x] Implementar retry em caso de falha
+
+### Calendário Visual
+- [ ] Criar componente de calendário mensal
+- [ ] Mostrar vencimentos por dia com cores por tipo
+- [ ] Adicionar navegação entre meses
+- [ ] Implementar clique para ver detalhes do vencimento
+
+### Upload de Arquivos
+- [ ] Adicionar campo de upload no formulário de vencimento
+- [ ] Integrar com S3 para armazenar arquivos
+- [ ] Mostrar arquivos anexados na visualização
+- [ ] Permitir download e exclusão de arquivos
+
+### Exportação Excel
+- [ ] Criar função de exportação para Excel
+- [ ] Adicionar filtros (tipo, status, período)
+- [ ] Incluir todas as colunas relevantes
+- [ ] Adicionar botão de exportação na interface
+
