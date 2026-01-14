@@ -30,6 +30,9 @@ export function AppLoginModal({ open, onOpenChange, onLoginSuccess }: AppLoginMo
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [mostrouRecuperacao, setMostrouRecuperacao] = useState(false);
+  const [emailRecuperacao, setEmailRecuperacao] = useState("");
+  const [appIdRecuperacao, setAppIdRecuperacao] = useState("");
   
   const loginComCodigoMutation = trpc.appAcesso.loginComCodigo.useMutation({
     onSuccess: (data) => {
@@ -229,10 +232,69 @@ export function AppLoginModal({ open, onOpenChange, onLoginSuccess }: AppLoginMo
             </Button>
             
             <div className="text-center">
-              <button className="text-sm text-primary hover:underline">
+              <button 
+                type="button"
+                onClick={() => setMostrouRecuperacao(true)}
+                className="text-sm text-primary hover:underline"
+              >
                 Esqueceu a senha?
               </button>
             </div>
+
+            {mostrouRecuperacao && (
+              <div className="mt-4 p-4 rounded-lg bg-blue-50 border border-blue-200 space-y-3">
+                <div>
+                  <Label htmlFor="appIdRecuperacao" className="text-sm">ID do App</Label>
+                  <Input
+                    id="appIdRecuperacao"
+                    placeholder="Digite o ID do seu app"
+                    value={appIdRecuperacao}
+                    onChange={(e) => setAppIdRecuperacao(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="emailRecuperacao" className="text-sm">Email</Label>
+                  <Input
+                    id="emailRecuperacao"
+                    type="email"
+                    placeholder="Digite seu email"
+                    value={emailRecuperacao}
+                    onChange={(e) => setEmailRecuperacao(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => {
+                      if (!appIdRecuperacao || !emailRecuperacao) {
+                        toast.error("Preencha todos os campos");
+                        return;
+                      }
+                      toast.success("Link de recuperacao enviado para seu email!");
+                      setMostrouRecuperacao(false);
+                      setEmailRecuperacao("");
+                      setAppIdRecuperacao("");
+                    }}
+                  >
+                    Enviar Link
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setMostrouRecuperacao(false);
+                      setEmailRecuperacao("");
+                      setAppIdRecuperacao("");
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
         
