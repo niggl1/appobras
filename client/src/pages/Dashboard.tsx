@@ -1258,8 +1258,68 @@ function OverviewSection({ user }: { user: any }) {
         </Card>
       )}
 
+      {/* Quick stats - Cards de Criação */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Card Apps */}
+        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25">
+                <Smartphone className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">0</span>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Menus Apps</h3>
+            <p className="text-sm text-muted-foreground mb-4">Apps criados para sua organização</p>
+            <Link href="/dashboard/apps/novo">
+              <button className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2">
+                <Plus className="w-4 h-4" />
+                Novo App
+              </button>
+            </Link>
+          </CardContent>
+        </Card>
 
+        {/* Card Relatórios */}
+        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-emerald-50/50 dark:from-gray-900 dark:to-emerald-950/30">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
+                <FileBarChart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">0</span>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Relatórios</h3>
+            <p className="text-sm text-muted-foreground mb-4">Relatórios criados com sua marca</p>
+            <Link href="/dashboard/relatorios/novo">
+              <button className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-md shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 flex items-center justify-center gap-2">
+                <Plus className="w-4 h-4" />
+                Novo Relatório
+              </button>
+            </Link>
+          </CardContent>
+        </Card>
 
+        {/* Card Livro de Manutenção */}
+        <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">0</span>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Livro de Manutenção</h3>
+            <p className="text-sm text-muted-foreground mb-4">Livros interativos com funcionalidades</p>
+            <Link href="/dashboard/criar-projeto">
+              <button className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md shadow-purple-500/25 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center justify-center gap-2">
+                <Plus className="w-4 h-4" />
+                Novo Livro
+              </button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Lista de Apps Criados */}
       {appsData && appsData.length > 0 && (
