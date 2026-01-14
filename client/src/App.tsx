@@ -52,6 +52,7 @@ import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
 import AppRedefinirSenha from "./pages/AppRedefinirSenha";
 import GestorRedefinirSenha from "./pages/GestorRedefinirSenha";
+import RelatoriosManutencaoPage from "./pages/RelatoriosManutencaoPage";
 import WhatsAppButton from "./components/WhatsAppButton";
 
 function Router() {
@@ -120,6 +121,7 @@ function Router() {
       <Route path="/dashboard/ordens-servico/:id" component={OrdemServicoDetalhe} />
       <Route path="/dashboard/criar-projeto" component={CriarProjeto} />
       <Route path="/dashboard/funcoes-simples" component={HistoricoTarefasSimples} />
+      <Route path="/dashboard/relatorios-manutencao" component={RelatoriosManutencaoPage} />
       <Route path="/dashboard/revistas/nova">{() => { window.location.href = '/dashboard/revistas'; return null; }}</Route>
       <Route path="/dashboard/:section" component={Dashboard} />
       <Route path="/condominio/:id" component={CondominioManager} />

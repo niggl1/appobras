@@ -166,6 +166,7 @@ const menuSections = [
       { icon: ArrowLeftRight, iconName: "ArrowLeftRight", label: "Antes e Depois", path: "/dashboard/antes-depois", funcaoId: "antes-depois" },
       { icon: CheckSquare, iconName: "CheckSquare", label: "Checklist Rápido", path: "#", funcaoId: "checklist-rapido", isChecklistRapido: true },
       { icon: CalendarClock, iconName: "CalendarClock", label: "Agenda de Vencimentos", path: "/dashboard/agenda-vencimentos", funcaoId: "agenda-vencimentos" },
+      { icon: BarChart3, iconName: "BarChart3", label: "Relatórios de Manutenção", path: "/dashboard/relatorios-manutencao", funcaoId: "relatorios-manutencao" },
     ]
   },
   {

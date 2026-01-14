@@ -1437,6 +1437,1396 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
               </CardContent>
             </Card>
 
+            {/* Tabela de Moradores */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Lista de Moradores</CardTitle>
+                <CardDescription>
+                  {filterStatus === "todos" ? "Todos a equipa" : 
+                   filterStatus === "ativos" ? "Moradores ativos" : "Moradores inativos"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loadingMoradores ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Nome</th>
+                          <th className="text-left py-2 px-2 font-medium">Apartamento</th>
+                          <th className="text-left py-2 px-2 font-medium">Bloco</th>
+                          <th className="text-left py-2 px-2 font-medium">Email</th>
+                          <th className="text-left py-2 px-2 font-medium">Telefone</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {moradores
+                          ?.filter(m => {
+                            if (filterStatus === "ativos") return m.ativo !== false;
+                            if (filterStatus === "inativos") return m.ativo === false;
+                            return true;
+                          })
+                          .map((morador) => (
+                            <tr key={morador.id} className="border-b last:border-0">
+                              <td className="py-2 px-2">{morador.nome}</td>
+                              <td className="py-2 px-2">{morador.apartamento || "-"}</td>
+                              <td className="py-2 px-2">{morador.bloco || "-"}</td>
+                              <td className="py-2 px-2">{morador.email || "-"}</td>
+                              <td className="py-2 px-2">{morador.telefone || "-"}</td>
+                              <td className="py-2 px-2">
+                                <Badge variant={morador.ativo === false ? "destructive" : "default"} className="text-xs">
+                                  {morador.ativo !== false ? "Ativo" : "Inativo"}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                    {(!moradores || moradores.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhum morador cadastrado
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Relatório de Vagas de Estacionamento */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Vagas de Estacionamento</CardTitle>
+                  <CardDescription>Ocupação das vagas</CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="print:hidden"
+                  onClick={() => {
+                    exportToCSV(
+                      (vagas || []).map(v => ({
+                        numero: v.numero,
+                        apartamento: v.apartamento || "",
+                        bloco: v.bloco || "",
+                        tipo: v.tipo || "",
+                        observacoes: v.observacoes || "",
+                      })),
+                      "relatorio_vagas",
+                      ["Número", "Apartamento", "Bloco", "Tipo", "Observações"]
+                    );
+                  }}
+                >
+                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                  Exportar
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {loadingVagas ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Vaga</th>
+                          <th className="text-left py-2 px-2 font-medium">Apartamento</th>
+                          <th className="text-left py-2 px-2 font-medium">Bloco</th>
+                          <th className="text-left py-2 px-2 font-medium">Tipo</th>
+                          <th className="text-left py-2 px-2 font-medium">Observações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {vagas?.map((vaga) => (
+                          <tr key={vaga.id} className="border-b last:border-0">
+                            <td className="py-2 px-2 font-medium">{vaga.numero}</td>
+                            <td className="py-2 px-2">{vaga.apartamento || "-"}</td>
+                            <td className="py-2 px-2">{vaga.bloco || "-"}</td>
+                            <td className="py-2 px-2">{vaga.tipo || "-"}</td>
+                            <td className="py-2 px-2">{vaga.observacoes || "-"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!vagas || vagas.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhuma vaga cadastrada
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* RELATÓRIOS DE ORDENS DE SERVIÇO */}
+        {activeCategory === "ordens" && (
+          <div className="space-y-6">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <ClipboardCheck className="w-5 h-5 text-amber-600" />
+                    <span className="text-sm text-muted-foreground">Total</span>
+                  </div>
+                  <p className="text-2xl font-bold text-amber-700 mt-2">{ordensServicoStats.total}</p>
+                  <p className="text-xs text-muted-foreground">ordens de serviço</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <span className="text-sm text-muted-foreground">Abertas</span>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-700 mt-2">{ordensServicoStats.abertas}</p>
+                  <p className="text-xs text-muted-foreground">aguardando início</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 text-orange-600" />
+                    <span className="text-sm text-muted-foreground">Em Andamento</span>
+                  </div>
+                  <p className="text-2xl font-bold text-orange-700 mt-2">{ordensServicoStats.emAndamento}</p>
+                  <p className="text-xs text-muted-foreground">em execução</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <span className="text-sm text-muted-foreground">Concluídas</span>
+                  </div>
+                  <p className="text-2xl font-bold text-green-700 mt-2">{ordensServicoStats.concluidas}</p>
+                  <p className="text-xs text-muted-foreground">finalizadas</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Cards Secundários */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <span className="text-sm font-medium">Ordens Urgentes</span>
+                  </div>
+                  <p className="text-3xl font-bold text-red-600 mt-2">{ordensServicoStats.urgentes}</p>
+                  <p className="text-xs text-muted-foreground">prioridade alta/urgente</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-indigo-600" />
+                    <span className="text-sm font-medium">Tempo Médio de Resolução</span>
+                  </div>
+                  <p className="text-3xl font-bold text-indigo-600 mt-2">
+                    {ordensServicoStats.tempoMedioResolucao > 0 
+                      ? `${Math.floor(ordensServicoStats.tempoMedioResolucao / 24)}d ${ordensServicoStats.tempoMedioResolucao % 24}h`
+                      : "N/A"
+                    }
+                  </p>
+                  <p className="text-xs text-muted-foreground">para ordens concluídas</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                    <span className="text-sm font-medium">Taxa de Conclusão</span>
+                  </div>
+                  <p className="text-3xl font-bold text-emerald-600 mt-2">
+                    {ordensServicoStats.total > 0 
+                      ? `${Math.round((ordensServicoStats.concluidas / ordensServicoStats.total) * 100)}%`
+                      : "0%"
+                    }
+                  </p>
+                  <p className="text-xs text-muted-foreground">ordens finalizadas</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Gráfico de Categorias */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">Ordens por Categoria</CardTitle>
+                <CardDescription>Distribuição das ordens de serviço por tipo</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <Doughnut
+                    data={{
+                      labels: Object.keys(ordensServicoStats.porCategoria).length > 0 
+                        ? Object.keys(ordensServicoStats.porCategoria)
+                        : ["Sem dados"],
+                      datasets: [{
+                        data: Object.keys(ordensServicoStats.porCategoria).length > 0
+                          ? Object.values(ordensServicoStats.porCategoria)
+                          : [1],
+                        backgroundColor: [
+                          "rgba(245, 158, 11, 0.8)",
+                          "rgba(59, 130, 246, 0.8)",
+                          "rgba(16, 185, 129, 0.8)",
+                          "rgba(239, 68, 68, 0.8)",
+                          "rgba(139, 92, 246, 0.8)",
+                          "rgba(236, 72, 153, 0.8)",
+                          "rgba(6, 182, 212, 0.8)",
+                        ],
+                        borderWidth: 0,
+                      }],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { position: "right" },
+                        tooltip: {
+                          callbacks: {
+                            label: (context) => {
+                              const value = context.raw as number;
+                              const total = ordensServicoStats.total || 1;
+                              const percentage = Math.round((value / total) * 100);
+                              return `${context.label}: ${value} (${percentage}%)`;
+                            }
+                          }
+                        }
+                      },
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Lista de Ordens Recentes */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">Ordens de Serviço Recentes</CardTitle>
+                <CardDescription>Últimas ordens registadas no sistema</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {ordensServico && ordensServico.length > 0 ? (
+                    ordensServico.slice(0, 10).map((os: any, index: number) => (
+                      <div key={os.id || index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-full ${
+                            os.status?.nome?.toLowerCase().includes("concluída") ? "bg-green-500" :
+                            os.status?.nome?.toLowerCase().includes("andamento") ? "bg-orange-500" :
+                            "bg-blue-500"
+                          }`} />
+                          <div>
+                            <p className="font-medium text-sm">{os.titulo || os.descricao || "Ordem de Serviço"}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {os.categoria?.nome || os.categoria || "Sem categoria"} • {os.status?.nome || "Aberta"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant={os.prioridade === "urgente" || os.prioridade === "alta" ? "destructive" : "secondary"} className="text-xs">
+                            {os.prioridade || "normal"}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {os.createdAt ? new Date(os.createdAt).toLocaleDateString("pt-BR") : "-"}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground py-8">Nenhuma ordem de serviço registada</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Botão de Exportar */}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  const headers = ["Título", "Categoria", "Status", "Prioridade", "Data Criação"];
+                  const csvData = ordensServico?.map((os: any) => ({
+                    Titulo: os.titulo || os.descricao || "Ordem de Serviço",
+                    Categoria: os.categoria?.nome || os.categoria || "Sem categoria",
+                    Status: os.status?.nome || "Aberta",
+                    Prioridade: os.prioridade || "normal",
+                    DataCriacao: os.createdAt ? new Date(os.createdAt).toLocaleDateString("pt-BR") : "-",
+                  })) || [];
+                  
+                  const csvContent = [
+                    headers.join(","),
+                    ...csvData.map((row: any) => `"${row.Titulo}","${row.Categoria}","${row.Status}","${row.Prioridade}","${row.DataCriacao}"`)
+                  ].join("\n");
+                  
+                  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                  const link = document.createElement("a");
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `ordens_servico_${new Date().toISOString().split("T")[0]}.csv`;
+                  link.click();
+                  toast.success("Relatório de Ordens de Serviço exportado!");
+                }}
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Exportar Excel/CSV
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* RELATÓRIOS OPERACIONAIS */}
+        {activeCategory === "operacional" && (
+          <div className="space-y-6">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Manutenções</p>
+                      <p className="text-2xl font-bold text-orange-600">{operacionalStats.manutencoes.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {operacionalStats.manutencoes.pendentes} pendentes
+                      </p>
+                    </div>
+                    <Wrench className="w-8 h-8 text-orange-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Ocorrências</p>
+                      <p className="text-2xl font-bold text-red-600">{operacionalStats.ocorrencias.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {operacionalStats.ocorrencias.pendentes} pendentes
+                      </p>
+                    </div>
+                    <AlertTriangle className="w-8 h-8 text-red-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vistorias</p>
+                      <p className="text-2xl font-bold text-blue-600">{operacionalStats.vistorias.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {operacionalStats.vistorias.realizadas} realizadas
+                      </p>
+                    </div>
+                    <ClipboardCheck className="w-8 h-8 text-blue-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Checklists</p>
+                      <p className="text-2xl font-bold text-green-600">{operacionalStats.checklists.total}</p>
+                    </div>
+                    <ListChecks className="w-8 h-8 text-green-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Gráficos Operacionais */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:hidden">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Status das Manutenções</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48">
+                    <Doughnut
+                      data={{
+                        labels: ["Pendentes", "Realizadas", "Finalizadas"],
+                        datasets: [{
+                          data: [
+                            operacionalStats.manutencoes.pendentes,
+                            operacionalStats.manutencoes.realizadas,
+                            operacionalStats.manutencoes.finalizadas
+                          ],
+                          backgroundColor: ["#f59e0b", "#3b82f6", "#22c55e"],
+                          borderWidth: 0,
+                        }],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: "bottom" } },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Status das Ocorrências</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48">
+                    <Doughnut
+                      data={{
+                        labels: ["Pendentes", "Realizadas", "Finalizadas"],
+                        datasets: [{
+                          data: [
+                            operacionalStats.ocorrencias.pendentes,
+                            operacionalStats.ocorrencias.realizadas,
+                            operacionalStats.ocorrencias.finalizadas
+                          ],
+                          backgroundColor: ["#ef4444", "#3b82f6", "#22c55e"],
+                          borderWidth: 0,
+                        }],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: "bottom" } },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Comparação Geral</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48">
+                    <Bar
+                      data={{
+                        labels: ["Manutenções", "Ocorrências", "Vistorias", "Checklists"],
+                        datasets: [{
+                          label: "Total",
+                          data: [
+                            operacionalStats.manutencoes.total,
+                            operacionalStats.ocorrencias.total,
+                            operacionalStats.vistorias.total,
+                            operacionalStats.checklists.total
+                          ],
+                          backgroundColor: ["#f97316", "#ef4444", "#3b82f6", "#22c55e"],
+                        }],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Tabela de Manutenções */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Manutenções</CardTitle>
+                  <CardDescription>Histórico de manutenções</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (manutencoes || []).map(m => ({
+                          titulo: m.titulo,
+                          descricao: m.descricao || "",
+                          status: m.status,
+                          prioridade: m.prioridade,
+                          data: m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "",
+                        })),
+                        "relatorio_manutencoes",
+                        ["Título", "Descrição", "Status", "Prioridade", "Data"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Manutenções",
+                          "Histórico de manutenções da organização",
+                          [
+                            { label: "Total", valor: operacionalStats.manutencoes.total },
+                            { label: "Pendentes", valor: operacionalStats.manutencoes.pendentes },
+                            { label: "Realizadas", valor: operacionalStats.manutencoes.realizadas },
+                            { label: "Finalizadas", valor: operacionalStats.manutencoes.finalizadas },
+                          ],
+                          ["Título", "Status", "Prioridade", "Data"],
+                          (manutencoes || []).map(m => [
+                            m.titulo,
+                            m.status === "pendente" ? "Pendente" : m.status === "realizada" ? "Realizada" : m.status === "finalizada" ? "Finalizada" : m.status,
+                            m.prioridade === "alta" ? "Alta" : m.prioridade === "media" ? "Média" : "Baixa",
+                            m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "-",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingManutencoes ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                          <th className="text-left py-2 px-2 font-medium">Prioridade</th>
+                          <th className="text-left py-2 px-2 font-medium">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {manutencoes?.map((m) => (
+                          <tr key={m.id} className="border-b last:border-0">
+                            <td className="py-2 px-2">{m.titulo}</td>
+                            <td className="py-2 px-2">
+                              <Badge variant={
+                                m.status === "finalizada" ? "default" :
+                                m.status === "realizada" ? "secondary" : "outline"
+                              } className="text-xs">
+                                {m.status === "pendente" ? "Pendente" :
+                                 m.status === "realizada" ? "Realizada" :
+                                 m.status === "finalizada" ? "Finalizada" :
+                                 m.status === "acao_necessaria" ? "Ação Necessária" : m.status}
+                              </Badge>
+                            </td>
+                            <td className="py-2 px-2">
+                              <Badge variant={
+                                m.prioridade === "alta" ? "destructive" :
+                                m.prioridade === "media" ? "secondary" : "outline"
+                              } className="text-xs">
+                                {m.prioridade === "alta" ? "Alta" :
+                                 m.prioridade === "media" ? "Média" : "Baixa"}
+                              </Badge>
+                            </td>
+                            <td className="py-2 px-2">
+                              {m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "-"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!manutencoes || manutencoes.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhuma manutenção registrada
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Tabela de Ocorrências */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Ocorrências</CardTitle>
+                  <CardDescription>Histórico de ocorrências</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (ocorrencias || []).map(o => ({
+                          titulo: o.titulo,
+                          categoria: o.categoria,
+                          status: o.status,
+                          data: o.createdAt ? new Date(o.createdAt).toLocaleDateString("pt-BR") : "",
+                        })),
+                        "relatorio_ocorrencias",
+                        ["Título", "Categoria", "Status", "Data"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Ocorrências",
+                          "Histórico de ocorrências da organização",
+                          [
+                            { label: "Total", valor: operacionalStats.ocorrencias.total },
+                            { label: "Pendentes", valor: operacionalStats.ocorrencias.pendentes },
+                            { label: "Realizadas", valor: operacionalStats.ocorrencias.realizadas },
+                            { label: "Finalizadas", valor: operacionalStats.ocorrencias.finalizadas },
+                          ],
+                          ["Título", "Categoria", "Status", "Data"],
+                          (ocorrencias || []).map(o => [
+                            o.titulo || "-",
+                            o.categoria || "-",
+                            o.status === "pendente" ? "Pendente" : o.status === "realizada" ? "Realizada" : o.status === "finalizada" ? "Finalizada" : (o.status || "-"),
+                            o.createdAt ? new Date(o.createdAt).toLocaleDateString("pt-BR") : "-",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingOcorrencias ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Categoria</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                          <th className="text-left py-2 px-2 font-medium">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ocorrencias?.map((o) => (
+                          <tr key={o.id} className="border-b last:border-0">
+                            <td className="py-2 px-2">{o.titulo}</td>
+                            <td className="py-2 px-2">{o.categoria}</td>
+                            <td className="py-2 px-2">
+                              <Badge variant={
+                                o.status === "finalizada" ? "default" :
+                                o.status === "realizada" ? "secondary" : "outline"
+                              } className="text-xs">
+                                {o.status === "pendente" ? "Pendente" :
+                                 o.status === "realizada" ? "Realizada" :
+                                 o.status === "finalizada" ? "Finalizada" :
+                                 o.status === "acao_necessaria" ? "Ação Necessária" : o.status}
+                              </Badge>
+                            </td>
+                            <td className="py-2 px-2">
+                              {o.createdAt ? new Date(o.createdAt).toLocaleDateString("pt-BR") : "-"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!ocorrencias || ocorrencias.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhuma ocorrência registrada
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Tabela de Vistorias */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Vistorias</CardTitle>
+                  <CardDescription>Histórico de vistorias</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (vistorias || []).map(v => ({
+                          titulo: v.titulo,
+                          descricao: v.descricao || "",
+                          status: v.status,
+                          data: v.createdAt ? new Date(v.createdAt).toLocaleDateString("pt-BR") : "",
+                        })),
+                        "relatorio_vistorias",
+                        ["Título", "Descrição", "Status", "Data"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Vistorias",
+                          "Histórico de vistorias da organização",
+                          [
+                            { label: "Total", valor: operacionalStats.vistorias.total },
+                            { label: "Pendentes", valor: operacionalStats.vistorias.pendentes },
+                            { label: "Realizadas", valor: operacionalStats.vistorias.realizadas },
+                          ],
+                          ["Título", "Descrição", "Status", "Data"],
+                          (vistorias || []).map(v => [
+                            v.titulo,
+                            v.descricao || "-",
+                            v.status === "pendente" ? "Pendente" : v.status === "realizada" ? "Realizada" : v.status,
+                            v.createdAt ? new Date(v.createdAt).toLocaleDateString("pt-BR") : "-",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingVistorias ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Descrição</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                          <th className="text-left py-2 px-2 font-medium">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {vistorias?.map((v) => (
+                          <tr key={v.id} className="border-b last:border-0">
+                            <td className="py-2 px-2">{v.titulo}</td>
+                            <td className="py-2 px-2">{v.descricao || "-"}</td>
+                            <td className="py-2 px-2">
+                              <Badge variant={v.status === "realizada" ? "default" : "secondary"} className="text-xs">
+                                {v.status === "pendente" ? "Pendente" : v.status === "realizada" ? "Realizada" : v.status}
+                              </Badge>
+                            </td>
+                            <td className="py-2 px-2">
+                              {v.createdAt ? new Date(v.createdAt).toLocaleDateString("pt-BR") : "-"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!vistorias || vistorias.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhuma vistoria registrada
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* RELATÓRIOS DE COMUNICAÇÃO */}
+        {activeCategory === "comunicacao" && (
+          <div className="space-y-6">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Avisos</p>
+                      <p className="text-2xl font-bold text-green-600">{avisos?.length || 0}</p>
+                    </div>
+                    <Bell className="w-8 h-8 text-green-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Eventos</p>
+                      <p className="text-2xl font-bold text-blue-600">{eventos?.length || 0}</p>
+                    </div>
+                    <Calendar className="w-8 h-8 text-blue-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Moradores Notificáveis</p>
+                      <p className="text-2xl font-bold text-purple-600">{moradoresStats.comTelefone}</p>
+                    </div>
+                    <Send className="w-8 h-8 text-purple-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Tabela de Avisos */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Avisos Publicados</CardTitle>
+                  <CardDescription>Histórico de avisos</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (avisos || []).map(a => ({
+                          titulo: a.titulo,
+                          tipo: a.tipo,
+                          data: a.createdAt ? new Date(a.createdAt).toLocaleDateString("pt-BR") : "",
+                        })),
+                        "relatorio_avisos",
+                        ["Título", "Tipo", "Data"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Avisos",
+                          "Histórico de avisos publicados",
+                          [
+                            { label: "Total", valor: comunicacaoStats.avisos.total },
+                            { label: "Urgentes", valor: comunicacaoStats.avisos.urgentes },
+                            { label: "Informativos", valor: comunicacaoStats.avisos.informativos },
+                          ],
+                          ["Título", "Tipo", "Data"],
+                          (avisos || []).map(a => [
+                            a.titulo || "-",
+                            a.tipo || "-",
+                            a.createdAt ? new Date(a.createdAt).toLocaleDateString("pt-BR") : "-",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingAvisos ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Tipo</th>
+                          <th className="text-left py-2 px-2 font-medium">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {avisos?.map((a) => (
+                          <tr key={a.id} className="border-b last:border-0">
+                            <td className="py-2 px-2">{a.titulo}</td>
+                            <td className="py-2 px-2">
+                              <Badge variant="outline" className="text-xs">{a.tipo}</Badge>
+                            </td>
+                            <td className="py-2 px-2">
+                              {a.createdAt ? new Date(a.createdAt).toLocaleDateString("pt-BR") : "-"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!avisos || avisos.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhum aviso publicado
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* RELATÓRIOS DE COMUNIDADE */}
+        {activeCategory === "comunidade" && (
+          <div className="space-y-6">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Votações</p>
+                      <p className="text-2xl font-bold text-purple-600">{comunidadeStats.votacoes.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {comunidadeStats.votacoes.ativas} ativas
+                      </p>
+                    </div>
+                    <Vote className="w-8 h-8 text-purple-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Classificados</p>
+                      <p className="text-2xl font-bold text-green-600">{comunidadeStats.classificados.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {comunidadeStats.classificados.ativos} ativos
+                      </p>
+                    </div>
+                    <ShoppingBag className="w-8 h-8 text-green-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Achados/Perdidos</p>
+                      <p className="text-2xl font-bold text-orange-600">{comunidadeStats.achados.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {comunidadeStats.achados.resolvidos} resolvidos
+                      </p>
+                    </div>
+                    <Search className="w-8 h-8 text-orange-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Caronas</p>
+                      <p className="text-2xl font-bold text-blue-600">{comunidadeStats.caronas.total}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {comunidadeStats.caronas.ofertas} ofertas
+                      </p>
+                    </div>
+                    <CarFront className="w-8 h-8 text-blue-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Gráficos de Comunidade */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:hidden">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Visão Geral da Comunidade</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48">
+                    <Bar
+                      data={{
+                        labels: ["Votações", "Classificados", "Achados/Perdidos", "Caronas"],
+                        datasets: [{
+                          label: "Total",
+                          data: [
+                            comunidadeStats.votacoes.total,
+                            comunidadeStats.classificados.total,
+                            comunidadeStats.achados.total,
+                            comunidadeStats.caronas.total
+                          ],
+                          backgroundColor: ["#8b5cf6", "#22c55e", "#f97316", "#3b82f6"],
+                        }],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Achados vs Perdidos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48">
+                    <Pie
+                      data={{
+                        labels: ["Achados", "Perdidos", "Resolvidos"],
+                        datasets: [{
+                          data: [
+                            comunidadeStats.achados.encontrados,
+                            comunidadeStats.achados.perdidos,
+                            comunidadeStats.achados.resolvidos
+                          ],
+                          backgroundColor: ["#22c55e", "#ef4444", "#3b82f6"],
+                          borderWidth: 0,
+                        }],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: "bottom" } },
+                      }}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Tabela de Votações */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Votações e Enquetes</CardTitle>
+                  <CardDescription>Histórico de votações</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (votacoes || []).map(v => ({
+                          titulo: v.titulo,
+                          tipo: v.tipo,
+                          dataFim: v.dataFim ? new Date(v.dataFim).toLocaleDateString("pt-BR") : "",
+                        })),
+                        "relatorio_votacoes",
+                        ["Título", "Tipo", "Data Fim"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Votações",
+                          "Histórico de votações e enquetes",
+                          [
+                            { label: "Total", valor: comunidadeStats.votacoes.total },
+                            { label: "Ativas", valor: comunidadeStats.votacoes.ativas },
+                            { label: "Encerradas", valor: comunidadeStats.votacoes.encerradas },
+                          ],
+                          ["Título", "Tipo", "Data Fim"],
+                          (votacoes || []).map(v => [
+                            v.titulo,
+                            v.tipo,
+                            v.dataFim ? new Date(v.dataFim).toLocaleDateString("pt-BR") : "-",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingVotacoes ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                          <th className="text-left py-2 px-2 font-medium">Data Fim</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {votacoes?.map((v) => {
+                          const isAtiva = v.dataFim ? new Date(v.dataFim) > new Date() : true;
+                          return (
+                            <tr key={v.id} className="border-b last:border-0">
+                              <td className="py-2 px-2">{v.titulo}</td>
+                              <td className="py-2 px-2">
+                                <Badge variant={isAtiva ? "default" : "secondary"} className="text-xs">
+                                  {isAtiva ? "Ativa" : "Encerrada"}
+                                </Badge>
+                              </td>
+                              <td className="py-2 px-2">
+                                {v.dataFim ? new Date(v.dataFim).toLocaleDateString("pt-BR") : "-"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    {(!votacoes || votacoes.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhuma votação registrada
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Tabela de Classificados */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Classificados</CardTitle>
+                  <CardDescription>Anúncios da comunidade</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={() => {
+                      exportToCSV(
+                        (classificados || []).map(c => ({
+                          titulo: c.titulo,
+                          tipo: c.tipo,
+                          preco: c.preco || "",
+                          status: c.status || "pendente",
+                        })),
+                        "relatorio_classificados",
+                        ["Título", "Tipo", "Preço", "Status"]
+                      );
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Excel
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="print:hidden"
+                    onClick={async () => {
+                      toast.loading("Gerando PDF...");
+                      try {
+                        await exportRelatorioComEstatisticas(
+                          "Relatório de Classificados",
+                          "Anúncios da comunidade",
+                          [
+                            { label: "Total", valor: comunidadeStats.classificados.total },
+                            { label: "Ativos", valor: comunidadeStats.classificados.ativos },
+                          ],
+                          ["Título", "Tipo", "Preço", "Status"],
+                          (classificados || []).map(c => [
+                            c.titulo,
+                            c.tipo,
+                            c.preco || "-",
+                            c.status === "aprovado" ? "Aprovado" : c.status === "pendente" ? "Pendente" : c.status || "Pendente",
+                          ]),
+                          selectedCondominio ? {
+                            nome: selectedCondominio.nome,
+                            logoUrl: selectedCondominio.logoUrl,
+                            endereco: selectedCondominio.endereco,
+                          } : undefined
+                        );
+                        toast.dismiss();
+                        toast.success("PDF gerado com sucesso!");
+                      } catch (error) {
+                        toast.dismiss();
+                        toast.error("Erro ao gerar PDF");
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingClassificados ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 px-2 font-medium">Título</th>
+                          <th className="text-left py-2 px-2 font-medium">Tipo</th>
+                          <th className="text-left py-2 px-2 font-medium">Preço</th>
+                          <th className="text-left py-2 px-2 font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {classificados?.map((c) => (
+                          <tr key={c.id} className="border-b last:border-0">
+                            <td className="py-2 px-2">{c.titulo}</td>
+                            <td className="py-2 px-2">{c.tipo}</td>
+                            <td className="py-2 px-2">{c.preco || "-"}</td>
+                            <td className="py-2 px-2">
+                              <Badge variant={c.status === "aprovado" ? "default" : "secondary"} className="text-xs">
+                                {c.status === "aprovado" ? "Aprovado" : c.status === "pendente" ? "Pendente" : c.status || "Pendente"}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!classificados || classificados.length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        Nenhum classificado registrado
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* RELATÓRIOS DE AGENDA/EVENTOS */}
+        {activeCategory === "agenda" && (
+          <div className="space-y-6">
+            {/* Cards de Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Eventos</p>
+                      <p className="text-2xl font-bold text-pink-600">{eventos?.length || 0}</p>
+                    </div>
+                    <Calendar className="w-8 h-8 text-pink-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Este Mês</p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {eventos?.filter(e => {
+                          if (!e.dataEvento) return false;
+                          const eventDate = new Date(e.dataEvento);
+                          const now = new Date();
+                          return eventDate.getMonth() === now.getMonth() && 
+                                 eventDate.getFullYear() === now.getFullYear();
+                        }).length || 0}
+                      </p>
+                    </div>
+                    <Clock className="w-8 h-8 text-blue-600/20" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Tabela de Eventos */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
