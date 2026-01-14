@@ -1294,6 +1294,12 @@ export default function AgendaVencimentos() {
     { enabled: condominioId > 0 }
   );
 
+  // Query para buscar todos os vencimentos para exportação
+  const { data: todosVencimentosExport } = trpc.vencimentos.list.useQuery(
+    { condominioId, tipo: undefined as any },
+    { enabled: condominioId > 0 }
+  );
+
   // Verificar alertas pendentes
   const { data: alertasPendentes, refetch: refetchAlertas } = trpc.alertasAutomaticos.verificarPendentes.useQuery(
     { condominioId },
@@ -1461,8 +1467,8 @@ export default function AgendaVencimentos() {
             <Button 
               variant="outline" 
               onClick={() => {
-                if (vencimentosQuery.data && vencimentosQuery.data.length > 0) {
-                  exportVencimentosExcel(vencimentosQuery.data as any, 'Vencimentos');
+                if (todosVencimentosExport && todosVencimentosExport.length > 0) {
+                  exportVencimentosExcel(todosVencimentosExport as any, 'Vencimentos');
                   toast.success('Excel exportado com sucesso!');
                 } else {
                   toast.error('Nenhum vencimento para exportar');
