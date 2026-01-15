@@ -925,3 +925,5 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Reduzir tamanho dos campos em EnvioMulticanalModal
 - [x] Reduzir tamanho dos campos em AppLoginModal
 - [x] Reduzir tamanho de todos os modais no Dashboard.tsx
+
+- [x] Corrigir texto do endereço para não expandir o modal (break-words, line-clamp-2)

@@ -623,19 +623,19 @@ export function TarefasSimplesModal({
               <MapPin className="h-4 w-4 text-orange-500" />
               Localização (automática)
             </Label>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
               {carregandoLocalizacao ? (
                 <div className="flex items-center gap-2 text-gray-500">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Obtendo localização...</span>
                 </div>
               ) : localizacao ? (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 min-w-0">
                   <div className="flex items-center gap-1 text-green-600 mb-1">
-                    <CheckCircle2 className="h-4 w-4" />
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
                     <span className="font-medium">Localização capturada</span>
                   </div>
-                  <p className="text-xs text-gray-500 truncate">{localizacao.endereco}</p>
+                  <p className="text-xs text-gray-500 break-words line-clamp-2">{localizacao.endereco}</p>
                 </div>
               ) : (
                 <button
