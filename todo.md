@@ -927,3 +927,5 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Reduzir tamanho de todos os modais no Dashboard.tsx
 
 - [x] Corrigir texto do endereço para não expandir o modal (break-words, line-clamp-2)
+
+- [x] Adicionar mapa miniatura no modal de Tarefas Simples para mostrar localização

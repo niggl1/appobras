@@ -30,6 +30,7 @@ import {
   Check
 } from "lucide-react";
 import { toast } from "sonner";
+import { MapView } from "@/components/Map";
 
 type TipoTarefa = "vistoria" | "manutencao" | "ocorrencia" | "antes_depois" | "checklist";
 
@@ -623,24 +624,49 @@ export function TarefasSimplesModal({
               <MapPin className="h-4 w-4 text-orange-500" />
               Localização (automática)
             </Label>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+            <div className="p-2 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
               {carregandoLocalizacao ? (
-                <div className="flex items-center gap-2 text-gray-500">
+                <div className="flex items-center gap-2 text-gray-500 p-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Obtendo localização...</span>
                 </div>
               ) : localizacao ? (
-                <div className="text-sm text-gray-600 min-w-0">
-                  <div className="flex items-center gap-1 text-green-600 mb-1">
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-                    <span className="font-medium">Localização capturada</span>
+                <div className="space-y-2">
+                  {/* Mapa Miniatura */}
+                  <div className="w-full h-24 rounded-lg overflow-hidden">
+                    <MapView
+                      className="w-full h-full"
+                      initialCenter={{ 
+                        lat: parseFloat(localizacao.lat), 
+                        lng: parseFloat(localizacao.lng) 
+                      }}
+                      initialZoom={16}
+                      onMapReady={(map) => {
+                        // Adicionar marcador na localização
+                        new google.maps.marker.AdvancedMarkerElement({
+                          map,
+                          position: { 
+                            lat: parseFloat(localizacao.lat), 
+                            lng: parseFloat(localizacao.lng) 
+                          },
+                          title: "Localização atual",
+                        });
+                      }}
+                    />
                   </div>
-                  <p className="text-xs text-gray-500 break-words line-clamp-2">{localizacao.endereco}</p>
+                  {/* Info da localização */}
+                  <div className="text-sm text-gray-600 min-w-0 px-1">
+                    <div className="flex items-center gap-1 text-green-600 mb-1">
+                      <CheckCircle2 className="h-3 w-3 flex-shrink-0" />
+                      <span className="font-medium text-xs">Localização capturada</span>
+                    </div>
+                    <p className="text-xs text-gray-500 break-words line-clamp-2">{localizacao.endereco}</p>
+                  </div>
                 </div>
               ) : (
                 <button
                   onClick={capturarLocalizacao}
-                  className="text-sm text-orange-600 hover:text-orange-700"
+                  className="text-sm text-orange-600 hover:text-orange-700 p-2"
                 >
                   Clique para capturar localização
                 </button>
