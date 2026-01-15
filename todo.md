@@ -1009,3 +1009,5 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Correção: Modal de Equipe de Gestão Cortado (15/01/2026)
 - [x] Ajustar modal de Equipe de Gestão que está cortado em cima e em baixo
+
+- [x] Melhorar visual do modal de Equipe para design premium

@@ -87,8 +87,8 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-            Equipe
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+            Equipe de Gestão
           </h2>
           <p className="text-muted-foreground mt-1">
             Gerencie os membros da equipe para compartilhamento de vistorias, manutenções e ocorrências
@@ -98,83 +98,136 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
           <DialogTrigger asChild>
             <Button 
               onClick={() => resetForm()}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-500/25"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/25 rounded-xl h-10 px-5 font-semibold"
             >
               <Plus className="w-4 h-4 mr-2" />
               Novo Membro
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-md overflow-y-auto max-h-[90vh] p-0">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
-              <DialogHeader className="space-y-1">
-                <DialogTitle className="flex items-center gap-2 text-white text-lg">
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
+          <DialogContent className="w-[95vw] sm:max-w-md overflow-y-auto max-h-[90vh] p-0 rounded-2xl border-0 shadow-2xl">
+            {/* Header Premium com Gradiente Laranja */}
+            <div className="relative bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 px-6 py-5 overflow-hidden">
+              {/* Efeito de brilho */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]" />
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+              <DialogHeader className="relative z-10">
+                <DialogTitle className="flex items-center gap-3 text-white">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/20">
+                    <User className="w-6 h-6 text-white" />
                   </div>
-                  {editingId ? "Editar Membro" : "Novo Membro da Equipe"}
+                  <div>
+                    <span className="text-xl font-bold block">
+                      {editingId ? "Editar Membro" : "Novo Membro"}
+                    </span>
+                    <span className="text-orange-100 text-sm font-normal">
+                      Equipe de Gestão
+                    </span>
+                  </div>
                 </DialogTitle>
               </DialogHeader>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4 p-6">
+            
+            {/* Formulário Premium */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-5 bg-gradient-to-b from-white to-orange-50/30 dark:from-gray-900 dark:to-gray-900">
+              {/* Upload de Foto com estilo premium */}
               <div className="flex justify-center">
-                <ImageUpload
-                  value={formData.fotoUrl}
-                  onChange={(url: string | undefined) => setFormData({ ...formData, fotoUrl: url || "" })}
-                  className="w-28 h-28 rounded-full"
-                  placeholder="Foto"
-                  compact
-                />
+                <div className="relative">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full blur opacity-30" />
+                  <ImageUpload
+                    value={formData.fotoUrl}
+                    onChange={(url: string | undefined) => setFormData({ ...formData, fotoUrl: url || "" })}
+                    className="relative w-24 h-24 rounded-full ring-4 ring-white shadow-xl"
+                    placeholder="Foto"
+                    compact
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome *</Label>
+              
+              {/* Campo Nome */}
+              <div className="space-y-1.5">
+                <Label htmlFor="nome" className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                  Nome <span className="text-orange-500">*</span>
+                </Label>
                 <Input
                   id="nome"
                   value={formData.nome}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                   placeholder="Nome completo"
                   required
+                  className="h-11 rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp">WhatsApp *</Label>
+              
+              {/* Campo WhatsApp */}
+              <div className="space-y-1.5">
+                <Label htmlFor="whatsapp" className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                  <Phone className="w-3.5 h-3.5 text-orange-500" />
+                  WhatsApp <span className="text-orange-500">*</span>
+                </Label>
                 <Input
                   id="whatsapp"
                   value={formData.whatsapp}
                   onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                   placeholder="(11) 99999-9999"
                   required
+                  className="h-11 rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="cargo">Cargo</Label>
+              
+              {/* Campo Cargo */}
+              <div className="space-y-1.5">
+                <Label htmlFor="cargo" className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+                  <Briefcase className="w-3.5 h-3.5 text-orange-500" />
+                  Cargo
+                </Label>
                 <Input
                   id="cargo"
                   value={formData.cargo}
                   onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
                   placeholder="Ex: Zelador, Porteiro, Técnico"
+                  className="h-11 rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição</Label>
+              
+              {/* Campo Descrição */}
+              <div className="space-y-1.5">
+                <Label htmlFor="descricao" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Descrição
+                </Label>
                 <Textarea
                   id="descricao"
                   value={formData.descricao}
                   onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                   placeholder="Responsabilidades e observações"
-                  rows={3}
+                  rows={2}
+                  className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500/20 transition-all resize-none"
                 />
               </div>
             </form>
-            <div className="flex gap-2 px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t">
-              <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
+            
+            {/* Botões Premium */}
+            <div className="flex gap-3 px-6 py-4 bg-gray-50/80 dark:bg-gray-900/80 border-t border-gray-100 dark:border-gray-800">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={resetForm} 
+                className="flex-1 h-11 rounded-xl border-gray-200 hover:bg-gray-100 transition-all"
+              >
                 Cancelar
               </Button>
               <Button 
                 onClick={handleSubmit}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+                className="flex-1 h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/30"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {editingId ? "Salvar" : "Adicionar"}
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Salvando...
+                  </span>
+                ) : (
+                  editingId ? "Salvar Alterações" : "Adicionar Membro"
+                )}
               </Button>
             </div>
           </DialogContent>
@@ -184,7 +237,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
       {/* Lista de Membros */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {membros?.map((membro) => (
-          <Card key={membro.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800">
+          <Card key={membro.id} className="group hover:shadow-xl transition-all duration-300 border border-orange-100 dark:border-orange-900/30 bg-gradient-to-br from-white to-orange-50/30 dark:from-slate-900 dark:to-slate-800 rounded-xl overflow-hidden">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -192,10 +245,10 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
                     <img
                       src={membro.fotoUrl}
                       alt={membro.nome}
-                      className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20"
+                      className="w-12 h-12 rounded-full object-cover ring-2 ring-orange-500/20"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-semibold text-lg">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg shadow-orange-500/20">
                       {membro.nome.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -243,7 +296,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                  className="text-orange-600 border-orange-200 hover:bg-orange-50 rounded-lg"
                   onClick={() => {
                     const phone = formatWhatsApp(membro.whatsapp);
                     window.open(`https://wa.me/${phone}`, "_blank");
