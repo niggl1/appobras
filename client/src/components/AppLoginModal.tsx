@@ -107,10 +107,10 @@ export function AppLoginModal({ open, onOpenChange, onLoginSuccess }: AppLoginMo
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[92vw] max-w-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Smartphone className="h-6 w-6 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <Smartphone className="h-5 w-5 text-primary" />
             Aceder ao Meu App
           </DialogTitle>
           <DialogDescription>

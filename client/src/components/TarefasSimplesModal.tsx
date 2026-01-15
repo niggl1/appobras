@@ -468,10 +468,10 @@ export function TarefasSimplesModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 shadow-2xl">
+      <DialogContent className="w-[92vw] max-w-md max-h-[92vh] overflow-y-auto p-0 gap-0 border-0 shadow-2xl">
         {/* Header Premium Laranja */}
         <div 
-          className="p-6 rounded-t-lg"
+          className="p-4 rounded-t-lg"
           style={{ 
             background: `linear-gradient(135deg, ${config.cor} 0%, #EA580C 100%)`,
           }}
@@ -479,11 +479,11 @@ export function TarefasSimplesModal({
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <IconeTipo className="h-6 w-6 text-white" />
+                <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <IconeTipo className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <DialogTitle className="text-xl font-bold text-white">
+                  <DialogTitle className="text-lg font-bold text-white">
                     {config.label}
                   </DialogTitle>
                   <p className="text-white/80 text-sm mt-1">
@@ -522,9 +522,9 @@ export function TarefasSimplesModal({
         </div>
 
         {/* Conteúdo do Modal */}
-        <div className="p-6 space-y-5 bg-white">
+        <div className="p-4 space-y-4 bg-white">
           {/* Protocolo */}
-          <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-xl border border-orange-100">
+          <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg border border-orange-100">
             <FileText className="h-4 w-4 text-orange-500" />
             <span className="text-sm text-orange-700 font-medium">
               Protocolo: {protocolo || "Gerando..."}
@@ -838,18 +838,18 @@ export function TarefasSimplesModal({
               placeholder="Adicione observações ou detalhes..."
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              rows={3}
+              rows={2}
               className="border-gray-200 focus:border-orange-400 focus:ring-orange-400 resize-none"
             />
           </div>
         </div>
 
         {/* Botões de Ação */}
-        <div className="p-6 bg-gray-50 border-t border-gray-100 space-y-3">
+        <div className="p-4 bg-gray-50 border-t border-gray-100 space-y-2">
           <Button
             onClick={salvarEReiniciar}
             disabled={salvando}
-            className="w-full h-12 text-base font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-200"
+            className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-200"
           >
             {salvando ? (
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
@@ -863,7 +863,7 @@ export function TarefasSimplesModal({
             onClick={enviarTodos}
             disabled={enviando || ((rascunhosCount?.count ?? 0) === 0 && !titulo && !descricao && imagens.length === 0)}
             variant="outline"
-            className="w-full h-12 text-base font-semibold border-2 border-orange-500 text-orange-600 hover:bg-orange-50"
+            className="w-full h-10 text-sm font-semibold border-2 border-orange-500 text-orange-600 hover:bg-orange-50"
           >
             {enviando ? (
               <Loader2 className="h-5 w-5 animate-spin mr-2" />

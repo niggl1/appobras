@@ -910,3 +910,18 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Corrigir botão "Novo Livro" que redirecionava para /dashboard/criar-projeto (rota removida)
 - [x] Atualizar redirecionamento para /dashboard/revistas onde o usuário pode criar livros de manutenção
 - [x] Corrigir dropdown "Novo Projeto" no menu lateral para mesma rota
+
+
+## Correção - Modal de Tarefas Simples
+- [ ] Ajustar modal para não precisar de scroll horizontal
+- [ ] Garantir que botões fiquem sempre visíveis
+- [ ] Melhorar responsividade do modal em telas menores
+
+
+## Correção - Modais Compactos (15/01/2026)
+- [x] Reduzir tamanho dos campos em TarefasSimplesModal
+- [x] Reduzir tamanho dos campos em ChecklistRapidoModal
+- [x] Reduzir tamanho dos campos em ShareModal
+- [x] Reduzir tamanho dos campos em EnvioMulticanalModal
+- [x] Reduzir tamanho dos campos em AppLoginModal
+- [x] Reduzir tamanho de todos os modais no Dashboard.tsx

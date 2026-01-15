@@ -137,8 +137,8 @@ Administração do Condomínio`);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-md p-0 overflow-hidden">
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-4">
+      <DialogContent className="w-[92vw] max-w-sm p-0 overflow-hidden">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3">
           <DialogHeader className="space-y-1">
             <DialogTitle className="flex items-center gap-2 text-white text-lg">
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -152,7 +152,7 @@ Administração do Condomínio`);
           </DialogHeader>
         </div>
 
-        <div className="space-y-4 p-6">
+        <div className="space-y-3 p-4">
           {/* Mensagem informativa */}
           <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
             <p className="text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2">

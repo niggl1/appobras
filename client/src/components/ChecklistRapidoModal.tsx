@@ -291,16 +291,16 @@ export function ChecklistRapidoModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 shadow-2xl">
-          <div className="p-6 rounded-t-lg" style={{ background: "linear-gradient(135deg, #A855F7 0%, #7C3AED 100%)" }}>
+        <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-y-auto p-0 gap-0 border-0 shadow-2xl">
+          <div className="p-4 rounded-t-lg" style={{ background: "linear-gradient(135deg, #A855F7 0%, #7C3AED 100%)" }}>
             <DialogHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <AlertCircle className="h-6 w-6 text-white" />
+                  <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <AlertCircle className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <DialogTitle className="text-xl font-bold text-white">Checklist Rápido</DialogTitle>
+                    <DialogTitle className="text-lg font-bold text-white">Checklist Rápido</DialogTitle>
                     <p className="text-white/80 text-sm mt-1">Crie e gerencie checklists com problemas</p>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export function ChecklistRapidoModal({
             </DialogHeader>
           </div>
 
-          <div className="p-6 space-y-5 bg-white">
+          <div className="p-4 space-y-4 bg-white">
             <div className="space-y-2">
               <Label className="text-gray-700 font-medium flex items-center gap-2">
                 <FileText className="h-4 w-4 text-purple-500" />
@@ -443,11 +443,12 @@ export function ChecklistRapidoModal({
               ))}
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-2 pt-3">
               <Button
                 onClick={salvarEReiniciar}
                 disabled={salvando || !checklistAtual?.titulo.trim()}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                size="sm"
+                className="flex-1 h-10 text-sm bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {salvando ? (
                   <>
@@ -465,7 +466,8 @@ export function ChecklistRapidoModal({
               <Button
                 onClick={enviarTodos}
                 disabled={enviando || (checklists.length === 0 && !checklistAtual?.titulo.trim())}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                size="sm"
+                className="flex-1 h-10 text-sm bg-green-600 hover:bg-green-700 text-white"
               >
                 {enviando ? (
                   <>
@@ -485,9 +487,9 @@ export function ChecklistRapidoModal({
       </Dialog>
 
       <Dialog open={modalProblemaAberto} onOpenChange={setModalProblemaAberto}>
-        <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-red-600">REPORTAR PROBLEMA</DialogTitle>
+            <DialogTitle className="text-lg font-bold text-red-600">REPORTAR PROBLEMA</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">

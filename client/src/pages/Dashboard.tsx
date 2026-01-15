@@ -433,7 +433,7 @@ export default function Dashboard() {
     <>
       {/* Diálogo de confirmação para funções rápidas */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-md">
+        <DialogContent className="w-[92vw] max-w-sm">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-amber-500" />
@@ -1986,8 +1986,8 @@ function RevistasSection() {
 
       {/* Dialog de criação de revista */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-4">
+        <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -2073,8 +2073,8 @@ function RevistasSection() {
 
       {/* Dialog de confirmação de exclusão */}
       <Dialog open={deleteConfirmId !== null} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <DialogContent className="w-[95vw] sm:max-w-[400px] max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-red-500 to-rose-500 px-6 py-4">
+        <DialogContent className="w-[92vw] max-w-xs max-h-[90vh] overflow-hidden p-0">
+          <div className="bg-gradient-to-r from-red-500 to-rose-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -2171,7 +2171,7 @@ function CondominioSection() {
                 Novo Local
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+            <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-y-auto p-0">
               {/* Header Premium */}
               <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-6 text-white">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
@@ -2368,7 +2368,7 @@ function CondominioSection() {
                   Cadastrar Organização
                 </Button>
               </DialogTrigger>
-              <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+              <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-y-auto p-0">
                 {/* Header Premium */}
                 <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-6 text-white">
                   <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
@@ -2932,8 +2932,8 @@ function MoradoresSection() {
                 Adicionar Morador
               </Button>
             </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[90vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3052,7 +3052,7 @@ function MoradoresSection() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t">
+            <div className="flex justify-end gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-900 border-t">
               <Button variant="outline" onClick={() => {
                 setShowMoradorDialog(false);
                 setEditingMorador(null);
@@ -3079,8 +3079,8 @@ function MoradoresSection() {
 
       {/* Modal de Importação Excel */}
       <Dialog open={showExcelDialog} onOpenChange={setShowExcelDialog}>
-        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-6 py-4">
+        <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-hidden p-0">
+          <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3200,8 +3200,8 @@ function MoradoresSection() {
 
       {/* Modal QR Code */}
       <Dialog open={showQRCodeDialog} onOpenChange={setShowQRCodeDialog}>
-        <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-purple-500 to-violet-500 px-6 py-4">
+        <DialogContent className="w-[92vw] max-w-sm max-h-[85vh] overflow-hidden p-0">
+          <div className="bg-gradient-to-r from-purple-500 to-violet-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3863,8 +3863,8 @@ function FuncionariosSection() {
               Adicionar Funcionário
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-sm max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -4044,8 +4044,8 @@ function FuncionariosSection() {
             setAccessFormData({ loginEmail: "", senha: "", loginAtivo: true });
           }
         }}>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -4461,8 +4461,8 @@ function AvisosSection() {
               Criar Aviso
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-[500px] max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-sm max-h-[90vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -4842,8 +4842,8 @@ function EventosSection() {
             <Bell className="w-4 h-4 mr-2" />
             {sendAllReminders.isPending ? "Enviando..." : "Enviar Lembretes"}
           </Button>
-          <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-sm max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -5252,7 +5252,7 @@ function VotacoesSection() {
               Nova Votação
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nova Votação</DialogTitle>
               <DialogDescription>Crie uma votação ou enquete para a equipa</DialogDescription>
@@ -5552,7 +5552,7 @@ function ClassificadosSection() {
               Novo Classificado
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-md">
+          <DialogContent className="w-[92vw] max-w-sm">
             <DialogHeader>
               <DialogTitle>Novo Classificado</DialogTitle>
               <DialogDescription>Publique um produto ou serviço</DialogDescription>
@@ -5748,8 +5748,8 @@ function CaronasSection() {
               Nova Carona
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -5966,8 +5966,8 @@ function AchadosSection() {
               Novo Item
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-amber-500 to-yellow-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-amber-500 to-yellow-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -6048,7 +6048,7 @@ function AchadosSection() {
 
       <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -6357,8 +6357,8 @@ function PublicidadeSection() {
                 Novo Anúncio
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-              <div className="bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-4">
+            <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+              <div className="bg-gradient-to-r from-pink-500 to-rose-500 px-4 py-3">
                 <DialogHeader className="space-y-1">
                   <DialogTitle className="flex items-center gap-2 text-white text-lg">
                     <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -6447,8 +6447,8 @@ function PublicidadeSection() {
                 Novo Anunciante
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0">
-              <div className="bg-gradient-to-r from-indigo-500 to-blue-500 px-6 py-4">
+            <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-hidden p-0">
+              <div className="bg-gradient-to-r from-indigo-500 to-blue-500 px-4 py-3">
                 <DialogHeader className="space-y-1">
                   <DialogTitle className="flex items-center gap-2 text-white text-lg">
                     <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -7316,8 +7316,8 @@ function RealizacoesSection() {
               Nova Realização
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-yellow-500 to-amber-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-yellow-500 to-amber-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -7380,7 +7380,7 @@ function RealizacoesSection() {
       {/* Diálogo de Galeria */}
       <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -7620,8 +7620,8 @@ function AntesDepoisSection() {
                 Novo Registro
               </Button>
             </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-lg max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -7902,8 +7902,8 @@ function MelhoriasSection() {
               Nova Melhoria
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -7982,7 +7982,7 @@ function MelhoriasSection() {
 
       <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -8163,8 +8163,8 @@ function AquisicoesSection() {
               Nova Aquisição
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -8232,7 +8232,7 @@ function AquisicoesSection() {
 
       <Dialog open={showGalleryDialog} onOpenChange={setShowGalleryDialog}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-hidden p-0">
-          <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-emerald-500 to-green-500 px-4 py-3">
             <DialogHeader className="space-y-1">
               <DialogTitle className="flex items-center gap-2 text-white text-lg">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -8391,8 +8391,8 @@ function VagasEstacionamentoSection() {
               Nova Vaga
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-slate-600 to-gray-700 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-slate-600 to-gray-700 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -8848,8 +8848,8 @@ function ComunicadosSection() {
               Novo Comunicado
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -9360,8 +9360,8 @@ function GaleriaSection() {
               Novo Álbum
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-fuchsia-500 to-pink-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-fuchsia-500 to-pink-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -9710,8 +9710,8 @@ function SegurancaSection() {
               Nova Dica
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-red-500 to-orange-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-red-500 to-orange-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -9992,8 +9992,8 @@ function RegrasSection() {
               Nova Regra
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-hidden p-0">
-            <div className="bg-gradient-to-r from-indigo-500 to-blue-500 px-6 py-4">
+          <DialogContent className="w-[92vw] max-w-md max-h-[85vh] overflow-hidden p-0">
+            <div className="bg-gradient-to-r from-indigo-500 to-blue-500 px-4 py-3">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
