@@ -35,6 +35,7 @@ import {
   XCircle,
   MapPin,
   Clock,
+  Download,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -153,6 +154,74 @@ export default function AdminUsuariosPage() {
     });
   };
 
+  const handleExportCSV = () => {
+    if (!usuariosData?.usuarios || usuariosData.usuarios.length === 0) {
+      toast.error("Não há usuários para exportar");
+      return;
+    }
+
+    const formatDateCSV = (date: Date | string | null) => {
+      if (!date) return "-";
+      return new Date(date).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    };
+
+    // Cabeçalho do CSV
+    const headers = [
+      "Nome",
+      "Email",
+      "Tipo Usuário",
+      "Cidade",
+      "Dias de Uso",
+      "Adimplência",
+      "Status",
+      "Tipo Conta",
+      "Data Cadastro",
+      "Último Acesso",
+    ];
+
+    // Dados dos usuários
+    const rows = usuariosData.usuarios.map((usuario) => [
+      usuario.name || "Sem nome",
+      usuario.email || "-",
+      TIPO_USUARIO_LABELS[usuario.tipoUsuario || "usuario"] || "Usuário",
+      usuario.cidade || "-",
+      usuario.diasUtilizacao || 0,
+      usuario.adimplente === false ? "Inadimplente" : "Adimplente",
+      usuario.bloqueado ? "Bloqueado" : "Ativo",
+      usuario.tipoConta ? TIPO_CONTA_LABELS[usuario.tipoConta] || usuario.tipoConta : "-",
+      formatDateCSV(usuario.createdAt),
+      formatDateCSV(usuario.lastSignedIn),
+    ]);
+
+    // Criar conteúdo CSV
+    const csvContent = [
+      headers.join(";"),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(";"))
+    ].join("\n");
+
+    // Adicionar BOM para UTF-8
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    
+    // Criar link de download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `usuarios_${new Date().toISOString().split("T")[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success("Lista de usuários exportada com sucesso!");
+  };
+
   const formatDate = (date: Date | string | null) => {
     if (!date) return "-";
     return new Date(date).toLocaleDateString("pt-BR", {
@@ -177,10 +246,16 @@ export default function AdminUsuariosPage() {
               Gerencie os usuários cadastrados no sistema
             </p>
           </div>
-          <Button onClick={() => refetch()} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Atualizar
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCSV} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar CSV
+            </Button>
+            <Button onClick={() => refetch()} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Atualizar
+            </Button>
+          </div>
         </div>
 
         {/* Estatísticas */}
