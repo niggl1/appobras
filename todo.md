@@ -944,3 +944,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Correção - Erro ResizeObserver (15/01/2026)
 - [x] Corrigir erro "ResizeObserver loop completed with undelivered notifications"
+
+
+## Histórico Unificado - Todas as Funções (15/01/2026)
+- [ ] Criar página de Histórico Unificado que busque dados de todas as tabelas (vistorias, manutencoes, ocorrencias, tarefas_simples, ordens_servico, checkl- [x] Criar página de histórico unificado
+- [x] Implementar busca por protocolo, nome, descrição, tipo, status
+- [x] Implementar filtro por intervalo de datas (de tal a tal data)
+- [x] Colocar item em destaque no menu Operacional/Manutenção

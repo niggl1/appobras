@@ -167,6 +167,7 @@ const menuSections = [
     label: "Operacional / Manutenção",
     icon: Wrench,
     items: [
+      { id: "historico", label: "⭐ Histórico Geral", icon: History, funcaoId: "historico", highlight: true },
       { id: "vistorias", label: "Vistoria Completa", icon: ClipboardCheck, funcaoId: "vistorias" },
       { id: "funcoes-simples", label: "Vistoria Rápida", icon: Zap, funcaoId: "vistoria-rapida", path: "/dashboard/funcoes-simples?tipo=vistoria" },
       { id: "manutencoes", label: "Manutenção Completa", icon: Wrench, funcaoId: "manutencoes" },
@@ -178,7 +179,6 @@ const menuSections = [
       { id: "antes-depois", label: "Antes e Depois Completo", icon: ArrowLeftRight, funcaoId: "antes-depois" },
       { id: "funcoes-simples-antes-depois", label: "Antes/Depois Rápido", icon: Zap, funcaoId: "antes-depois-rapido", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
       { id: "vencimentos", label: "Agenda de Vencimentos", icon: CalendarClock, funcaoId: "agenda-vencimentos" },
-      { id: "historico", label: "⭐ Histórico de Atividades", icon: History, funcaoId: "historico" },
     ]
   },
   {
@@ -241,6 +241,8 @@ export default function Dashboard() {
         if (!item.funcaoId) return true;
         // Funções rápidas sempre visíveis
         if (item.funcaoId.includes('-rapida') || item.funcaoId.includes('-rapido')) return true;
+        // Histórico sempre visível
+        if (item.funcaoId === 'historico') return true;
         // Verificar se a função está habilitada
         return funcoesHabilitadas.includes(item.funcaoId);
       })
@@ -623,20 +625,23 @@ export default function Dashboard() {
                       {section.items.map((item) => {
                         const isItemActive = currentSection === item.id;
                         const isRapida = isFuncaoRapida(item.funcaoId || item.id);
+                        const isHighlight = (item as any).highlight === true;
                         return (
-                          <div key={item.id} className="flex items-center group/item">
+                          <div key={item.id} className={cn("flex items-center group/item", isHighlight && "mb-2")}>
                             <Link href={(item as any).path || `/dashboard/${item.id}`} className="flex-1">
                               <button
                                 className={cn(
                                   "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-200",
+                                  isHighlight && !isItemActive && "bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/30 text-orange-600 font-medium hover:from-orange-500/20 hover:to-amber-500/20",
                                   isItemActive
                                     ? "bg-primary/10 text-primary font-medium"
-                                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                                    : !isHighlight && "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                                 )}
                               >
                                 <item.icon className={cn(
                                   "w-4 h-4",
-                                  isItemActive ? "text-primary" : "text-sidebar-foreground/50"
+                                  isHighlight && !isItemActive && "text-orange-500",
+                                  isItemActive ? "text-primary" : !isHighlight && "text-sidebar-foreground/50"
                                 )} />
                                 <span className="flex-1 text-left">{item.label}</span>
                               </button>
