@@ -989,3 +989,19 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar Ocorrência Rápida
 - [x] Adicionar Checklist Rápido
 - [x] Adicionar Antes/Depois Rápido
+
+
+## Melhoria Visual AppBuilder (15/01/2026)
+- [ ] Ordenar módulos em ordem alfabética
+- [ ] Adicionar cores em degradê aos módulos
+- [ ] Melhorar estilo visual dos módulos
+- [ ] Deixar visual mais profissional
+
+
+## Melhoria Visual AppBuilder (15/01/2026)
+- [x] Organizar módulos em ordem alfabética
+- [x] Adicionar cores em degradê nos módulos
+- [x] Melhorar estilo visual dos cards de módulos
+- [x] Deixar visual profissional
+- [x] Separar Funções Completas e Funções Rápidas em categorias
+- [x] Adicionar 5 módulos de funções rápidas (Vistoria, Manutenção, Ocorrência, Checklist, Antes/Depois)

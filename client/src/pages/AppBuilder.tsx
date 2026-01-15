@@ -100,31 +100,30 @@ interface AppModule {
   order: number;
 }
 
-// Módulos disponíveis - Apenas módulos relacionados a manutenção
-// Estilo funções rápidas: fundo colorido sólido com ícones brancos
-// Ordenados alfabeticamente por título
+// Módulos disponíveis - Ordenados alfabeticamente
+// Estilo profissional com gradientes
 const availableModules: Omit<AppModule, "enabled" | "order">[] = [
-  // Operacional / Manutenção
-  { id: "vencimentos", key: "vencimentos", title: "Agenda Vencimentos", icon: CalendarClock, color: "text-white", bgColor: "bg-fuchsia-500" },
-  { id: "antes_depois", key: "antes_depois", title: "Antes e Depois Completa", icon: Camera, color: "text-white", bgColor: "bg-violet-500" },
-  { id: "aquisicoes", key: "aquisicoes", title: "Aquisições", icon: Package, color: "text-white", bgColor: "bg-green-500" },
-  { id: "checklists", key: "checklists", title: "Checklists Completos", icon: ClipboardCheck, color: "text-white", bgColor: "bg-teal-500" },
-  { id: "galeria", key: "galeria", title: "Galeria de Fotos", icon: Image, color: "text-white", bgColor: "bg-pink-500" },
-  { id: "manutencoes", key: "manutencoes", title: "Manutenções Completas", icon: Wrench, color: "text-white", bgColor: "bg-slate-600" },
-  { id: "melhorias", key: "melhorias", title: "Melhorias", icon: Hammer, color: "text-white", bgColor: "bg-amber-500" },
-  { id: "ocorrencias", key: "ocorrencias", title: "Ocorrências Completas", icon: AlertTriangle, color: "text-white", bgColor: "bg-yellow-500" },
-  { id: "ordem_servico", key: "ordem_servico", title: "Ordens de Serviço", icon: ClipboardPen, color: "text-white", bgColor: "bg-teal-600" },
-  { id: "realizacoes", key: "realizacoes", title: "Realizações", icon: Award, color: "text-white", bgColor: "bg-yellow-600" },
-  { id: "vistorias", key: "vistorias", title: "Vistorias Completas", icon: Search, color: "text-white", bgColor: "bg-emerald-500" },
-  // Funções Rápidas
-  { id: "vistoria_rapida", key: "vistoria_rapida", title: "Vistoria Rápida", icon: Zap, color: "text-white", bgColor: "bg-emerald-400" },
-  { id: "manutencao_rapida", key: "manutencao_rapida", title: "Manutenção Rápida", icon: Zap, color: "text-white", bgColor: "bg-slate-500" },
-  { id: "ocorrencia_rapida", key: "ocorrencia_rapida", title: "Ocorrência Rápida", icon: Zap, color: "text-white", bgColor: "bg-yellow-400" },
-  { id: "checklist_rapido", key: "checklist_rapido", title: "Checklist Rápido", icon: Zap, color: "text-white", bgColor: "bg-teal-400" },
-  { id: "antes_depois_rapido", key: "antes_depois_rapido", title: "Antes/Depois Rápido", icon: Zap, color: "text-white", bgColor: "bg-violet-400" },
+  // Funções Completas (A-Z)
+  { id: "vencimentos", key: "vencimentos", title: "Agenda Vencimentos", icon: CalendarClock, color: "text-white", bgColor: "bg-gradient-to-br from-fuchsia-500 to-purple-600" },
+  { id: "antes_depois", key: "antes_depois", title: "Antes e Depois Completa", icon: Camera, color: "text-white", bgColor: "bg-gradient-to-br from-violet-500 to-indigo-600" },
+  { id: "aquisicoes", key: "aquisicoes", title: "Aquisições", icon: Package, color: "text-white", bgColor: "bg-gradient-to-br from-green-500 to-emerald-600" },
+  { id: "checklists", key: "checklists", title: "Checklists Completos", icon: ClipboardCheck, color: "text-white", bgColor: "bg-gradient-to-br from-teal-500 to-cyan-600" },
+  { id: "galeria", key: "galeria", title: "Galeria de Fotos", icon: Image, color: "text-white", bgColor: "bg-gradient-to-br from-pink-500 to-rose-600" },
+  { id: "manutencoes", key: "manutencoes", title: "Manutenções Completas", icon: Wrench, color: "text-white", bgColor: "bg-gradient-to-br from-slate-600 to-slate-800" },
+  { id: "melhorias", key: "melhorias", title: "Melhorias", icon: Hammer, color: "text-white", bgColor: "bg-gradient-to-br from-amber-500 to-orange-600" },
+  { id: "ocorrencias", key: "ocorrencias", title: "Ocorrências Completas", icon: AlertTriangle, color: "text-white", bgColor: "bg-gradient-to-br from-yellow-500 to-amber-600" },
+  { id: "ordem_servico", key: "ordem_servico", title: "Ordens de Serviço", icon: ClipboardPen, color: "text-white", bgColor: "bg-gradient-to-br from-teal-600 to-emerald-700" },
+  { id: "realizacoes", key: "realizacoes", title: "Realizações", icon: Award, color: "text-white", bgColor: "bg-gradient-to-br from-yellow-600 to-orange-700" },
+  { id: "vistorias", key: "vistorias", title: "Vistorias Completas", icon: Search, color: "text-white", bgColor: "bg-gradient-to-br from-emerald-500 to-green-600" },
+  // Funções Rápidas (A-Z)
+  { id: "antes_depois_rapido", key: "antes_depois_rapido", title: "Antes/Depois Rápido", icon: Zap, color: "text-white", bgColor: "bg-gradient-to-br from-violet-400 to-purple-500" },
+  { id: "checklist_rapido", key: "checklist_rapido", title: "Checklist Rápido", icon: Zap, color: "text-white", bgColor: "bg-gradient-to-br from-teal-400 to-cyan-500" },
+  { id: "manutencao_rapida", key: "manutencao_rapida", title: "Manutenção Rápida", icon: Zap, color: "text-white", bgColor: "bg-gradient-to-br from-slate-500 to-slate-700" },
+  { id: "ocorrencia_rapida", key: "ocorrencia_rapida", title: "Ocorrência Rápida", icon: Zap, color: "text-white", bgColor: "bg-gradient-to-br from-yellow-400 to-amber-500" },
+  { id: "vistoria_rapida", key: "vistoria_rapida", title: "Vistoria Rápida", icon: Zap, color: "text-white", bgColor: "bg-gradient-to-br from-emerald-400 to-green-500" },
 ];
 
-// Componente de módulo arrastável
+// Componente de módulo arrastável - Estilo profissional
 function SortableModule({ module, onToggle, onRemove }: { 
   module: AppModule; 
   onToggle: (id: string) => void;
@@ -151,18 +150,23 @@ function SortableModule({ module, onToggle, onRemove }: {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "relative group rounded-xl border-2 transition-all duration-200",
+        "relative group rounded-2xl border transition-all duration-300 overflow-hidden",
         isDragging ? "opacity-50 scale-105 z-50 shadow-2xl" : "opacity-100",
         module.enabled 
-          ? "border-primary/30 bg-gradient-to-br from-white to-primary/5 shadow-md" 
-          : "border-dashed border-gray-300 bg-gray-50/50"
+          ? "border-transparent bg-white shadow-lg hover:shadow-xl" 
+          : "border-dashed border-gray-300 bg-gray-50/80"
       )}
     >
+      {/* Barra de gradiente no topo quando ativo */}
+      {module.enabled && (
+        <div className={cn("h-1.5 w-full", module.bgColor)} />
+      )}
+
       {/* Grip handle */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1 rounded cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+        className="absolute top-3 left-3 p-1.5 rounded-lg cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 hover:bg-gray-100/80 backdrop-blur-sm transition-colors"
       >
         <GripVertical className="w-4 h-4" />
       </div>
@@ -170,33 +174,36 @@ function SortableModule({ module, onToggle, onRemove }: {
       {/* Remove button */}
       <button
         onClick={() => onRemove(module.id)}
-        className="absolute top-2 right-2 p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-3 right-3 p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-200"
       >
         <X className="w-4 h-4" />
       </button>
 
-      <div className="p-4 pt-8">
+      <div className="p-5 pt-10">
         <div className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto transition-all",
+          "w-14 h-14 rounded-2xl flex items-center justify-center mb-4 mx-auto transition-all shadow-lg",
           module.enabled ? module.bgColor : "bg-gray-200"
         )}>
-          <Icon className={cn("w-6 h-6", module.enabled ? module.color : "text-gray-400")} />
+          <Icon className={cn("w-7 h-7", module.enabled ? module.color : "text-gray-400")} />
         </div>
         
         <h4 className={cn(
-          "text-sm font-medium text-center mb-3",
-          module.enabled ? "text-foreground" : "text-gray-400"
+          "text-sm font-semibold text-center mb-4 line-clamp-2",
+          module.enabled ? "text-gray-800" : "text-gray-400"
         )}>
           {module.title}
         </h4>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 bg-gray-50 rounded-lg py-2 px-3">
           <Switch
             checked={module.enabled}
             onCheckedChange={() => onToggle(module.id)}
-            className="data-[state=checked]:bg-primary"
+            className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-orange-500 data-[state=checked]:to-amber-500"
           />
-          <span className="text-xs text-muted-foreground">
+          <span className={cn(
+            "text-xs font-medium",
+            module.enabled ? "text-orange-600" : "text-gray-400"
+          )}>
             {module.enabled ? "Ativo" : "Inativo"}
           </span>
         </div>
@@ -205,7 +212,7 @@ function SortableModule({ module, onToggle, onRemove }: {
   );
 }
 
-// Componente de módulo para adicionar
+// Componente de módulo para adicionar - Estilo profissional
 function AddModuleCard({ module, onAdd }: { 
   module: Omit<AppModule, "enabled" | "order">; 
   onAdd: (module: Omit<AppModule, "enabled" | "order">) => void;
@@ -215,13 +222,25 @@ function AddModuleCard({ module, onAdd }: {
   return (
     <button
       onClick={() => onAdd(module)}
-      className="p-3 rounded-xl border-2 border-dashed border-gray-200 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 flex flex-col items-center gap-2 group"
+      className="p-4 rounded-2xl bg-white border border-gray-100 hover:border-orange-200 hover:shadow-lg transition-all duration-300 flex flex-col items-center gap-3 group relative overflow-hidden"
     >
-      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", module.bgColor)}>
-        <Icon className={cn("w-5 h-5", module.color)} />
+      {/* Efeito de hover no fundo */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <div className="relative z-10 flex flex-col items-center gap-3">
+        <div className={cn(
+          "w-12 h-12 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-110 transition-all duration-300",
+          module.bgColor
+        )}>
+          <Icon className={cn("w-6 h-6", module.color)} />
+        </div>
+        <span className="text-xs font-semibold text-gray-600 group-hover:text-gray-800 text-center line-clamp-2 leading-tight">
+          {module.title}
+        </span>
+        <div className="w-6 h-6 rounded-full bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center transition-all duration-300">
+          <Plus className="w-3.5 h-3.5 text-orange-500 group-hover:text-white transition-colors" />
+        </div>
       </div>
-      <span className="text-xs font-medium text-gray-600 group-hover:text-primary">{module.title}</span>
-      <Plus className="w-4 h-4 text-gray-400 group-hover:text-primary" />
     </button>
   );
 }
@@ -493,22 +512,51 @@ export default function AppBuilder() {
 
             {/* Módulos disponíveis para adicionar */}
             {unusedModules.length > 0 && (
-              <Card>
-                <CardHeader className="pb-4">
+              <Card className="overflow-hidden">
+                <CardHeader className="pb-4 bg-gradient-to-r from-gray-50 to-white border-b">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-primary" />
+                    <Plus className="w-5 h-5 text-orange-500" />
                     Adicionar Módulos
                   </CardTitle>
                   <CardDescription>
                     Clique para adicionar mais módulos ao seu app
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                    {unusedModules.map((module) => (
-                      <AddModuleCard key={module.id} module={module} onAdd={addModule} />
-                    ))}
-                  </div>
+                <CardContent className="p-6">
+                  {/* Funções Completas */}
+                  {unusedModules.filter(m => !m.id.includes('rapido') && !m.id.includes('rapida')).length > 0 && (
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="h-px flex-1 bg-gradient-to-r from-orange-200 to-transparent" />
+                        <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider px-2">Funções Completas</span>
+                        <div className="h-px flex-1 bg-gradient-to-l from-orange-200 to-transparent" />
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                        {unusedModules.filter(m => !m.id.includes('rapido') && !m.id.includes('rapida')).map((module) => (
+                          <AddModuleCard key={module.id} module={module} onAdd={addModule} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Funções Rápidas */}
+                  {unusedModules.filter(m => m.id.includes('rapido') || m.id.includes('rapida')).length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="h-px flex-1 bg-gradient-to-r from-amber-200 to-transparent" />
+                        <span className="text-xs font-semibold text-amber-600 uppercase tracking-wider px-2 flex items-center gap-1">
+                          <Zap className="w-3 h-3" />
+                          Funções Rápidas
+                        </span>
+                        <div className="h-px flex-1 bg-gradient-to-l from-amber-200 to-transparent" />
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                        {unusedModules.filter(m => m.id.includes('rapido') || m.id.includes('rapida')).map((module) => (
+                          <AddModuleCard key={module.id} module={module} onAdd={addModule} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
