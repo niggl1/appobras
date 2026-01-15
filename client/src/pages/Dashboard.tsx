@@ -688,11 +688,17 @@ export default function Dashboard() {
             {/* Link de Admin - só para admins */}
             {user?.role === 'admin' && (
               <div className="mt-4 pt-4 border-t border-sidebar-border">
-                <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">Administração</p>
+                <p className="text-xs font-semibold text-orange-500 uppercase tracking-wider mb-2 px-3">Administração</p>
+                <Link href="/admin/usuarios">
+                  <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+                    <Users className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm font-medium">Admin Usuários</span>
+                  </button>
+                </Link>
                 <Link href="/admin/funcoes">
                   <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
-                    <Shield className="w-5 h-5" />
-                    <span className="text-sm font-medium">Gestão de Funções</span>
+                    <Sliders className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm font-medium">Admin Funções</span>
                   </button>
                 </Link>
               </div>

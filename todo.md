@@ -764,3 +764,13 @@
 - [x] Verificar se o menu está sendo renderizado corretamente
 - [x] Garantir que o role do usuário está sendo lido corretamente
 - [x] Mover menu de admin para o SidebarFooter para evitar sobreposição
+
+## Fase 54: Investigar inconsistências entre menus
+
+### Problema real identificado
+- [x] Menu de admin só aparece em algumas páginas (Agenda de Vencimentos, Ordens de Serviço)
+- [x] Funções Rápidas diferentes entre os dois menus
+- [x] Possivelmente existem dois layouts diferentes sendo usados
+- [x] Investigar quais páginas usam qual layout
+- [x] Unificar os menus para consistência
+- [x] Adicionado Admin Usuários e Admin Funções no Dashboard.tsx
