@@ -128,6 +128,8 @@ import QuickFunctionsEditor, { getSelectedQuickFunctions, allQuickFunctions, COR
 import AssistenteCriacao from "@/components/AssistenteCriacao";
 import OrdensServico from "./OrdensServico";
 import AgendaVencimentos from "./AgendaVencimentos";
+import OrdemServicoDetalhe from "./OrdemServicoDetalhe";
+import OrdensServicoConfig from "./OrdensServicoConfig";
 
 // Estrutura do menu otimizada para gestão de manutenção
 // Cada item tem um funcaoId que mapeia para as funções do admin
@@ -848,6 +850,8 @@ export default function Dashboard() {
           {currentSection === "historico-infracoes" && <HistoricoInfracoesPage />}
           {currentSection === "funcoes-simples" && <HistoricoTarefasSimples />}
           {currentSection === "notificar-morador" && <NotificarMoradorPage />}
+          {currentSection === "ordens-servico-config" && <OrdensServicoConfig />}
+          {currentSection?.startsWith("ordem-servico/") && <OrdemServicoDetalhe />}
         </div>
       </main>
 
