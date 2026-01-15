@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+// DashboardLayout removido - agora renderizado dentro do Dashboard.tsx
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -213,7 +213,7 @@ export default function HistoricoInfracoesPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -784,6 +784,6 @@ export default function HistoricoInfracoesPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }

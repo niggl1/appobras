@@ -118,6 +118,8 @@ import AssembleiaOnlineCard from "@/components/AssembleiaOnlineCard";
 import NotificacoesPage from "./NotificacoesPage";
 import NotificarMoradorPage from "./NotificarMoradorPage";
 import RelatoriosPage from "./RelatoriosPage";
+import HistoricoAcessosPage from "./HistoricoAcessosPage";
+import HistoricoInfracoesPage from "./HistoricoInfracoesPage";
 import NotificationAlert from "@/components/NotificationAlert";
 import FuncoesRapidas from "@/components/FuncoesRapidas";
 import FuncoesRapidasGrid from "@/components/FuncoesRapidasGrid";
@@ -841,6 +843,8 @@ export default function Dashboard() {
           {currentSection === "configuracoes" && <ConfiguracoesSection />}
           {currentSection === "ordens-servico" && <OrdensServico />}
           {currentSection === "agenda-vencimentos" && <AgendaVencimentos />}
+          {currentSection === "historico-acessos" && <HistoricoAcessosPage />}
+          {currentSection === "historico-infracoes" && <HistoricoInfracoesPage />}
         </div>
       </main>
 
