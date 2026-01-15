@@ -1961,7 +1961,7 @@ export const tarefasSimples = mysqlTable("tarefas_simples", {
   funcionarioId: int("funcionarioId").references(() => funcionarios.id),
   
   // Tipo da tarefa
-  tipo: mysqlEnum("tipo", ["vistoria", "manutencao", "ocorrencia", "antes_depois"]).notNull(),
+  tipo: mysqlEnum("tipo", ["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).notNull(),
   
   // Dados principais
   protocolo: varchar("protocolo", { length: 50 }).notNull().unique(),
@@ -1971,6 +1971,9 @@ export const tarefasSimples = mysqlTable("tarefas_simples", {
   
   // Imagens (JSON array de URLs)
   imagens: json("imagens").$type<string[]>(),
+  
+  // Itens do checklist (JSON array de objetos)
+  itensChecklist: json("itensChecklist").$type<{ id: string; titulo: string; concluido: boolean; temProblema: boolean; problema?: { titulo: string; descricao: string; imagens: string[]; } }[]>(),
   
   // Localização automática
   latitude: varchar("latitude", { length: 20 }),
@@ -2024,7 +2027,7 @@ export const camposRapidosTemplates = mysqlTable("campos_rapidos_templates", {
   tipoCampo: mysqlEnum("tipoCampo", ["titulo", "descricao", "local", "observacao"]).notNull(),
   
   // Tipo da tarefa (opcional - para filtrar por contexto)
-  tipoTarefa: mysqlEnum("tipoTarefa", ["vistoria", "manutencao", "ocorrencia", "antes_depois"]),
+  tipoTarefa: mysqlEnum("tipoTarefa", ["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]),
   
   // Valor salvo
   valor: text("valor").notNull(),

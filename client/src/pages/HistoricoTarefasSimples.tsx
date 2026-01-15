@@ -28,12 +28,13 @@ import {
   Edit,
   RefreshCw,
   Loader2,
+  ListChecks,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-type TipoTarefa = "vistoria" | "manutencao" | "ocorrencia" | "antes_depois";
+type TipoTarefa = "vistoria" | "manutencao" | "ocorrencia" | "antes_depois" | "checklist";
 type StatusTarefa = "rascunho" | "enviado" | "concluido";
 
 const tipoConfig = {
@@ -60,6 +61,12 @@ const tipoConfig = {
     icon: ArrowLeftRight,
     cor: "#10B981",
     corClara: "#ECFDF5",
+  },
+  checklist: {
+    label: "Checklist",
+    icon: ListChecks,
+    cor: "#8B5CF6",
+    corClara: "#F5F3FF",
   },
 };
 
@@ -110,7 +117,7 @@ export default function HistoricoTarefasSimples() {
   const { data: tarefas, isLoading } = trpc.tarefasSimples.listar.useQuery(
     {
       condominioId: condominioId!,
-      tipo: filtroTipo !== "todos" ? filtroTipo : undefined,
+      tipo: filtroTipo !== "todos" ? (filtroTipo as any) : undefined,
       status: filtroStatus !== "todos" ? filtroStatus : undefined,
       limite: 100,
     },

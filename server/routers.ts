@@ -13576,7 +13576,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     // Gerar protocolo único
     gerarProtocolo: protectedProcedure
       .input(z.object({
-        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]),
       }))
       .mutation(async ({ input }) => {
         const prefixos = {
@@ -13584,6 +13584,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           manutencao: "MAN",
           ocorrencia: "OCO",
           antes_depois: "A&D",
+          checklist: "CHK",
         };
         const prefixo = prefixos[input.tipo];
         const data = new Date();
@@ -13601,7 +13602,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     criar: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]),
         protocolo: z.string(),
         titulo: z.string().optional(),
         descricao: z.string().optional(),
@@ -13612,6 +13613,17 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         endereco: z.string().optional(),
         statusPersonalizado: z.string().optional(),
         funcionarioId: z.number().optional(),
+        itensChecklist: z.array(z.object({
+          id: z.string(),
+          titulo: z.string(),
+          concluido: z.boolean(),
+          temProblema: z.boolean(),
+          problema: z.object({
+            titulo: z.string(),
+            descricao: z.string(),
+            imagens: z.array(z.string()),
+          }).optional(),
+        })).optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         const db = await getDb();
@@ -13630,6 +13642,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           longitude: input.longitude || null,
           endereco: input.endereco || null,
           statusPersonalizado: input.statusPersonalizado || null,
+          itensChecklist: input.itensChecklist || null,
           status: "rascunho",
         });
         return { id: Number(result.insertId), protocolo: input.protocolo };
@@ -13662,7 +13675,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     enviarTodas: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]).optional(),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
         ids: z.array(z.number()).optional(),
       }))
       .mutation(async ({ input, ctx }) => {
@@ -13717,7 +13730,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     listar: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]).optional(),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
         status: z.enum(["rascunho", "enviado", "concluido"]).optional(),
         limite: z.number().optional().default(50),
       }))
@@ -13745,7 +13758,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     contarRascunhos: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]).optional(),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
       }))
       .query(async ({ input }) => {
         const db = await getDb();
@@ -13868,7 +13881,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
       .input(z.object({
         condominioId: z.number(),
         tipoCampo: z.enum(["titulo", "descricao", "local", "observacao"]).optional(),
-        tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]).optional(),
+        tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
       }))
       .query(async ({ input }) => {
         const db = await getDb();
@@ -13897,7 +13910,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
       .input(z.object({
         condominioId: z.number(),
         tipoCampo: z.enum(["titulo", "descricao", "local", "observacao"]),
-        tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois"]).optional(),
+        tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
         valor: z.string().min(1),
         nome: z.string().optional(),
       }))

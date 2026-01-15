@@ -891,3 +891,16 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Exibir status de adimplência (verde/vermelho)
 - [x] Implementar funcionalidade de bloqueio com mensagem
 - [x] Exibir mensagem de bloqueio na tela de login
+
+
+## Fase 64: Integrar Checklist Rápido nas Funções Simples
+### Backend
+- [x] Adicionar tipo "checklist" no enum de tarefas simples
+- [x] Adicionar campo itensChecklist na tabela tarefas_simples
+- [x] Executar migração do banco de dados
+
+### Frontend
+- [x] Adicionar configuração do tipo checklist em HistoricoTarefasSimples
+- [x] Atualizar TarefasSimplesModal para suportar checklist
+- [x] Adicionar interface de itens do checklist no modal
+- [x] Testar integração completa

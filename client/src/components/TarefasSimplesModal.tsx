@@ -25,11 +25,25 @@ import {
   Tag,
   Star,
   History,
-  Trash2
+  Trash2,
+  ListChecks,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
 
-type TipoTarefa = "vistoria" | "manutencao" | "ocorrencia" | "antes_depois";
+type TipoTarefa = "vistoria" | "manutencao" | "ocorrencia" | "antes_depois" | "checklist";
+
+interface ItemChecklist {
+  id: string;
+  titulo: string;
+  concluido: boolean;
+  temProblema: boolean;
+  problema?: {
+    titulo: string;
+    descricao: string;
+    imagens: string[];
+  };
+}
 type TipoCampo = "titulo" | "descricao" | "local" | "observacao";
 
 interface TarefasSimplesModalProps {
@@ -65,6 +79,12 @@ const tipoConfig = {
     cor: "#F97316",
     corClara: "#FFF7ED",
   },
+  checklist: {
+    label: "Checklist Rápido",
+    icon: ListChecks,
+    cor: "#8B5CF6",
+    corClara: "#F5F3FF",
+  },
 };
 
 // Componente para botão de salvar/selecionar template
@@ -80,9 +100,10 @@ function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onS
   const [popoverOpen, setPopoverOpen] = useState(false);
   const utils = trpc.useUtils();
 
-  // Buscar templates salvos
+  // Buscar templates salvos - ignorar checklist pois não usa templates
+  const tipoTarefaParaTemplate = tipoTarefa === "checklist" ? undefined : tipoTarefa;
   const { data: templates, isLoading } = trpc.camposRapidosTemplates.listar.useQuery(
-    { condominioId, tipoCampo, tipoTarefa },
+    { condominioId, tipoCampo, tipoTarefa: tipoTarefaParaTemplate },
     { enabled: popoverOpen && condominioId > 0 }
   );
 
@@ -120,7 +141,7 @@ function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onS
     criarTemplateMutation.mutate({
       condominioId,
       tipoCampo,
-      tipoTarefa,
+      tipoTarefa: tipoTarefaParaTemplate,
       valor: valorAtual.trim(),
     });
   };
@@ -249,6 +270,10 @@ export function TarefasSimplesModal({
   const [salvando, setSalvando] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Estados para checklist
+  const [itensChecklist, setItensChecklist] = useState<ItemChecklist[]>([]);
+  const [novoItemChecklist, setNovoItemChecklist] = useState("");
 
   const utils = trpc.useUtils();
 
@@ -260,7 +285,7 @@ export function TarefasSimplesModal({
 
   // Contar rascunhos pendentes
   const { data: rascunhosCount } = trpc.tarefasSimples.contarRascunhos.useQuery(
-    { condominioId, tipo },
+    { condominioId, tipo: tipo as any },
     { enabled: open && condominioId > 0 }
   );
 
@@ -280,7 +305,7 @@ export function TarefasSimplesModal({
 
   const gerarNovoProtocolo = async () => {
     try {
-      const result = await gerarProtocoloMutation.mutateAsync({ tipo });
+      const result = await gerarProtocoloMutation.mutateAsync({ tipo: tipo as any });
       setProtocolo(result.protocolo);
     } catch (error) {
       console.error("Erro ao gerar protocolo:", error);
@@ -290,6 +315,7 @@ export function TarefasSimplesModal({
         manutencao: "MAN",
         ocorrencia: "OCO",
         antes_depois: "A/D",
+        checklist: "CHK",
       };
       const now = new Date();
       const timestamp = now.toISOString().replace(/[-:T]/g, '').substring(2, 14);
@@ -374,7 +400,7 @@ export function TarefasSimplesModal({
     try {
       await criarTarefaMutation.mutateAsync({
         condominioId,
-        tipo,
+        tipo: tipo as any,
         protocolo,
         titulo: titulo || undefined,
         descricao: descricao || undefined,
@@ -384,6 +410,7 @@ export function TarefasSimplesModal({
         longitude: localizacao?.lng,
         endereco: localizacao?.endereco,
         statusPersonalizado: statusPersonalizado || undefined,
+        itensChecklist: tipo === "checklist" && itensChecklist.length > 0 ? itensChecklist : undefined,
       });
 
       toast.success("Registro salvo! Adicione outro.", {
@@ -396,6 +423,8 @@ export function TarefasSimplesModal({
       setLocal("");
       setImagens([]);
       setStatusPersonalizado("");
+      setItensChecklist([]);
+      setNovoItemChecklist("");
       await gerarNovoProtocolo();
       
       utils.tarefasSimples.contarRascunhos.invalidate({ condominioId });
@@ -416,7 +445,7 @@ export function TarefasSimplesModal({
     try {
       await enviarTodasMutation.mutateAsync({
         condominioId,
-        tipo,
+        tipo: tipo as any,
       });
 
       toast.success("Todos os registros foram enviados!", {
@@ -658,6 +687,140 @@ export function TarefasSimplesModal({
               </Button>
             </div>
           </div>
+
+          {/* Interface de Checklist - Só aparece quando tipo é checklist */}
+          {tipo === "checklist" && (
+            <div className="space-y-3">
+              <Label className="text-gray-700 font-medium flex items-center gap-2">
+                <ListChecks className="h-4 w-4 text-purple-500" />
+                Itens do Checklist
+              </Label>
+              
+              {/* Lista de itens */}
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {itensChecklist.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                      item.concluido
+                        ? "bg-green-50 border-green-200"
+                        : item.temProblema
+                        ? "bg-red-50 border-red-200"
+                        : "bg-gray-50 border-gray-200"
+                    }`}
+                  >
+                    <button
+                      onClick={() => {
+                        setItensChecklist(prev =>
+                          prev.map((i, idx) =>
+                            idx === index ? { ...i, concluido: !i.concluido, temProblema: false } : i
+                          )
+                        );
+                      }}
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        item.concluido
+                          ? "bg-green-500 border-green-500 text-white"
+                          : "border-gray-300 hover:border-purple-400"
+                      }`}
+                    >
+                      {item.concluido && <Check className="h-4 w-4" />}
+                    </button>
+                    <span className={`flex-1 text-sm ${item.concluido ? "line-through text-gray-400" : "text-gray-700"}`}>
+                      {item.titulo}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setItensChecklist(prev =>
+                          prev.map((i, idx) =>
+                            idx === index ? { ...i, temProblema: !i.temProblema, concluido: false } : i
+                          )
+                        );
+                      }}
+                      className={`p-1.5 rounded-lg transition-all ${
+                        item.temProblema
+                          ? "bg-red-500 text-white"
+                          : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                      }`}
+                      title="Reportar problema"
+                    >
+                      <AlertTriangle className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setItensChecklist(prev => prev.filter((_, idx) => idx !== index));
+                      }}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                      title="Remover item"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Adicionar novo item */}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Adicionar item ao checklist..."
+                  value={novoItemChecklist}
+                  onChange={(e) => setNovoItemChecklist(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && novoItemChecklist.trim()) {
+                      setItensChecklist(prev => [
+                        ...prev,
+                        {
+                          id: crypto.randomUUID(),
+                          titulo: novoItemChecklist.trim(),
+                          concluido: false,
+                          temProblema: false,
+                        },
+                      ]);
+                      setNovoItemChecklist("");
+                    }
+                  }}
+                  className="flex-1 border-purple-200 focus:border-purple-400 focus:ring-purple-400"
+                />
+                <Button
+                  onClick={() => {
+                    if (novoItemChecklist.trim()) {
+                      setItensChecklist(prev => [
+                        ...prev,
+                        {
+                          id: crypto.randomUUID(),
+                          titulo: novoItemChecklist.trim(),
+                          concluido: false,
+                          temProblema: false,
+                        },
+                      ]);
+                      setNovoItemChecklist("");
+                    }
+                  }}
+                  disabled={!novoItemChecklist.trim()}
+                  className="bg-purple-500 hover:bg-purple-600"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {itensChecklist.length > 0 && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <span>
+                    {itensChecklist.filter(i => i.concluido).length} de {itensChecklist.length} concluídos
+                  </span>
+                  {itensChecklist.filter(i => i.temProblema).length > 0 && (
+                    <>
+                      <span className="text-gray-300">|</span>
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <span className="text-red-500">
+                        {itensChecklist.filter(i => i.temProblema).length} com problema
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Descrição com botão + */}
           <div className="space-y-2">
