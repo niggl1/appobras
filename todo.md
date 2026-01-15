@@ -960,3 +960,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Remoção: Botão Novo Projeto (15/01/2026)
 - [x] Remover botão "+ Novo Projeto" da página Meus Projetos
+
+
+## Verificação: Rotas e Funções dos Módulos (15/01/2026)
+- [x] Verificar rotas do App.tsx
+- [x] Verificar se todas as páginas existem
+- [x] Verificar se todas as funções estão implementadas
+- [x] Todas as rotas estão corretas e funcionando
