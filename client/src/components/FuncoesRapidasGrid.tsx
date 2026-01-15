@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Zap, Loader2, Settings } from "lucide-react";
-import { iconMap, CORES_FUNCOES_RAPIDAS } from "./DashboardLayout";
+import { iconMap, CORES_FUNCOES_RAPIDAS } from "./QuickFunctionsEditor";
 
 interface FuncoesRapidasGridProps {
   condominioId: number;

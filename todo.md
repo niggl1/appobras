@@ -808,3 +808,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] OrdemServicoDetalhe.tsx
 - [x] OrdensServicoConfig.tsx
 - [x] AdminUsuarios.tsx
+
+
+## Fase 56: Limpeza - Remover DashboardLayout.tsx
+- [x] Remover arquivo DashboardLayout.tsx
+- [x] Remover arquivo DashboardLayoutSkeleton.tsx
+- [x] Atualizar FuncoesRapidasGrid.tsx para importar de QuickFunctionsEditor
