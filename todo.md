@@ -717,3 +717,9 @@
 - [x] Tornar campo tipo opcional no backend (routers.ts)
 - [x] Remover "undefined as any" do frontend (AgendaVencimentos.tsx)
 - [x] Testar correção
+
+
+## Reorganização da Logo
+- [x] Substituir as duas logos do menu lateral pela logo completa "APP MANUTENÇÃO"
+- [x] Remover logo da área de conteúdo (Agenda de Vencimentos e Ordens de Serviço)
+- [x] Testar alterações

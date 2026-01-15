@@ -1479,14 +1479,7 @@ export default function AgendaVencimentos() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <img 
-              src="/logo-manutencao.png" 
-              alt="App Manutenção" 
-              className="h-12 object-contain"
-            />
-          </div>
+        <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
           <div className="flex flex-wrap gap-2">
             {/* Botão de Processar Alertas */}
             <Button

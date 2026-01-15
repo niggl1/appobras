@@ -233,14 +233,7 @@ export default function OrdensServico() {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50">
         {/* Header Premium */}
         <div className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-300 p-6 rounded-b-3xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <img 
-                src="/logo-manutencao.png" 
-                alt="App Manutenção" 
-                className="h-12 object-contain"
-              />
-            </div>
+          <div className="flex items-center justify-end">
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"

@@ -527,10 +527,12 @@ function DashboardLayoutContent({
                 <PanelLeft className="h-4 w-4 text-muted-foreground" />
               </button>
               {!isCollapsed ? (
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate text-primary">
-                    App Manutenção
-                  </span>
+                <div className="flex items-center min-w-0">
+                  <img 
+                    src="/LogoManutencao2.png" 
+                    alt="App Manutenção" 
+                    className="h-10 object-contain"
+                  />
                 </div>
               ) : null}
             </div>
