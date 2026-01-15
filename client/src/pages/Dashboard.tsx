@@ -125,7 +125,7 @@ import NotificationAlert from "@/components/NotificationAlert";
 import FuncoesRapidas from "@/components/FuncoesRapidas";
 import FuncoesRapidasGrid from "@/components/FuncoesRapidasGrid";
 import QuickFunctionsEditor, { getSelectedQuickFunctions, allQuickFunctions, CORES_FUNCOES_RAPIDAS } from "@/components/QuickFunctionsEditor";
-import AssistenteCriacao from "@/components/AssistenteCriacao";
+// AssistenteCriacao removido - sistema focado em manutenção
 import OrdensServico from "./OrdensServico";
 import AgendaVencimentos from "./AgendaVencimentos";
 import OrdemServicoDetalhe from "./OrdemServicoDetalhe";
@@ -1530,7 +1530,7 @@ function getCurrentEdition(): string {
 // Revistas Section
 function RevistasSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [mostrarAssistente, setMostrarAssistente] = useState(false);
+  // mostrarAssistente removido
   const [formData, setFormData] = useState({
     titulo: "",
     subtitulo: "Informativo Mensal",
@@ -1678,7 +1678,7 @@ function RevistasSection() {
           </div>
           <Button 
             className="bg-white text-purple-700 hover:bg-purple-50 shadow-lg shadow-purple-900/30 font-semibold px-6 py-3 h-auto"
-            onClick={() => setMostrarAssistente(true)}
+            onClick={() => toast.info('Funcionalidade em desenvolvimento')}
           >
             <Plus className="w-5 h-5 mr-2" />
             Novo Projeto
@@ -2145,19 +2145,7 @@ function RevistasSection() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal do Assistente de Criação */}
-      <Dialog open={mostrarAssistente} onOpenChange={setMostrarAssistente}>
-        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sr-only">
-            <DialogTitle>Assistente de Criação</DialogTitle>
-            <DialogDescription>Crie seu projeto passo a passo</DialogDescription>
-          </DialogHeader>
-          <AssistenteCriacao 
-            onClose={() => setMostrarAssistente(false)}
-            onComplete={() => setMostrarAssistente(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Assistente de Criação removido - sistema focado em manutenção */}
     </div>
   );
 }

@@ -48,7 +48,7 @@ import RelatorioBuilder from "./pages/RelatorioBuilder";
 import OrdensServico from "@/pages/OrdensServico";
 import OrdemServicoDetalhe from "@/pages/OrdemServicoDetalhe";
 import OrdensServicoConfig from "@/pages/OrdensServicoConfig";
-import CriarProjeto from "./pages/CriarProjeto";
+// CriarProjeto removido - sistema focado em manutenção
 import AppViewer from "./pages/AppViewer";
 import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
@@ -123,7 +123,7 @@ function Router() {
       {/* Rota de ordens-servico agora usa o Dashboard.tsx */}
       <Route path="/dashboard/ordens-servico/configuracoes" component={OrdensServicoConfig} />
       <Route path="/dashboard/ordens-servico/:id" component={OrdemServicoDetalhe} />
-      <Route path="/dashboard/criar-projeto" component={CriarProjeto} />
+      {/* Rota criar-projeto removida - sistema focado em manutenção */}
       <Route path="/dashboard/funcoes-simples" component={HistoricoTarefasSimples} />
       <Route path="/dashboard/relatorios-manutencao" component={RelatoriosManutencaoPage} />
       <Route path="/dashboard/revistas/nova">{() => { window.location.href = '/dashboard/revistas'; return null; }}</Route>
