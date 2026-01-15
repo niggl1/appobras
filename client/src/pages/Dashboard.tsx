@@ -167,10 +167,15 @@ const menuSections = [
     icon: Wrench,
     items: [
       { id: "vistorias", label: "Vistorias", icon: ClipboardCheck, funcaoId: "vistorias" },
+      { id: "funcoes-simples", label: "Vistoria Rápida", icon: Zap, funcaoId: "vistoria-rapida", path: "/dashboard/funcoes-simples?tipo=vistoria" },
       { id: "manutencoes", label: "Manutenções", icon: Wrench, funcaoId: "manutencoes" },
+      { id: "funcoes-simples-manutencao", label: "Manutenção Rápida", icon: Zap, funcaoId: "manutencao-rapida", path: "/dashboard/funcoes-simples?tipo=manutencao" },
       { id: "ocorrencias", label: "Ocorrências", icon: AlertTriangle, funcaoId: "ocorrencias" },
+      { id: "funcoes-simples-ocorrencia", label: "Ocorrência Rápida", icon: Zap, funcaoId: "ocorrencia-rapida", path: "/dashboard/funcoes-simples?tipo=ocorrencia" },
       { id: "checklists", label: "Checklists", icon: ListChecks, funcaoId: "checklists" },
+      { id: "funcoes-simples-checklist", label: "Checklist Rápido", icon: Zap, funcaoId: "checklist-rapido", path: "/dashboard/funcoes-simples?tipo=checklist" },
       { id: "antes-depois", label: "Antes e Depois", icon: ArrowLeftRight, funcaoId: "antes-depois" },
+      { id: "funcoes-simples-antes-depois", label: "Antes/Depois Rápido", icon: Zap, funcaoId: "antes-depois-rapido", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
       { id: "vencimentos", label: "Agenda de Vencimentos", icon: CalendarClock, funcaoId: "agenda-vencimentos" },
     ]
   },
@@ -616,7 +621,7 @@ export default function Dashboard() {
                         const isRapida = isFuncaoRapida(item.funcaoId || item.id);
                         return (
                           <div key={item.id} className="flex items-center group/item">
-                            <Link href={`/dashboard/${item.id}`} className="flex-1">
+                            <Link href={(item as any).path || `/dashboard/${item.id}`} className="flex-1">
                               <button
                                 className={cn(
                                   "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-200",
@@ -982,7 +987,7 @@ export default function Dashboard() {
                             {section.items.map((item) => (
                               <Link
                                 key={item.id}
-                                href={`/dashboard/${item.id}`}
+                                href={(item as any).path || `/dashboard/${item.id}`}
                                 onClick={() => setMobileMenuOpen(false)}
                               >
                                 <div className={cn(
