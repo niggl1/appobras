@@ -7922,6 +7922,263 @@ export const appRouter = router({
           navegadores: navegadoresResult.map(n => ({ nome: n.navegador || "Desconhecido", quantidade: Number(n.count) })),
         };
       }),
+
+    // Exportar histórico de acessos para Excel
+    exportarHistoricoExcel: protectedProcedure
+      .input(z.object({
+        membroId: z.number(),
+        membroNome: z.string(),
+        dataInicio: z.string().optional(),
+        dataFim: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Construir condições
+        const conditions = [eq(membroAcessos.membroId, input.membroId)];
+        if (input.dataInicio) {
+          conditions.push(gte(membroAcessos.dataHora, new Date(input.dataInicio)));
+        }
+        if (input.dataFim) {
+          conditions.push(lte(membroAcessos.dataHora, new Date(input.dataFim)));
+        }
+        
+        // Buscar todos os acessos
+        const acessos = await db.select().from(membroAcessos)
+          .where(and(...conditions))
+          .orderBy(desc(membroAcessos.dataHora));
+        
+        // Gerar Excel usando ExcelJS
+        const ExcelJS = await import("exceljs");
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "App Manutenção";
+        workbook.created = new Date();
+        
+        const worksheet = workbook.addWorksheet("Histórico de Acessos");
+        
+        // Definir colunas
+        worksheet.columns = [
+          { header: "Data", key: "data", width: 12 },
+          { header: "Hora", key: "hora", width: 10 },
+          { header: "Tipo", key: "tipo", width: 18 },
+          { header: "Status", key: "status", width: 12 },
+          { header: "IP", key: "ip", width: 16 },
+          { header: "Dispositivo", key: "dispositivo", width: 12 },
+          { header: "Navegador", key: "navegador", width: 15 },
+          { header: "Sistema", key: "sistema", width: 12 },
+          { header: "Motivo Falha", key: "motivoFalha", width: 25 },
+        ];
+        
+        // Estilizar cabeçalho
+        worksheet.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
+        worksheet.getRow(1).fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFEA580C" }, // Laranja
+        };
+        worksheet.getRow(1).alignment = { horizontal: "center" };
+        
+        // Adicionar dados
+        acessos.forEach((acesso) => {
+          const dataHora = new Date(acesso.dataHora);
+          const row = worksheet.addRow({
+            data: dataHora.toLocaleDateString("pt-BR"),
+            hora: dataHora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+            tipo: acesso.tipoAcesso === "login" ? "Login" :
+                  acesso.tipoAcesso === "logout" ? "Logout" :
+                  acesso.tipoAcesso === "recuperacao_senha" ? "Recuperação de Senha" :
+                  acesso.tipoAcesso === "alteracao_senha" ? "Alteração de Senha" : "Login",
+            status: acesso.sucesso ? "Sucesso" : "Falha",
+            ip: acesso.ip || "-",
+            dispositivo: acesso.dispositivo || "Desktop",
+            navegador: acesso.navegador || "Desconhecido",
+            sistema: acesso.sistemaOperacional || "Desconhecido",
+            motivoFalha: acesso.motivoFalha || "-",
+          });
+          
+          // Colorir linha baseado no status
+          if (!acesso.sucesso) {
+            row.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFFEE2E2" }, // Vermelho claro
+            };
+          }
+        });
+        
+        // Adicionar bordas
+        worksheet.eachRow((row) => {
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        });
+        
+        // Gerar buffer
+        const buffer = await workbook.xlsx.writeBuffer();
+        const base64 = Buffer.from(buffer).toString("base64");
+        
+        return {
+          filename: `historico-acessos-${input.membroNome.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().split("T")[0]}.xlsx`,
+          data: base64,
+          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        };
+      }),
+
+    // Exportar histórico de acessos para PDF
+    exportarHistoricoPDF: protectedProcedure
+      .input(z.object({
+        membroId: z.number(),
+        membroNome: z.string(),
+        dataInicio: z.string().optional(),
+        dataFim: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Construir condições
+        const conditions = [eq(membroAcessos.membroId, input.membroId)];
+        if (input.dataInicio) {
+          conditions.push(gte(membroAcessos.dataHora, new Date(input.dataInicio)));
+        }
+        if (input.dataFim) {
+          conditions.push(lte(membroAcessos.dataHora, new Date(input.dataFim)));
+        }
+        
+        // Buscar todos os acessos
+        const acessos = await db.select().from(membroAcessos)
+          .where(and(...conditions))
+          .orderBy(desc(membroAcessos.dataHora));
+        
+        // Gerar PDF usando PDFKit
+        const PDFDocument = (await import("pdfkit")).default;
+        const doc = new PDFDocument({ margin: 50, size: "A4" });
+        
+        const chunks: Buffer[] = [];
+        doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+        
+        // Cabeçalho
+        doc.fontSize(20).fillColor("#EA580C").text("Histórico de Acessos", { align: "center" });
+        doc.moveDown(0.5);
+        doc.fontSize(14).fillColor("#374151").text(input.membroNome, { align: "center" });
+        doc.moveDown(0.3);
+        doc.fontSize(10).fillColor("#6B7280").text(
+          `Gerado em ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`,
+          { align: "center" }
+        );
+        doc.moveDown(1);
+        
+        // Linha separadora
+        doc.strokeColor("#EA580C").lineWidth(2)
+          .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+        doc.moveDown(1);
+        
+        // Estatísticas resumidas
+        const totalAcessos = acessos.length;
+        const acessosSucesso = acessos.filter(a => a.sucesso).length;
+        const acessosFalha = acessos.filter(a => !a.sucesso).length;
+        
+        doc.fontSize(11).fillColor("#374151");
+        doc.text(`Total de Acessos: ${totalAcessos}`, { continued: true });
+        doc.text(`   |   Sucesso: ${acessosSucesso}`, { continued: true });
+        doc.text(`   |   Falha: ${acessosFalha}`);
+        doc.moveDown(1);
+        
+        // Tabela de acessos
+        const tableTop = doc.y;
+        const colWidths = [70, 50, 90, 60, 90, 70, 65];
+        const headers = ["Data", "Hora", "Tipo", "Status", "IP", "Dispositivo", "Navegador"];
+        
+        // Cabeçalho da tabela
+        doc.fillColor("#EA580C").rect(50, tableTop, 495, 20).fill();
+        doc.fillColor("#FFFFFF").fontSize(9);
+        let x = 55;
+        headers.forEach((header, i) => {
+          doc.text(header, x, tableTop + 5, { width: colWidths[i], align: "left" });
+          x += colWidths[i];
+        });
+        
+        // Linhas da tabela
+        let y = tableTop + 25;
+        const maxRowsPerPage = 25;
+        let rowCount = 0;
+        
+        for (const acesso of acessos) {
+          if (rowCount >= maxRowsPerPage) {
+            doc.addPage();
+            y = 50;
+            rowCount = 0;
+            
+            // Repetir cabeçalho na nova página
+            doc.fillColor("#EA580C").rect(50, y, 495, 20).fill();
+            doc.fillColor("#FFFFFF").fontSize(9);
+            x = 55;
+            headers.forEach((header, i) => {
+              doc.text(header, x, y + 5, { width: colWidths[i], align: "left" });
+              x += colWidths[i];
+            });
+            y += 25;
+          }
+          
+          const dataHora = new Date(acesso.dataHora);
+          const rowData = [
+            dataHora.toLocaleDateString("pt-BR"),
+            dataHora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+            acesso.tipoAcesso === "login" ? "Login" :
+            acesso.tipoAcesso === "logout" ? "Logout" :
+            acesso.tipoAcesso === "recuperacao_senha" ? "Recup. Senha" :
+            acesso.tipoAcesso === "alteracao_senha" ? "Alt. Senha" : "Login",
+            acesso.sucesso ? "Sucesso" : "Falha",
+            acesso.ip || "-",
+            acesso.dispositivo || "Desktop",
+            acesso.navegador || "Desc.",
+          ];
+          
+          // Fundo alternado
+          if (rowCount % 2 === 0) {
+            doc.fillColor("#F9FAFB").rect(50, y - 3, 495, 18).fill();
+          }
+          
+          // Fundo vermelho para falhas
+          if (!acesso.sucesso) {
+            doc.fillColor("#FEE2E2").rect(50, y - 3, 495, 18).fill();
+          }
+          
+          doc.fillColor("#374151").fontSize(8);
+          x = 55;
+          rowData.forEach((data, i) => {
+            doc.text(data, x, y, { width: colWidths[i], align: "left" });
+            x += colWidths[i];
+          });
+          
+          y += 18;
+          rowCount++;
+        }
+        
+        // Rodapé
+        doc.fontSize(8).fillColor("#9CA3AF");
+        doc.text("App Manutenção - Sistema de Gestão de Manutenção", 50, 780, { align: "center" });
+        
+        doc.end();
+        
+        // Aguardar finalização
+        await new Promise<void>((resolve) => doc.on("end", resolve));
+        
+        const buffer = Buffer.concat(chunks);
+        const base64 = buffer.toString("base64");
+        
+        return {
+          filename: `historico-acessos-${input.membroNome.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().split("T")[0]}.pdf`,
+          data: base64,
+          mimeType: "application/pdf",
+        };
+      }),
   }),
 
   // ==================== LINKS COMPARTILHÁVEIS ====================

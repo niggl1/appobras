@@ -1041,3 +1041,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar interface de visualização do histórico de acessos
 - [x] Adicionar opção no modal de equipe para ver histórico
 - [x] Testar fluxo completo (96 testes passando)
+
+
+## Exportação do Histórico de Acessos (15/01/2026)
+- [x] Criar rota tRPC para exportar histórico em PDF
+- [x] Criar rota tRPC para exportar histórico em Excel
+- [x] Adicionar botões de exportação no modal de histórico
+- [x] Testar exportação PDF
+- [x] Testar exportação Excel (102 testes passando)

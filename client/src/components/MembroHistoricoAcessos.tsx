@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 import { 
   History, 
   Monitor, 
@@ -20,8 +21,10 @@ import {
   ChevronRight,
   Calendar,
   Clock,
-  MapPin,
-  Shield
+  Shield,
+  FileSpreadsheet,
+  FileText,
+  Download
 } from "lucide-react";
 
 interface MembroHistoricoAcessosProps {
@@ -41,12 +44,87 @@ export function MembroHistoricoAcessos({
 }: MembroHistoricoAcessosProps) {
   const [pagina, setPagina] = useState(1);
   const [filtroTipo, setFiltroTipo] = useState<string>("todos");
+  const [exportando, setExportando] = useState<"pdf" | "excel" | null>(null);
   const limite = 10;
 
   const { data, isLoading, refetch } = trpc.membroEquipe.historicoAcessos.useQuery(
     { membroId, limite, pagina },
     { enabled: open }
   );
+
+  const exportarExcelMutation = trpc.membroEquipe.exportarHistoricoExcel.useMutation({
+    onSuccess: (result) => {
+      // Criar blob e fazer download
+      const byteCharacters = atob(result.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: result.mimeType });
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = result.filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("Excel exportado com sucesso!");
+      setExportando(null);
+    },
+    onError: (error) => {
+      toast.error("Erro ao exportar Excel: " + error.message);
+      setExportando(null);
+    },
+  });
+
+  const exportarPDFMutation = trpc.membroEquipe.exportarHistoricoPDF.useMutation({
+    onSuccess: (result) => {
+      // Criar blob e fazer download
+      const byteCharacters = atob(result.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: result.mimeType });
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = result.filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("PDF exportado com sucesso!");
+      setExportando(null);
+    },
+    onError: (error) => {
+      toast.error("Erro ao exportar PDF: " + error.message);
+      setExportando(null);
+    },
+  });
+
+  const handleExportarExcel = () => {
+    setExportando("excel");
+    exportarExcelMutation.mutate({
+      membroId,
+      membroNome,
+    });
+  };
+
+  const handleExportarPDF = () => {
+    setExportando("pdf");
+    exportarPDFMutation.mutate({
+      membroId,
+      membroNome,
+    });
+  };
 
   const formatarData = (data: Date | string) => {
     const d = new Date(data);
@@ -73,21 +151,6 @@ export function MembroHistoricoAcessos({
         return <Tablet className="w-4 h-4" />;
       default:
         return <Monitor className="w-4 h-4" />;
-    }
-  };
-
-  const getTipoAcessoIcon = (tipo: string | null) => {
-    switch (tipo) {
-      case "login":
-        return <LogIn className="w-4 h-4" />;
-      case "logout":
-        return <LogOut className="w-4 h-4" />;
-      case "recuperacao_senha":
-        return <KeyRound className="w-4 h-4" />;
-      case "alteracao_senha":
-        return <Shield className="w-4 h-4" />;
-      default:
-        return <LogIn className="w-4 h-4" />;
     }
   };
 
@@ -135,29 +198,71 @@ export function MembroHistoricoAcessos({
           </DialogHeader>
         </div>
 
-        {/* Filtros */}
+        {/* Filtros e Exportação */}
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
-          <div className="flex items-center justify-between gap-4">
-            <Select value={filtroTipo} onValueChange={setFiltroTipo}>
-              <SelectTrigger className="w-48 h-9 rounded-lg">
-                <SelectValue placeholder="Filtrar por tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os acessos</SelectItem>
-                <SelectItem value="login">Apenas logins</SelectItem>
-                <SelectItem value="sucesso">Bem-sucedidos</SelectItem>
-                <SelectItem value="falha">Falhas</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => refetch()}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Atualizar
-            </Button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Select value={filtroTipo} onValueChange={setFiltroTipo}>
+                <SelectTrigger className="w-48 h-9 rounded-lg">
+                  <SelectValue placeholder="Filtrar por tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os acessos</SelectItem>
+                  <SelectItem value="login">Apenas logins</SelectItem>
+                  <SelectItem value="sucesso">Bem-sucedidos</SelectItem>
+                  <SelectItem value="falha">Falhas</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => refetch()}
+                className="text-blue-600"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Atualizar
+              </Button>
+            </div>
+            
+            {/* Botões de Exportação */}
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={handleExportarExcel}
+                disabled={exportando !== null || !data?.acessos?.length}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow-md"
+              >
+                {exportando === "excel" ? (
+                  <span className="flex items-center gap-1">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Exportando...
+                  </span>
+                ) : (
+                  <>
+                    <FileSpreadsheet className="w-4 h-4 mr-1" />
+                    Excel
+                  </>
+                )}
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleExportarPDF}
+                disabled={exportando !== null || !data?.acessos?.length}
+                className="bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg shadow-md"
+              >
+                {exportando === "pdf" ? (
+                  <span className="flex items-center gap-1">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Exportando...
+                  </span>
+                ) : (
+                  <>
+                    <FileText className="w-4 h-4 mr-1" />
+                    PDF
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 

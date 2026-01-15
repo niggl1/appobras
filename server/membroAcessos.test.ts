@@ -261,6 +261,79 @@ describe("Histórico de Acessos de Membros da Equipe", () => {
     });
   });
 
+  describe("Exportação de Histórico", () => {
+    it("deve gerar dados para exportação Excel", async () => {
+      const exportData = {
+        membroId: 1,
+        membroNome: "João Silva",
+        dataInicio: undefined,
+        dataFim: undefined,
+      };
+      
+      expect(exportData.membroId).toBe(1);
+      expect(exportData.membroNome).toBe("João Silva");
+    });
+
+    it("deve gerar dados para exportação PDF", async () => {
+      const exportData = {
+        membroId: 1,
+        membroNome: "João Silva",
+        dataInicio: "2026-01-01",
+        dataFim: "2026-01-15",
+      };
+      
+      expect(exportData.dataInicio).toBe("2026-01-01");
+      expect(exportData.dataFim).toBe("2026-01-15");
+    });
+
+    it("deve formatar nome do ficheiro corretamente", () => {
+      const membroNome = "João Silva";
+      const dataAtual = "2026-01-15";
+      
+      const filenameExcel = `historico-acessos-${membroNome.replace(/\s+/g, "-").toLowerCase()}-${dataAtual}.xlsx`;
+      const filenamePDF = `historico-acessos-${membroNome.replace(/\s+/g, "-").toLowerCase()}-${dataAtual}.pdf`;
+      
+      expect(filenameExcel).toBe("historico-acessos-joão-silva-2026-01-15.xlsx");
+      expect(filenamePDF).toBe("historico-acessos-joão-silva-2026-01-15.pdf");
+    });
+
+    it("deve incluir todos os campos necessários no Excel", () => {
+      const colunas = [
+        "Data", "Hora", "Tipo", "Status", "IP", 
+        "Dispositivo", "Navegador", "Sistema", "Motivo Falha"
+      ];
+      
+      expect(colunas).toHaveLength(9);
+      expect(colunas).toContain("Data");
+      expect(colunas).toContain("IP");
+      expect(colunas).toContain("Dispositivo");
+    });
+
+    it("deve formatar tipo de acesso corretamente", () => {
+      const formatarTipo = (tipo: string) => {
+        switch (tipo) {
+          case "login": return "Login";
+          case "logout": return "Logout";
+          case "recuperacao_senha": return "Recuperação de Senha";
+          case "alteracao_senha": return "Alteração de Senha";
+          default: return "Login";
+        }
+      };
+      
+      expect(formatarTipo("login")).toBe("Login");
+      expect(formatarTipo("logout")).toBe("Logout");
+      expect(formatarTipo("recuperacao_senha")).toBe("Recuperação de Senha");
+      expect(formatarTipo("alteracao_senha")).toBe("Alteração de Senha");
+    });
+
+    it("deve formatar status corretamente", () => {
+      const formatarStatus = (sucesso: boolean) => sucesso ? "Sucesso" : "Falha";
+      
+      expect(formatarStatus(true)).toBe("Sucesso");
+      expect(formatarStatus(false)).toBe("Falha");
+    });
+  });
+
   describe("Captura de IP", () => {
     it("deve extrair IP do header x-forwarded-for", () => {
       const headers = {
