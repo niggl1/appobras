@@ -30,7 +30,6 @@ import {
   ClipboardList,
   Loader2,
   Zap,
-  ArrowLeftRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -67,10 +66,6 @@ export const allQuickFunctions = [
   { id: "vencimentos", label: "Vencimentos", icon: CalendarClock, gradient: "from-rose-400 to-rose-600", path: "/dashboard/vencimentos" },
   // Funções Rápidas
   { id: "funcoes-simples", label: "Funções Rápidas", icon: Zap, gradient: "from-orange-500 to-amber-600", path: "/dashboard/funcoes-simples" },
-  { id: "vistoria-rapida", label: "Vistoria Rápida", icon: ClipboardCheck, gradient: "from-blue-500 to-cyan-600", path: "/dashboard/funcoes-simples?tipo=vistoria" },
-  { id: "manutencao-rapida", label: "Manutenção Rápida", icon: Wrench, gradient: "from-orange-500 to-red-600", path: "/dashboard/funcoes-simples?tipo=manutencao" },
-  { id: "ocorrencia-rapida", label: "Ocorrência Rápida", icon: AlertTriangle, gradient: "from-red-500 to-rose-600", path: "/dashboard/funcoes-simples?tipo=ocorrencia" },
-  { id: "antes-depois-rapido", label: "Antes/Depois Rápido", icon: ArrowLeftRight, gradient: "from-green-500 to-emerald-600", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
   { id: "checklist-rapido", label: "Checklist Rápido", icon: ListChecks, gradient: "from-purple-500 to-pink-600", path: "/dashboard/funcoes-simples?tipo=checklist" },
 ];
 
@@ -79,11 +74,11 @@ export const iconMap: Record<string, any> = {
   ListChecks, Wrench, AlertTriangle, ClipboardCheck, Megaphone, Vote, Bell,
   CalendarDays, Users, Car, ShoppingBag, Search, Camera, FileText, Shield,
   BookOpen, TrendingUp, Package, Video, CalendarClock, BellRing, ClipboardList,
-  Zap, ArrowLeftRight,
+  Zap,
 };
 
 const QUICK_FUNCTIONS_KEY = "dashboard-quick-functions";
-const DEFAULT_FUNCTIONS = ["checklists", "manutencoes", "ocorrencias", "vistorias", "ordens-servico", "vistoria-rapida", "manutencao-rapida", "ocorrencia-rapida", "antes-depois-rapido", "checklist-rapido"];
+const DEFAULT_FUNCTIONS = ["checklists", "manutencoes", "ocorrencias", "vistorias", "ordens-servico"];
 
 // Funções para compatibilidade com localStorage (fallback)
 export function getSelectedQuickFunctions(): string[] {
