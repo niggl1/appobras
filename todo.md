@@ -1011,3 +1011,14 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Ajustar modal de Equipe de Gestão que está cortado em cima e em baixo
 
 - [x] Melhorar visual do modal de Equipe para design premium
+
+
+## Sistema de Permissões por Membro da Equipe (15/01/2026)
+- [x] Atualizar schema com campos: email, senha, permissoes, acessoTotal
+- [x] Criar rotas de autenticação para membros da equipe
+- [x] Criar rotas de gestão de permissões
+- [x] Atualizar modal de cadastro de membros com opções de permissões
+- [x] Criar página de login para membros da equipe (/equipe/login)
+- [x] Implementar filtro de menu baseado em permissões
+- [x] Bloquear acesso a rotas não autorizadas
+- [x] Testar sistema completo de permissões

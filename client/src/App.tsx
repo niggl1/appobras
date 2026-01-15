@@ -42,6 +42,7 @@ import FuncionarioLogin from "./pages/FuncionarioLogin";
 import FuncionarioDashboard from "./pages/FuncionarioDashboard";
 import FuncionarioRecuperarSenha from "./pages/FuncionarioRecuperarSenha";
 import FuncionarioRedefinirSenha from "./pages/FuncionarioRedefinirSenha";
+import MembroLogin from "./pages/MembroLogin";
 import HistoricoAcessosPage from "./pages/HistoricoAcessosPage";
 import AppBuilder from "./pages/AppBuilder";
 import RelatorioBuilder from "./pages/RelatorioBuilder";
@@ -99,6 +100,9 @@ function Router() {
       <Route path="/morador/recuperar-senha" component={MoradorRecuperarSenha} />
       <Route path="/morador/redefinir-senha/:token" component={MoradorRedefinirSenha} />
       <Route path="/morador" component={MoradorDashboard} />
+      
+      {/* Portal do Membro da Equipe */}
+      <Route path="/equipe/login" component={MembroLogin} />
       
       {/* Portal do Funcionário */}
       <Route path="/funcionario/login" component={FuncionarioLogin} />

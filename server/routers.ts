@@ -7273,10 +7273,23 @@ export const appRouter = router({
         descricao: z.string().optional(),
         cargo: z.string().optional(),
         fotoUrl: z.string().optional(),
+        // Novos campos de permissões
+        email: z.string().email().optional(),
+        senha: z.string().min(6).optional(),
+        acessoTotal: z.boolean().optional(),
+        permissoes: z.array(z.string()).optional(),
       }))
       .mutation(async ({ input }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
+        
+        // Se tem email e senha, fazer hash da senha
+        let senhaHash = null;
+        if (input.email && input.senha) {
+          const bcrypt = await import("bcrypt");
+          senhaHash = await bcrypt.hash(input.senha, 10);
+        }
+        
         const result = await db.insert(membrosEquipe).values({
           condominioId: input.condominioId,
           nome: input.nome,
@@ -7284,6 +7297,10 @@ export const appRouter = router({
           descricao: input.descricao || null,
           cargo: input.cargo || null,
           fotoUrl: input.fotoUrl || null,
+          email: input.email || null,
+          senha: senhaHash,
+          acessoTotal: input.acessoTotal || false,
+          permissoes: input.permissoes || [],
         });
         return { id: result[0].insertId };
       }),
@@ -7296,12 +7313,32 @@ export const appRouter = router({
         descricao: z.string().optional(),
         cargo: z.string().optional(),
         fotoUrl: z.string().optional(),
+        // Novos campos de permissões
+        email: z.string().email().optional().nullable(),
+        senha: z.string().min(6).optional(),
+        acessoTotal: z.boolean().optional(),
+        permissoes: z.array(z.string()).optional(),
       }))
       .mutation(async ({ input }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
-        const { id, ...data } = input;
-        await db.update(membrosEquipe).set(data).where(eq(membrosEquipe.id, id));
+        const { id, senha, permissoes, ...data } = input;
+        
+        // Preparar dados para atualização
+        const updateData: any = { ...data };
+        
+        // Se tem nova senha, fazer hash
+        if (senha) {
+          const bcrypt = await import("bcrypt");
+          updateData.senha = await bcrypt.hash(senha, 10);
+        }
+        
+        // Converter permissões para JSON string
+        if (permissoes !== undefined) {
+          updateData.permissoes = permissoes;
+        }
+        
+        await db.update(membrosEquipe).set(updateData).where(eq(membrosEquipe.id, id));
         return { success: true };
       }),
 
@@ -7312,6 +7349,181 @@ export const appRouter = router({
         if (!db) throw new Error("Database not available");
         await db.update(membrosEquipe).set({ ativo: false }).where(eq(membrosEquipe.id, input.id));
         return { success: true };
+      }),
+
+    // Login de membro da equipe
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        senha: z.string().min(1),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar membro pelo email
+        const result = await db.select().from(membrosEquipe)
+          .where(and(
+            eq(membrosEquipe.email, input.email),
+            eq(membrosEquipe.ativo, true)
+          ))
+          .limit(1);
+        
+        if (!result[0]) {
+          throw new Error("Email ou senha inválidos");
+        }
+        
+        const membro = result[0];
+        
+        // Verificar se tem senha cadastrada
+        if (!membro.senha) {
+          throw new Error("Este membro não possui acesso ao sistema");
+        }
+        
+        // Verificar senha
+        const bcrypt = await import("bcrypt");
+        const senhaValida = await bcrypt.compare(input.senha, membro.senha);
+        
+        if (!senhaValida) {
+          throw new Error("Email ou senha inválidos");
+        }
+        
+        // Atualizar último acesso
+        await db.update(membrosEquipe)
+          .set({ ultimoAcesso: new Date() })
+          .where(eq(membrosEquipe.id, membro.id));
+        
+        // Gerar token JWT para o membro
+        const jwt = await import("jsonwebtoken");
+        const token = jwt.default.sign(
+          { 
+            membroId: membro.id, 
+            condominioId: membro.condominioId,
+            nome: membro.nome,
+            acessoTotal: membro.acessoTotal,
+            permissoes: membro.permissoes || [],
+            tipo: "membro_equipe"
+          },
+          process.env.JWT_SECRET || "secret",
+          { expiresIn: "7d" }
+        );
+        
+        // Setar cookie
+        ctx.res.cookie("membro_token", token, {
+          ...getSessionCookieOptions(ctx.req),
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+        });
+        
+        return { 
+          success: true, 
+          membro: {
+            id: membro.id,
+            nome: membro.nome,
+            cargo: membro.cargo,
+            fotoUrl: membro.fotoUrl,
+            condominioId: membro.condominioId,
+            acessoTotal: membro.acessoTotal,
+            permissoes: membro.permissoes ? (typeof membro.permissoes === 'string' ? JSON.parse(membro.permissoes) : membro.permissoes) : [],
+          }
+        };
+      }),
+
+    // Logout de membro da equipe
+    logout: publicProcedure
+      .mutation(async ({ ctx }) => {
+        ctx.res.clearCookie("membro_token", getSessionCookieOptions(ctx.req));
+        return { success: true };
+      }),
+
+    // Verificar sessão do membro
+    me: publicProcedure
+      .query(async ({ ctx }) => {
+        const token = ctx.req.cookies?.membro_token;
+        if (!token) return null;
+        
+        try {
+          const jwt = await import("jsonwebtoken");
+          const decoded = jwt.default.verify(token, process.env.JWT_SECRET || "secret") as any;
+          
+          if (decoded.tipo !== "membro_equipe") return null;
+          
+          const db = await getDb();
+          if (!db) return null;
+          
+          const result = await db.select().from(membrosEquipe)
+            .where(and(
+              eq(membrosEquipe.id, decoded.membroId),
+              eq(membrosEquipe.ativo, true)
+            ))
+            .limit(1);
+          
+          if (!result[0]) return null;
+          
+          const membro = result[0];
+          return {
+            id: membro.id,
+            nome: membro.nome,
+            cargo: membro.cargo,
+            fotoUrl: membro.fotoUrl,
+            condominioId: membro.condominioId,
+            acessoTotal: membro.acessoTotal,
+            permissoes: membro.permissoes ? (typeof membro.permissoes === 'string' ? JSON.parse(membro.permissoes) : membro.permissoes) : [],
+            tipo: "membro_equipe",
+          };
+        } catch {
+          return null;
+        }
+      }),
+
+    // Atualizar permissões de um membro
+    updatePermissoes: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        acessoTotal: z.boolean(),
+        permissoes: z.array(z.string()),
+        email: z.string().email().optional().nullable(),
+        senha: z.string().min(6).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const updateData: any = {
+          acessoTotal: input.acessoTotal,
+          permissoes: JSON.stringify(input.permissoes),
+          email: input.email || null,
+        };
+        
+        // Se forneceu nova senha, fazer hash
+        if (input.senha) {
+          const bcrypt = await import("bcrypt");
+          updateData.senha = await bcrypt.hash(input.senha, 10);
+        }
+        
+        await db.update(membrosEquipe).set(updateData).where(eq(membrosEquipe.id, input.id));
+        return { success: true };
+      }),
+
+    // Listar módulos disponíveis para permissões
+    modulosDisponiveis: publicProcedure
+      .query(() => {
+        return [
+          { id: "vistorias", nome: "Vistorias Completas", descricao: "Criar e gerenciar vistorias completas" },
+          { id: "vistorias_rapidas", nome: "Vistorias Rápidas", descricao: "Criar vistorias rápidas" },
+          { id: "manutencoes", nome: "Manutenções Completas", descricao: "Criar e gerenciar manutenções completas" },
+          { id: "manutencoes_rapidas", nome: "Manutenções Rápidas", descricao: "Criar manutenções rápidas" },
+          { id: "ocorrencias", nome: "Ocorrências Completas", descricao: "Criar e gerenciar ocorrências completas" },
+          { id: "ocorrencias_rapidas", nome: "Ocorrências Rápidas", descricao: "Criar ocorrências rápidas" },
+          { id: "checklists", nome: "Checklists Completos", descricao: "Criar e gerenciar checklists" },
+          { id: "checklists_rapidos", nome: "Checklists Rápidos", descricao: "Criar checklists rápidos" },
+          { id: "antes_depois", nome: "Antes e Depois Completo", descricao: "Criar registros antes/depois" },
+          { id: "antes_depois_rapido", nome: "Antes/Depois Rápido", descricao: "Criar registros antes/depois rápidos" },
+          { id: "ordens_servico", nome: "Ordens de Serviço", descricao: "Criar e gerenciar ordens de serviço" },
+          { id: "agenda_vencimentos", nome: "Agenda de Vencimentos", descricao: "Gerenciar agenda de vencimentos" },
+          { id: "historico", nome: "Histórico Geral", descricao: "Visualizar histórico de atividades" },
+          { id: "gestao_organizacao", nome: "Gestão da Organização", descricao: "Configurar dados da organização" },
+          { id: "equipe_gestao", nome: "Equipe de Gestão", descricao: "Gerenciar membros da equipe" },
+        ];
       }),
   }),
 

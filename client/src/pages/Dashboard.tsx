@@ -222,6 +222,9 @@ export default function Dashboard() {
   const currentSection = params.section || "overview";
   const { data: condominios } = trpc.condominio.list.useQuery();
   
+  // Verificar se é membro da equipe logado
+  const { data: membroLogado } = trpc.membroEquipe.me.useQuery();
+  
   // Buscar funções habilitadas para a organização do usuário
   const condominioId = condominios?.[0]?.id;
   const { data: funcoesHabilitadas } = trpc.funcoesCondominio.listarHabilitadas.useQuery(
@@ -229,10 +232,15 @@ export default function Dashboard() {
     { enabled: !!condominioId }
   );
   
-  // Filtrar menu baseado nas funções habilitadas
+  // Filtrar menu baseado nas funções habilitadas e permissões do membro
   const menuSectionsFiltrado = useMemo(() => {
     // Se não há condomínio ou funções carregadas, mostrar tudo
     if (!condominioId || !funcoesHabilitadas) return menuSections;
+    
+    // Se é membro da equipe com permissões limitadas, filtrar por permissões
+    const permissoesMembro = membroLogado?.permissoes || [];
+    const temAcessoTotal = membroLogado?.acessoTotal || false;
+    const isMembro = !!membroLogado;
     
     return menuSections.map(section => ({
       ...section,
@@ -243,6 +251,16 @@ export default function Dashboard() {
         if (item.funcaoId.includes('-rapida') || item.funcaoId.includes('-rapido')) return true;
         // Histórico sempre visível
         if (item.funcaoId === 'historico') return true;
+        
+        // Se é membro da equipe
+        if (isMembro) {
+          // Se tem acesso total, mostrar tudo
+          if (temAcessoTotal) return funcoesHabilitadas.includes(item.funcaoId);
+          // Senão, verificar permissões específicas
+          const moduloPermissao = item.funcaoId.replace('-completa', '').replace('-completo', '');
+          return permissoesMembro.includes(moduloPermissao) && funcoesHabilitadas.includes(item.funcaoId);
+        }
+        
         // Verificar se a função está habilitada
         return funcoesHabilitadas.includes(item.funcaoId);
       })
@@ -250,7 +268,7 @@ export default function Dashboard() {
       // Manter seções que têm path (como Visão Geral) ou que ainda têm itens
       return section.path || section.items.length > 0;
     });
-  }, [condominioId, funcoesHabilitadas]);
+  }, [condominioId, funcoesHabilitadas, membroLogado]);
   
   // Estado para controlar seções expandidas
   const [expandedSections, setExpandedSections] = useState<string[]>(() => {

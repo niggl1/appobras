@@ -1094,6 +1094,16 @@ export const membrosEquipe = mysqlTable("membros_equipe", {
   descricao: text("descricao"),
   cargo: varchar("cargo", { length: 100 }),
   fotoUrl: text("fotoUrl"),
+  // Campos para login e permissões
+  email: varchar("email", { length: 320 }),
+  senha: varchar("senha", { length: 255 }),
+  acessoTotal: boolean("acessoTotal").default(false).notNull(),
+  // JSON com lista de módulos permitidos: ["vistorias", "manutencoes", "ocorrencias", "checklists", "antes_depois", "ordens_servico", "agenda_vencimentos", "historico", "gestao_organizacao", "equipe_gestao"]
+  permissoes: json("permissoes").$type<string[]>().default([]),
+  // Token para reset de senha
+  resetToken: varchar("resetToken", { length: 64 }),
+  resetTokenExpira: timestamp("resetTokenExpira"),
+  ultimoAcesso: timestamp("ultimoAcesso"),
   ativo: boolean("ativo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
