@@ -111,7 +111,8 @@ import {
   inscricoesRevista,
   tarefasSimples,
   statusPersonalizados,
-  camposRapidosTemplates
+  camposRapidosTemplates,
+  adminLogs
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -14120,6 +14121,10 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         const db = await getDb();
         if (!db) throw new Error("Database not available");
         
+        // Buscar dados anteriores do usuário
+        const [usuarioAnterior] = await db.select().from(users).where(eq(users.id, input.id)).limit(1);
+        if (!usuarioAnterior) throw new Error("Usuário não encontrado");
+        
         const { id, ...updateData } = input;
         
         // Remover campos undefined
@@ -14132,6 +14137,28 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         }
         
         await db.update(users).set(cleanData).where(eq(users.id, id));
+        
+        // Registrar log de atividade
+        const detalhes = {
+          antes: {
+            role: usuarioAnterior.role,
+            tipoConta: usuarioAnterior.tipoConta,
+            name: usuarioAnterior.name,
+            phone: usuarioAnterior.phone,
+          },
+          depois: cleanData,
+        };
+        
+        await db.insert(adminLogs).values({
+          adminId: ctx.user.id,
+          adminNome: ctx.user.name || 'Admin',
+          adminEmail: ctx.user.email || '',
+          acao: 'editar',
+          entidade: 'usuario',
+          entidadeId: id,
+          entidadeNome: usuarioAnterior.name || usuarioAnterior.email || `ID: ${id}`,
+          detalhes: JSON.stringify(detalhes),
+        });
         
         return { success: true, message: "Usuário atualizado com sucesso" };
       }),
@@ -14158,6 +14185,29 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           .limit(1);
         
         if (!usuario) throw new Error("Usuário não encontrado");
+        
+        // Registrar log de atividade ANTES de excluir
+        const detalhes = {
+          usuarioExcluido: {
+            id: usuario.id,
+            name: usuario.name,
+            email: usuario.email,
+            role: usuario.role,
+            tipoConta: usuario.tipoConta,
+            createdAt: usuario.createdAt,
+          },
+        };
+        
+        await db.insert(adminLogs).values({
+          adminId: ctx.user.id,
+          adminNome: ctx.user.name || 'Admin',
+          adminEmail: ctx.user.email || '',
+          acao: 'excluir',
+          entidade: 'usuario',
+          entidadeId: input.id,
+          entidadeNome: usuario.name || usuario.email || `ID: ${input.id}`,
+          detalhes: JSON.stringify(detalhes),
+        });
         
         // Excluir usuário
         await db.delete(users).where(eq(users.id, input.id));
@@ -14261,6 +14311,76 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           ativos30dias,
           novos30dias,
           porMes,
+        };
+      }),
+
+    // Listar logs de atividades administrativas
+    listarLogs: protectedProcedure
+      .input(z.object({
+        page: z.number().default(1),
+        limit: z.number().default(20),
+        acao: z.enum(["criar", "editar", "excluir", "ativar", "desativar", "promover", "rebaixar"]).optional(),
+        entidade: z.enum(["usuario", "condominio", "vistoria", "manutencao", "ordem_servico", "funcao", "configuracao"]).optional(),
+        adminId: z.number().optional(),
+        dataInicio: z.date().optional(),
+        dataFim: z.date().optional(),
+      }))
+      .query(async ({ input, ctx }) => {
+        if (ctx.user?.role !== 'admin') {
+          throw new Error("Apenas administradores podem acessar esta função");
+        }
+        
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const conditions = [];
+        
+        if (input.acao) {
+          conditions.push(eq(adminLogs.acao, input.acao));
+        }
+        
+        if (input.entidade) {
+          conditions.push(eq(adminLogs.entidade, input.entidade));
+        }
+        
+        if (input.adminId) {
+          conditions.push(eq(adminLogs.adminId, input.adminId));
+        }
+        
+        if (input.dataInicio) {
+          conditions.push(gte(adminLogs.createdAt, input.dataInicio));
+        }
+        
+        if (input.dataFim) {
+          conditions.push(lte(adminLogs.createdAt, input.dataFim));
+        }
+        
+        // Contar total
+        const totalResult = await db.select({ count: sql<number>`count(*)` })
+          .from(adminLogs)
+          .where(conditions.length > 0 ? and(...conditions) : undefined);
+        
+        const total = Number(totalResult[0]?.count || 0);
+        
+        // Buscar logs com paginação
+        const offset = (input.page - 1) * input.limit;
+        
+        let query = db.select().from(adminLogs);
+        
+        if (conditions.length > 0) {
+          query = query.where(and(...conditions)) as typeof query;
+        }
+        
+        const logs = await query
+          .orderBy(desc(adminLogs.createdAt))
+          .limit(input.limit)
+          .offset(offset);
+        
+        return {
+          logs,
+          total,
+          page: input.page,
+          totalPages: Math.ceil(total / input.limit),
         };
       }),
   }),

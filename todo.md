@@ -814,3 +814,26 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Remover arquivo DashboardLayout.tsx
 - [x] Remover arquivo DashboardLayoutSkeleton.tsx
 - [x] Atualizar FuncoesRapidasGrid.tsx para importar de QuickFunctionsEditor
+
+
+## Fase 57: Log de Atividades de Admin
+### Backend
+- [ ] Criar tabela admin_logs no schema.ts
+- [ ] Criar rotas tRPC para registrar e listar logs
+- [ ] Integrar registro de log nas ações de editar e excluir usuários
+
+### Frontend
+- [ ] Criar aba/seção de logs na página AdminUsuarios
+- [ ] Exibir histórico de ações com filtros
+
+## Fase 60: Sistema de Logs de Auditoria
+- [x] Criar tabela admin_logs no schema.ts
+- [x] Executar migração do banco de dados (pnpm db:push)
+- [x] Importar adminLogs no routers.ts
+- [x] Adicionar registro de log na rota de atualizar usuário
+- [x] Adicionar registro de log na rota de excluir usuário
+- [x] Criar rota listarLogs para consultar histórico de atividades
+- [x] Criar página AdminLogs.tsx com interface de visualização
+- [x] Adicionar link "Logs de Auditoria" no menu de administração
+- [x] Adicionar rota /admin/logs no App.tsx
+- [x] Corrigir erros de TypeScript no AdminLogs.tsx

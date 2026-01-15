@@ -2146,3 +2146,35 @@ export const appAcessosLog = mysqlTable("app_acessos_log", {
 
 export type AppAcessoLog = typeof appAcessosLog.$inferSelect;
 export type InsertAppAcessoLog = typeof appAcessosLog.$inferInsert;
+
+
+// ==================== ADMIN LOGS ====================
+// Log de atividades administrativas (auditoria)
+export const adminLogs = mysqlTable("admin_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  
+  // Quem realizou a ação
+  adminId: int("adminId").references(() => users.id).notNull(),
+  adminNome: varchar("adminNome", { length: 255 }),
+  adminEmail: varchar("adminEmail", { length: 320 }),
+  
+  // Tipo de ação
+  acao: mysqlEnum("acao", ["criar", "editar", "excluir", "ativar", "desativar", "promover", "rebaixar"]).notNull(),
+  
+  // Entidade afetada
+  entidade: mysqlEnum("entidade", ["usuario", "condominio", "vistoria", "manutencao", "ordem_servico", "funcao", "configuracao"]).notNull(),
+  entidadeId: int("entidadeId"),
+  entidadeNome: varchar("entidadeNome", { length: 255 }),
+  
+  // Detalhes da alteração (JSON com antes/depois)
+  detalhes: text("detalhes"),
+  
+  // Informações da sessão
+  ip: varchar("ip", { length: 45 }),
+  userAgent: text("userAgent"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type InsertAdminLog = typeof adminLogs.$inferInsert;

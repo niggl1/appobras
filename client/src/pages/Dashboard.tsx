@@ -131,6 +131,7 @@ import AgendaVencimentos from "./AgendaVencimentos";
 import OrdemServicoDetalhe from "./OrdemServicoDetalhe";
 import OrdensServicoConfig from "./OrdensServicoConfig";
 import AdminUsuarios from "./AdminUsuarios";
+import AdminLogs from "./AdminLogs";
 
 // Estrutura do menu otimizada para gestão de manutenção
 // Cada item tem um funcaoId que mapeia para as funções do admin
@@ -709,6 +710,12 @@ export default function Dashboard() {
                     <span className="text-sm font-medium">Admin Funções</span>
                   </button>
                 </Link>
+                <Link href="/admin/logs">
+                  <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+                    <History className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm font-medium">Logs de Auditoria</span>
+                  </button>
+                </Link>
               </div>
             )}
           </nav>
@@ -854,6 +861,7 @@ export default function Dashboard() {
           {currentSection === "ordens-servico-config" && <OrdensServicoConfig />}
           {currentSection?.startsWith("ordem-servico/") && <OrdemServicoDetalhe />}
           {currentSection === "admin-usuarios" && <AdminUsuarios />}
+          {currentSection === "admin-logs" && <AdminLogs />}
         </div>
       </main>
 
