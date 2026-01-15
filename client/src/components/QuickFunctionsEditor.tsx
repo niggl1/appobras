@@ -31,7 +31,6 @@ import {
   Loader2,
   Zap,
   ArrowLeftRight,
-  FlaskConical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -73,8 +72,6 @@ export const allQuickFunctions = [
   { id: "ocorrencia-rapida", label: "Ocorrência Rápida", icon: AlertTriangle, gradient: "from-red-500 to-rose-600", path: "/dashboard/funcoes-simples?tipo=ocorrencia" },
   { id: "antes-depois-rapido", label: "Antes/Depois Rápido", icon: ArrowLeftRight, gradient: "from-green-500 to-emerald-600", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
   { id: "checklist-rapido", label: "Checklist Rápido", icon: ListChecks, gradient: "from-purple-500 to-pink-600", path: "/dashboard/funcoes-simples?tipo=checklist" },
-  // Teste
-  { id: "teste", label: "Teste", icon: FlaskConical, gradient: "from-gray-500 to-slate-600", path: "/dashboard/teste" },
 ];
 
 // Mapa de ícones para uso externo
@@ -82,11 +79,11 @@ export const iconMap: Record<string, any> = {
   ListChecks, Wrench, AlertTriangle, ClipboardCheck, Megaphone, Vote, Bell,
   CalendarDays, Users, Car, ShoppingBag, Search, Camera, FileText, Shield,
   BookOpen, TrendingUp, Package, Video, CalendarClock, BellRing, ClipboardList,
-  Zap, ArrowLeftRight, FlaskConical,
+  Zap, ArrowLeftRight,
 };
 
 const QUICK_FUNCTIONS_KEY = "dashboard-quick-functions";
-const DEFAULT_FUNCTIONS = ["checklists", "manutencoes", "ocorrencias", "vistorias", "ordens-servico"];
+const DEFAULT_FUNCTIONS = ["checklists", "manutencoes", "ocorrencias", "vistorias", "ordens-servico", "checklist-rapido"];
 
 // Funções para compatibilidade com localStorage (fallback)
 export function getSelectedQuickFunctions(): string[] {
