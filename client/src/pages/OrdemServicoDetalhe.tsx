@@ -607,7 +607,8 @@ export default function OrdemServicoDetalhe() {
     );
   }
 
-  // Calcular progressodem.status?.icone ? getIconComponent(ordem.status.icone) : Circle;
+  // Calcular progresso e ícones
+  const StatusIcon = ordem.status?.icone ? getIconComponent(ordem.status.icone) : Circle;
   const CategoriaIcon = ordem.categoria?.icone ? getIconComponent(ordem.categoria.icone) : Tag;
   const PrioridadeIcon = ordem.prioridade?.icone ? getIconComponent(ordem.prioridade.icone) : Flag;
 

@@ -795,3 +795,16 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [ ] Migrar páginas para serem renderizadas dentro do Dashboard.tsx
 - [ ] Remover DashboardLayout.tsx (ou manter apenas para casos específicos)
 - [ ] Testar todas as páginas afetadas
+
+
+### Conclusão Fase 55
+- [x] Todas as 9 páginas migradas com sucesso para o menu unificado do Dashboard.tsx
+- [x] OrdensServico.tsx
+- [x] AgendaVencimentos.tsx
+- [x] HistoricoAcessosPage.tsx
+- [x] HistoricoInfracoesPage.tsx
+- [x] HistoricoTarefasSimples.tsx
+- [x] NotificarMoradorPage.tsx
+- [x] OrdemServicoDetalhe.tsx
+- [x] OrdensServicoConfig.tsx
+- [x] AdminUsuarios.tsx
