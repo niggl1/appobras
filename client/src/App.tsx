@@ -110,7 +110,7 @@ function Router() {
       <Route path="/perfil" component={Perfil} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard/notificacoes" component={Notificacoes} />
-      <Route path="/dashboard/vencimentos" component={AgendaVencimentos} />
+      <Route path="/dashboard/vencimentos">{() => { window.location.href = '/dashboard/agenda-vencimentos'; return null; }}</Route>
       <Route path="/dashboard/notificar-morador" component={NotificarMoradorPage} />
       <Route path="/dashboard/historico-infracoes" component={HistoricoInfracoesPage} />
       <Route path="/admin/funcoes" component={AdminFuncoes} />
@@ -118,7 +118,7 @@ function Router() {
       <Route path="/dashboard/historico-acessos" component={HistoricoAcessosPage} />
       <Route path="/dashboard/apps/novo" component={AppBuilder} />
       <Route path="/dashboard/relatorios/novo" component={RelatorioBuilder} />
-      <Route path="/dashboard/ordens-servico" component={OrdensServico} />
+      {/* Rota de ordens-servico agora usa o Dashboard.tsx */}
       <Route path="/dashboard/ordens-servico/configuracoes" component={OrdensServicoConfig} />
       <Route path="/dashboard/ordens-servico/:id" component={OrdemServicoDetalhe} />
       <Route path="/dashboard/criar-projeto" component={CriarProjeto} />

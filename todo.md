@@ -781,13 +781,13 @@
 Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.tsx (menu do síndico).
 
 ### Páginas que usam DashboardLayout (9 páginas)
-- [ ] AgendaVencimentos.tsx
+- [x] AgendaVencimentos.tsx (migrada)
 - [ ] HistoricoAcessosPage.tsx
 - [ ] HistoricoInfracoesPage.tsx
 - [ ] HistoricoTarefasSimples.tsx
 - [ ] NotificarMoradorPage.tsx
 - [ ] OrdemServicoDetalhe.tsx
-- [ ] OrdensServico.tsx
+- [x] OrdensServico.tsx (migrada)
 - [ ] OrdensServicoConfig.tsx
 - [ ] AdminUsuarios.tsx
 

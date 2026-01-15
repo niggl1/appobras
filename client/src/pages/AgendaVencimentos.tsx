@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
-import DashboardLayout from "@/components/DashboardLayout";
+// DashboardLayout removido - agora usa o menu do Dashboard.tsx
 import CalendarioVencimentos from "@/components/CalendarioVencimentos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1455,28 +1455,23 @@ export default function AgendaVencimentos() {
 
   if (condominiosLoading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   if (!condominioId) {
     return (
-      <DashboardLayout>
-        <div className="text-center py-20">
-          <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-semibold mb-2">Nenhuma organização encontrado</h2>
-          <p className="text-muted-foreground">Crie uma organização primeiro para usar a Agenda de Vencimentos.</p>
-        </div>
-      </DashboardLayout>
+      <div className="text-center py-20">
+        <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+        <h2 className="text-xl font-semibold mb-2">Nenhuma organização encontrado</h2>
+        <p className="text-muted-foreground">Crie uma organização primeiro para usar a Agenda de Vencimentos.</p>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
@@ -1697,6 +1692,5 @@ export default function AgendaVencimentos() {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>
   );
 }

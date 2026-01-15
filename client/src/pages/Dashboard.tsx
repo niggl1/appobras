@@ -123,6 +123,8 @@ import FuncoesRapidas from "@/components/FuncoesRapidas";
 import FuncoesRapidasGrid from "@/components/FuncoesRapidasGrid";
 import QuickFunctionsEditor, { getSelectedQuickFunctions, allQuickFunctions, CORES_FUNCOES_RAPIDAS } from "@/components/QuickFunctionsEditor";
 import AssistenteCriacao from "@/components/AssistenteCriacao";
+import OrdensServico from "./OrdensServico";
+import AgendaVencimentos from "./AgendaVencimentos";
 
 // Estrutura do menu otimizada para gestão de manutenção
 // Cada item tem um funcaoId que mapeia para as funções do admin
@@ -837,6 +839,8 @@ export default function Dashboard() {
           {currentSection === "relatorios" && condominios?.[0] && <RelatoriosPage condominioId={condominios[0].id} />}
           {currentSection === "equipe" && condominios?.[0] && <MembrosEquipePage condominioId={condominios[0].id} />}
           {currentSection === "configuracoes" && <ConfiguracoesSection />}
+          {currentSection === "ordens-servico" && <OrdensServico />}
+          {currentSection === "agenda-vencimentos" && <AgendaVencimentos />}
         </div>
       </main>
 
