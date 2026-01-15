@@ -951,3 +951,8 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Implementar busca por protocolo, nome, descrição, tipo, status
 - [x] Implementar filtro por intervalo de datas (de tal a tal data)
 - [x] Colocar item em destaque no menu Operacional/Manutenção
+
+## Melhoria: Expandir Lista de Tipos no Histórico (15/01/2026)
+- [x] Adicionar todas as funções completas ao filtro de tipos
+- [x] Adicionar todas as funções rápidas ao filtro de tipos
+- [x] Adicionar Ordem de Serviço ao filtro de tipos

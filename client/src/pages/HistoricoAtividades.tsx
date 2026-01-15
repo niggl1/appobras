@@ -43,11 +43,21 @@ interface HistoricoAtividadesPageProps {
 
 // Mapeamento de tipos para ícones e cores
 const tipoConfig: Record<string, { icon: any; cor: string; bgCor: string; label: string }> = {
+  // Funções Completas
   vistoria: { icon: ClipboardCheck, cor: "text-blue-600", bgCor: "bg-blue-100 dark:bg-blue-900/50", label: "Vistoria Completa" },
   manutencao: { icon: Wrench, cor: "text-green-600", bgCor: "bg-green-100 dark:bg-green-900/50", label: "Manutenção Completa" },
   ocorrencia: { icon: AlertTriangle, cor: "text-yellow-600", bgCor: "bg-yellow-100 dark:bg-yellow-900/50", label: "Ocorrência Completa" },
-  ordem_servico: { icon: ClipboardList, cor: "text-purple-600", bgCor: "bg-purple-100 dark:bg-purple-900/50", label: "Ordem de Serviço" },
   checklist: { icon: ListChecks, cor: "text-indigo-600", bgCor: "bg-indigo-100 dark:bg-indigo-900/50", label: "Checklist Completo" },
+  antes_depois: { icon: ArrowLeftRight, cor: "text-pink-600", bgCor: "bg-pink-100 dark:bg-pink-900/50", label: "Antes e Depois Completo" },
+  // Funções Rápidas
+  vistoria_rapida: { icon: Zap, cor: "text-blue-500", bgCor: "bg-blue-50 dark:bg-blue-900/30", label: "Vistoria Rápida" },
+  manutencao_rapida: { icon: Zap, cor: "text-green-500", bgCor: "bg-green-50 dark:bg-green-900/30", label: "Manutenção Rápida" },
+  ocorrencia_rapida: { icon: Zap, cor: "text-yellow-500", bgCor: "bg-yellow-50 dark:bg-yellow-900/30", label: "Ocorrência Rápida" },
+  checklist_rapido: { icon: Zap, cor: "text-indigo-500", bgCor: "bg-indigo-50 dark:bg-indigo-900/30", label: "Checklist Rápido" },
+  antes_depois_rapido: { icon: Zap, cor: "text-pink-500", bgCor: "bg-pink-50 dark:bg-pink-900/30", label: "Antes/Depois Rápido" },
+  // Ordem de Serviço
+  ordem_servico: { icon: ClipboardList, cor: "text-purple-600", bgCor: "bg-purple-100 dark:bg-purple-900/50", label: "Ordem de Serviço" },
+  // Legacy - para compatibilidade
   tarefa_simples: { icon: Zap, cor: "text-orange-600", bgCor: "bg-orange-100 dark:bg-orange-900/50", label: "Função Rápida" },
 };
 
@@ -256,12 +266,20 @@ export default function HistoricoAtividadesPage({ condominioId }: HistoricoAtivi
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos os tipos</SelectItem>
+                    {/* Funções Completas */}
                     <SelectItem value="vistoria">Vistoria Completa</SelectItem>
                     <SelectItem value="manutencao">Manutenção Completa</SelectItem>
                     <SelectItem value="ocorrencia">Ocorrência Completa</SelectItem>
-                    <SelectItem value="ordem_servico">Ordem de Serviço</SelectItem>
                     <SelectItem value="checklist">Checklist Completo</SelectItem>
-                    <SelectItem value="tarefa_simples">Funções Rápidas</SelectItem>
+                    <SelectItem value="antes_depois">Antes e Depois Completo</SelectItem>
+                    {/* Funções Rápidas */}
+                    <SelectItem value="vistoria_rapida">Vistoria Rápida</SelectItem>
+                    <SelectItem value="manutencao_rapida">Manutenção Rápida</SelectItem>
+                    <SelectItem value="ocorrencia_rapida">Ocorrência Rápida</SelectItem>
+                    <SelectItem value="checklist_rapido">Checklist Rápido</SelectItem>
+                    <SelectItem value="antes_depois_rapido">Antes/Depois Rápido</SelectItem>
+                    {/* Ordem de Serviço */}
+                    <SelectItem value="ordem_servico">Ordem de Serviço</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
