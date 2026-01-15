@@ -654,3 +654,21 @@
 - [ ] Incluir todas as colunas relevantes
 - [ ] Adicionar botão de exportação na interface
 
+
+
+## Fase 49: Sistema de Email - Zoho SMTP
+- [ ] Criar serviço de email com Zoho SMTP
+- [ ] Integrar envio de email no processamento de alertas de vencimento
+- [ ] Configurar credenciais do Zoho (SMTP_USER, SMTP_PASSWORD)
+- [ ] Testar envio de emails de alerta
+
+
+## Fase 49: Sistema de Email - Resend API
+- [x] Instalar SDK do Resend
+- [x] Criar serviço de email com Resend
+- [x] Testar conexão com Resend API
+- [x] Verificar domínio appmanutencao.com.br no Resend
+- [x] Enviar email de teste com sucesso
+- [x] Integrar Resend no processamento de alertas de vencimento
+- [x] Remover código SMTP/Zoho desnecessário
+- [x] Testar envio de alerta de vencimento real
