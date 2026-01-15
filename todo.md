@@ -973,3 +973,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Alterar "Antes e Depois" para "Antes e Depois Completa"
 - [x] Alterar "Ocorrências" para "Ocorrências Completas"
 - [x] Alterar "Vistorias" para "Vistorias Completas"
+
+
+## Ajuste de Textos - Módulos "Adicionar Módulos" (15/01/2026)
+- [x] Alterar "Antes e Depois" para "Antes e Depois Completa"
+- [x] Alterar "Ocorrências" para "Ocorrências Completas"
+- [x] Alterar "Vistorias" para "Vistorias Completas"
+- [x] Alterar "Manutenções" para "Manutenções Completas"
+- [x] Alterar "Checklists" para "Checklists Completos"

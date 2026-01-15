@@ -106,16 +106,16 @@ interface AppModule {
 const availableModules: Omit<AppModule, "enabled" | "order">[] = [
   // Operacional / Manutenção
   { id: "vencimentos", key: "vencimentos", title: "Agenda Vencimentos", icon: CalendarClock, color: "text-white", bgColor: "bg-fuchsia-500" },
-  { id: "antes_depois", key: "antes_depois", title: "Antes e Depois", icon: Camera, color: "text-white", bgColor: "bg-violet-500" },
+  { id: "antes_depois", key: "antes_depois", title: "Antes e Depois Completa", icon: Camera, color: "text-white", bgColor: "bg-violet-500" },
   { id: "aquisicoes", key: "aquisicoes", title: "Aquisições", icon: Package, color: "text-white", bgColor: "bg-green-500" },
-  { id: "checklists", key: "checklists", title: "Checklists", icon: ClipboardCheck, color: "text-white", bgColor: "bg-teal-500" },
+  { id: "checklists", key: "checklists", title: "Checklists Completos", icon: ClipboardCheck, color: "text-white", bgColor: "bg-teal-500" },
   { id: "galeria", key: "galeria", title: "Galeria de Fotos", icon: Image, color: "text-white", bgColor: "bg-pink-500" },
-  { id: "manutencoes", key: "manutencoes", title: "Manutenções", icon: Wrench, color: "text-white", bgColor: "bg-slate-600" },
+  { id: "manutencoes", key: "manutencoes", title: "Manutenções Completas", icon: Wrench, color: "text-white", bgColor: "bg-slate-600" },
   { id: "melhorias", key: "melhorias", title: "Melhorias", icon: Hammer, color: "text-white", bgColor: "bg-amber-500" },
-  { id: "ocorrencias", key: "ocorrencias", title: "Ocorrências", icon: AlertTriangle, color: "text-white", bgColor: "bg-yellow-500" },
+  { id: "ocorrencias", key: "ocorrencias", title: "Ocorrências Completas", icon: AlertTriangle, color: "text-white", bgColor: "bg-yellow-500" },
   { id: "ordem_servico", key: "ordem_servico", title: "Ordens de Serviço", icon: ClipboardPen, color: "text-white", bgColor: "bg-teal-600" },
   { id: "realizacoes", key: "realizacoes", title: "Realizações", icon: Award, color: "text-white", bgColor: "bg-yellow-600" },
-  { id: "vistorias", key: "vistorias", title: "Vistorias", icon: Search, color: "text-white", bgColor: "bg-emerald-500" },
+  { id: "vistorias", key: "vistorias", title: "Vistorias Completas", icon: Search, color: "text-white", bgColor: "bg-emerald-500" },
 ];
 
 // Componente de módulo arrastável
