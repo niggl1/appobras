@@ -818,13 +818,13 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Fase 57: Log de Atividades de Admin
 ### Backend
-- [ ] Criar tabela admin_logs no schema.ts
-- [ ] Criar rotas tRPC para registrar e listar logs
-- [ ] Integrar registro de log nas ações de editar e excluir usuários
+- [x] Criar tabela admin_logs no schema.ts (implementado na Fase 60)
+- [x] Criar rotas tRPC para registrar e listar logs (implementado na Fase 60)
+- [x] Integrar registro de log nas ações de editar e excluir usuários (implementado na Fase 60)
 
 ### Frontend
-- [ ] Criar aba/seção de logs na página AdminUsuarios
-- [ ] Exibir histórico de ações com filtros
+- [x] Criar aba/seção de logs na página AdminUsuarios (implementado como página separada AdminLogs.tsx)
+- [x] Exibir histórico de ações com filtros (implementado na Fase 60)
 
 ## Fase 60: Sistema de Logs de Auditoria
 - [x] Criar tabela admin_logs no schema.ts
@@ -837,3 +837,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar link "Logs de Auditoria" no menu de administração
 - [x] Adicionar rota /admin/logs no App.tsx
 - [x] Corrigir erros de TypeScript no AdminLogs.tsx
+
+
+## Fase 61: Substituir Logo na Página de Login
+- [x] Copiar nova logo para pasta public
+- [x] Identificar página de login e substituir logo APP SÍNDICO
+- [x] Testar alterações

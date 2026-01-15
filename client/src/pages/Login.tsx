@@ -40,9 +40,9 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <img 
-              src="/logo-appsindico-horizontal.png" 
+              src="/logo-login.png" 
               alt="App Manutenção" 
-              className="h-16 mx-auto"
+              className="h-24 mx-auto"
             />
           </Link>
           <p className="text-muted-foreground mt-2">Acesse sua conta</p>
