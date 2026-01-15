@@ -237,6 +237,8 @@ export default function Dashboard() {
       items: section.items.filter(item => {
         // Se o item não tem funcaoId, sempre mostrar
         if (!item.funcaoId) return true;
+        // Funções rápidas sempre visíveis
+        if (item.funcaoId.includes('-rapida') || item.funcaoId.includes('-rapido')) return true;
         // Verificar se a função está habilitada
         return funcoesHabilitadas.includes(item.funcaoId);
       })
