@@ -728,3 +728,31 @@
 ## Bug: Ícone pequeno duplicado no menu lateral
 - [ ] Remover ícone pequeno que aparece ao lado da nova logo
 - [ ] Testar alteração
+
+
+## Fase 52: Página de Administração de Usuários
+
+### Análise do Sistema Atual
+- [x] Tabela users com campos: id, openId, name, email, loginMethod, role (user/admin/sindico/morador), tipoConta (sindico/administradora/admin)
+- [x] adminProcedure já existe para proteger rotas de admin
+- [x] Página AdminFuncoes.tsx existe como referência de padrão
+
+### Backend (tRPC)
+- [x] Criar rota admin.listarUsuarios (listar todos os usuários com filtros)
+- [x] Criar rota admin.atualizarUsuario (alterar role, tipoConta, ativo)
+- [x] Criar rota admin.excluirUsuario (soft delete ou hard delete)
+- [x] Criar rota admin.estatisticasUsuarios (contagem por role, por mês)
+
+### Frontend
+- [x] Criar página AdminUsuarios.tsx
+- [x] Tabela com lista de usuários (nome, email, role, tipoConta, último login)
+- [x] Filtros por role, tipoConta, período de cadastro
+- [x] Ações: Editar role, Desativar, Excluir
+- [x] Modal de edição de usuário
+- [x] Gráficos de estatísticas (usuários por mês, por role)
+
+### Integração
+- [x] Adicionar rota /admin/usuarios no App.tsx
+- [x] Adicionar link no menu lateral (apenas para admins)
+- [x] Testar funcionalidades
+- [x] Salvar checkpoint

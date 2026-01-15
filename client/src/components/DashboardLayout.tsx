@@ -202,6 +202,12 @@ const menuSections = [
   },
 ];
 
+// Menu de administração (apenas para admins)
+const adminMenuItems = [
+  { icon: Shield, iconName: "Shield", label: "Admin Usuários", path: "/admin/usuarios" },
+  { icon: Sliders, iconName: "Sliders", label: "Admin Funções", path: "/admin/funcoes" },
+];
+
 // Exportar menuSections para uso em outros componentes
 export { menuSections };
 
@@ -745,6 +751,31 @@ function DashboardLayoutContent({
                 );
               })}
             </SidebarMenu>
+            
+            {/* Menu de Administração - apenas para admins */}
+            {user?.role === 'admin' && (
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <div className="px-3 py-2">
+                  <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Administração</span>
+                </div>
+                <SidebarMenu>
+                  {adminMenuItems.map((item) => (
+                    <SidebarMenuItem key={item.path}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={location === item.path}
+                        tooltip={item.label}
+                      >
+                        <a href={item.path} className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4 text-orange-500" />
+                          <span>{item.label}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </div>
+            )}
           </SidebarContent>
 
           <SidebarFooter className="p-3 border-t">

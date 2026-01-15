@@ -36,6 +36,7 @@ import RecuperarSenha from "./pages/RecuperarSenha";
 import RedefinirSenha from "./pages/RedefinirSenha";
 import Perfil from "./pages/Perfil";
 import AdminFuncoes from "./pages/AdminFuncoes";
+import AdminUsuarios from "./pages/AdminUsuarios";
 import FuncionarioLogin from "./pages/FuncionarioLogin";
 import FuncionarioDashboard from "./pages/FuncionarioDashboard";
 import FuncionarioRecuperarSenha from "./pages/FuncionarioRecuperarSenha";
@@ -113,6 +114,7 @@ function Router() {
       <Route path="/dashboard/notificar-morador" component={NotificarMoradorPage} />
       <Route path="/dashboard/historico-infracoes" component={HistoricoInfracoesPage} />
       <Route path="/admin/funcoes" component={AdminFuncoes} />
+      <Route path="/admin/usuarios" component={AdminUsuarios} />
       <Route path="/dashboard/historico-acessos" component={HistoricoAcessosPage} />
       <Route path="/dashboard/apps/novo" component={AppBuilder} />
       <Route path="/dashboard/relatorios/novo" component={RelatorioBuilder} />
