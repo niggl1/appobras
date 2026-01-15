@@ -73,6 +73,15 @@ export default function AdminUsuariosPage() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<any>(null);
   const [blockConfirm, setBlockConfirm] = useState<any>(null);
+  
+  // Estado para modal de exportação
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportFilters, setExportFilters] = useState({
+    tipoUsuario: "",
+    cidade: "",
+    adimplente: "",
+    bloqueado: "",
+  });
 
   // Buscar usuários
   const { data: usuariosData, isLoading, refetch } = trpc.adminUsuarios.listar.useQuery({
@@ -171,6 +180,40 @@ export default function AdminUsuariosPage() {
       });
     };
 
+    // Aplicar filtros de exportação
+    let usuariosFiltrados = usuariosData.usuarios;
+    
+    if (exportFilters.tipoUsuario && exportFilters.tipoUsuario !== "all") {
+      usuariosFiltrados = usuariosFiltrados.filter(
+        (u) => u.tipoUsuario === exportFilters.tipoUsuario
+      );
+    }
+    
+    if (exportFilters.cidade) {
+      usuariosFiltrados = usuariosFiltrados.filter(
+        (u) => u.cidade?.toLowerCase().includes(exportFilters.cidade.toLowerCase())
+      );
+    }
+    
+    if (exportFilters.adimplente && exportFilters.adimplente !== "all") {
+      const isAdimplente = exportFilters.adimplente === "true";
+      usuariosFiltrados = usuariosFiltrados.filter(
+        (u) => u.adimplente === isAdimplente
+      );
+    }
+    
+    if (exportFilters.bloqueado && exportFilters.bloqueado !== "all") {
+      const isBloqueado = exportFilters.bloqueado === "true";
+      usuariosFiltrados = usuariosFiltrados.filter(
+        (u) => u.bloqueado === isBloqueado
+      );
+    }
+    
+    if (usuariosFiltrados.length === 0) {
+      toast.error("Nenhum usuário encontrado com os filtros selecionados");
+      return;
+    }
+
     // Cabeçalho do CSV
     const headers = [
       "Nome",
@@ -185,8 +228,8 @@ export default function AdminUsuariosPage() {
       "Último Acesso",
     ];
 
-    // Dados dos usuários
-    const rows = usuariosData.usuarios.map((usuario) => [
+    // Dados dos usuários filtrados
+    const rows = usuariosFiltrados.map((usuario) => [
       usuario.name || "Sem nome",
       usuario.email || "-",
       TIPO_USUARIO_LABELS[usuario.tipoUsuario || "usuario"] || "Usuário",
@@ -219,7 +262,9 @@ export default function AdminUsuariosPage() {
     link.click();
     document.body.removeChild(link);
     
-    toast.success("Lista de usuários exportada com sucesso!");
+    toast.success(`${usuariosFiltrados.length} usuário(s) exportado(s) com sucesso!`);
+    setShowExportModal(false);
+    setExportFilters({ tipoUsuario: "", cidade: "", adimplente: "", bloqueado: "" });
   };
 
   const formatDate = (date: Date | string | null) => {
@@ -247,7 +292,7 @@ export default function AdminUsuariosPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleExportCSV} variant="outline" size="sm">
+            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />
               Exportar CSV
             </Button>
@@ -770,6 +815,103 @@ export default function AdminUsuariosPage() {
               >
                 {excluirMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Excluir
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de Exportação com Filtros */}
+        <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Download className="h-5 w-5 text-orange-500" />
+                Exportar Usuários para CSV
+              </DialogTitle>
+              <DialogDescription>
+                Selecione os filtros para exportar apenas os usuários desejados. Deixe em branco para exportar todos.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Tipo de Usuário</Label>
+                <Select
+                  value={exportFilters.tipoUsuario}
+                  onValueChange={(v) => setExportFilters({ ...exportFilters, tipoUsuario: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos os tipos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os tipos</SelectItem>
+                    <SelectItem value="usuario">Usuário</SelectItem>
+                    <SelectItem value="pequena_empresa">Pequena Empresa</SelectItem>
+                    <SelectItem value="media_empresa">Média Empresa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Cidade</Label>
+                <Input
+                  placeholder="Digite a cidade para filtrar"
+                  value={exportFilters.cidade}
+                  onChange={(e) => setExportFilters({ ...exportFilters, cidade: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Status de Adimplência</Label>
+                <Select
+                  value={exportFilters.adimplente}
+                  onValueChange={(v) => setExportFilters({ ...exportFilters, adimplente: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="true">Adimplentes</SelectItem>
+                    <SelectItem value="false">Inadimplentes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Status de Bloqueio</Label>
+                <Select
+                  value={exportFilters.bloqueado}
+                  onValueChange={(v) => setExportFilters({ ...exportFilters, bloqueado: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="false">Ativos</SelectItem>
+                    <SelectItem value="true">Bloqueados</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowExportModal(false);
+                  setExportFilters({ tipoUsuario: "", cidade: "", adimplente: "", bloqueado: "" });
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleExportCSV}
+                className="bg-orange-500 hover:bg-orange-600"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Exportar
               </Button>
             </DialogFooter>
           </DialogContent>
