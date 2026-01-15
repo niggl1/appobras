@@ -8161,17 +8161,19 @@ export const appRouter = router({
     list: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipo: z.enum(['contrato', 'servico', 'manutencao']),
+        tipo: z.enum(['contrato', 'servico', 'manutencao']).optional(),
       }))
       .query(async ({ input }) => {
         const db = await getDb();
         if (!db) return [];
         
+        const conditions = [eq(vencimentos.condominioId, input.condominioId)];
+        if (input.tipo) {
+          conditions.push(eq(vencimentos.tipo, input.tipo));
+        }
+        
         const items = await db.select().from(vencimentos)
-          .where(and(
-            eq(vencimentos.condominioId, input.condominioId),
-            eq(vencimentos.tipo, input.tipo)
-          ))
+          .where(and(...conditions))
           .orderBy(vencimentos.dataVencimento);
         
         // Calcular dias restantes/atrasados para cada item

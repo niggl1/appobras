@@ -235,17 +235,11 @@ export default function OrdensServico() {
         <div className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-300 p-6 rounded-b-3xl shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                <ClipboardList className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white drop-shadow-sm">
-                  Ordens de Serviço
-                </h1>
-                <p className="text-white/80 text-sm">
-                  Gerencie todas as ordens de serviço da organização
-                </p>
-              </div>
+              <img 
+                src="/logo-manutencao.png" 
+                alt="App Manutenção" 
+                className="h-12 object-contain"
+              />
             </div>
             <div className="flex items-center gap-3">
               <Button

@@ -787,8 +787,121 @@ function VencimentosDashboard({ condominioId }: { condominioId: number }) {
   const maxPorMes = porMes ? Math.max(...porMes.map(m => m.total), 1) : 1;
   const maxEvolucao = evolucao ? Math.max(...evolucao.map(e => e.total), 1) : 1;
 
+  // Estados para os modais de cadastro rápido
+  const [showContratoModal, setShowContratoModal] = useState(false);
+  const [showServicoModal, setShowServicoModal] = useState(false);
+  const [showManutencaoModal, setShowManutencaoModal] = useState(false);
+
   return (
     <div className="space-y-6">
+      {/* Seção de Cadastro Rápido - Quando não há vencimentos */}
+      {(estatisticas?.total || 0) === 0 && (
+        <Card className="border-2 border-dashed border-orange-300 bg-gradient-to-br from-orange-50 to-yellow-50">
+          <CardContent className="py-12">
+            <div className="text-center space-y-6">
+              <div className="flex justify-center">
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg">
+                  <Calendar className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800">Comece a Controlar seus Vencimentos</h3>
+                <p className="text-gray-600 mt-2 max-w-md mx-auto">
+                  Cadastre seus contratos, serviços e manutenções para receber alertas automáticos antes do vencimento.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 pt-4">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md min-w-[200px] h-14"
+                  onClick={() => setShowContratoModal(true)}
+                >
+                  <FileText className="h-5 w-5 mr-2" />
+                  Cadastrar Contrato
+                </Button>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md min-w-[200px] h-14"
+                  onClick={() => setShowServicoModal(true)}
+                >
+                  <Settings className="h-5 w-5 mr-2" />
+                  Cadastrar Serviço
+                </Button>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md min-w-[200px] h-14"
+                  onClick={() => setShowManutencaoModal(true)}
+                >
+                  <Wrench className="h-5 w-5 mr-2" />
+                  Cadastrar Manutenção
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Modais de Cadastro Rápido */}
+      <Dialog open={showContratoModal} onOpenChange={setShowContratoModal}>
+        <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-blue-600" />
+              Novo Contrato
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os dados do contrato a ser acompanhado.
+            </DialogDescription>
+          </DialogHeader>
+          <VencimentoForm
+            tipo="contrato"
+            condominioId={condominioId}
+            onSuccess={() => setShowContratoModal(false)}
+            onCancel={() => setShowContratoModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showServicoModal} onOpenChange={setShowServicoModal}>
+        <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-green-600" />
+              Novo Serviço
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os dados do serviço a ser acompanhado.
+            </DialogDescription>
+          </DialogHeader>
+          <VencimentoForm
+            tipo="servico"
+            condominioId={condominioId}
+            onSuccess={() => setShowServicoModal(false)}
+            onCancel={() => setShowServicoModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showManutencaoModal} onOpenChange={setShowManutencaoModal}>
+        <DialogContent className="w-[95vw] max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-orange-600" />
+              Nova Manutenção
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os dados da manutenção a ser acompanhada.
+            </DialogDescription>
+          </DialogHeader>
+          <VencimentoForm
+            tipo="manutencao"
+            condominioId={condominioId}
+            onSuccess={() => setShowManutencaoModal(false)}
+            onCancel={() => setShowManutencaoModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
       {/* Cards de Estatísticas */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
@@ -1296,7 +1409,7 @@ export default function AgendaVencimentos() {
 
   // Query para buscar todos os vencimentos para exportação
   const { data: todosVencimentosExport } = trpc.vencimentos.list.useQuery(
-    { condominioId, tipo: undefined as any },
+    { condominioId },
     { enabled: condominioId > 0 }
   );
 
@@ -1367,14 +1480,12 @@ export default function AgendaVencimentos() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Calendar className="h-6 w-6" />
-              Agenda de Vencimentos
-            </h1>
-            <p className="text-muted-foreground">
-              Acompanhe contratos, serviços e manutenções da organização.
-            </p>
+          <div className="flex items-center gap-4">
+            <img 
+              src="/logo-manutencao.png" 
+              alt="App Manutenção" 
+              className="h-12 object-contain"
+            />
           </div>
           <div className="flex flex-wrap gap-2">
             {/* Botão de Processar Alertas */}

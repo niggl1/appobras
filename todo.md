@@ -687,3 +687,33 @@
 - [x] Adicionar plataforma Android
 - [x] Adicionar plataforma iOS
 - [x] Testar configuração
+
+
+## Fase 51: Atualização do Logotipo
+- [ ] Remover ícones duplicados das páginas de Ordens de Serviço e Agenda de Vencimentos
+- [ ] Adicionar novo logotipo (LogoManutenção2.png) ao projeto
+- [ ] Testar alterações
+
+
+## Bug: Agenda de Vencimentos não carrega conteúdo
+- [ ] Investigar erro na página de Agenda de Vencimentos
+- [ ] Corrigir o problema
+- [ ] Testar a correção
+
+
+## Bug: Formulário de cadastro de vencimentos não aparece
+- [ ] Investigar onde está o formulário de cadastro na página de Agenda de Vencimentos
+- [ ] Corrigir a exibição do formulário
+- [ ] Testar a correção
+
+
+## Melhoria: Botões de cadastro na Agenda de Vencimentos
+- [ ] Adicionar botões de cadastro de Contratos, Serviços e Manutenções no espaço vazio
+- [ ] Testar a funcionalidade
+
+
+## Bug Corrigido: Erro de validação do campo tipo na Agenda de Vencimentos
+- [x] Identificar erro: tipo undefined não aceite na query vencimentos.list
+- [x] Tornar campo tipo opcional no backend (routers.ts)
+- [x] Remover "undefined as any" do frontend (AgendaVencimentos.tsx)
+- [x] Testar correção
