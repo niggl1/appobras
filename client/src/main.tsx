@@ -1,5 +1,19 @@
 import { trpc } from "@/lib/trpc";
 import { UNAUTHED_ERR_MSG } from '@shared/const';
+
+// Suprimir erro benigno do ResizeObserver que ocorre em alguns navegadores
+// Este erro não afeta a funcionalidade da aplicação
+const resizeObserverErr = window.ResizeObserver;
+window.ResizeObserver = class ResizeObserver extends resizeObserverErr {
+  constructor(callback: ResizeObserverCallback) {
+    super((entries, observer) => {
+      // Usar requestAnimationFrame para evitar o erro de loop
+      window.requestAnimationFrame(() => {
+        callback(entries, observer);
+      });
+    });
+  }
+};
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";

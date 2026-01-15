@@ -940,3 +940,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar componente de visualização de histórico
 - [x] Adicionar item de menu em destaque para Histórico
 - [x] Busca inteligente por tipo, status, protocolo, funcionário e intervalo de datas
+
+
+## Correção - Erro ResizeObserver (15/01/2026)
+- [x] Corrigir erro "ResizeObserver loop completed with undelivered notifications"
