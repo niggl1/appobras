@@ -14079,8 +14079,20 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           .limit(input.limit)
           .offset(offset);
         
+        // Calcular dias de utilização automaticamente baseado no createdAt
+        const usuariosComDias = result.map(usuario => {
+          const createdDate = new Date(usuario.createdAt);
+          const today = new Date();
+          const diffTime = Math.abs(today.getTime() - createdDate.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          return {
+            ...usuario,
+            diasUtilizacao: diffDays,
+          };
+        });
+        
         return {
-          usuarios: result,
+          usuarios: usuariosComDias,
           total,
           page: input.page,
           totalPages: Math.ceil(total / input.limit),
