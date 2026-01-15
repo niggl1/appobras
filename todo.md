@@ -774,3 +774,24 @@
 - [x] Investigar quais páginas usam qual layout
 - [x] Unificar os menus para consistência
 - [x] Adicionado Admin Usuários e Admin Funções no Dashboard.tsx
+
+## Fase 55: Unificação dos Layouts de Dashboard
+
+### Objetivo
+Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.tsx (menu do síndico).
+
+### Páginas que usam DashboardLayout (9 páginas)
+- [ ] AgendaVencimentos.tsx
+- [ ] HistoricoAcessosPage.tsx
+- [ ] HistoricoInfracoesPage.tsx
+- [ ] HistoricoTarefasSimples.tsx
+- [ ] NotificarMoradorPage.tsx
+- [ ] OrdemServicoDetalhe.tsx
+- [ ] OrdensServico.tsx
+- [ ] OrdensServicoConfig.tsx
+- [ ] AdminUsuarios.tsx
+
+### Implementação
+- [ ] Migrar páginas para serem renderizadas dentro do Dashboard.tsx
+- [ ] Remover DashboardLayout.tsx (ou manter apenas para casos específicos)
+- [ ] Testar todas as páginas afetadas
