@@ -464,46 +464,6 @@ export default function Dashboard() {
 
         {/* Navigation com Seções Colapsáveis */}
         <ScrollArea className="flex-1 py-4">
-          {/* Botões de Registro Rápido */}
-          <div className="px-3 mb-4">
-            <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">Registro Rápido</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button 
-                onClick={() => setShowVistoriaRapida(true)}
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-green-500"
-              >
-                <ClipboardCheck className="w-4 h-4 text-white" />
-                <span className="text-[10px] font-semibold text-white">Vistoria</span>
-              </button>
-              <button 
-                onClick={() => setShowManutencaoRapida(true)}
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-orange-500"
-              >
-                <Wrench className="w-4 h-4 text-white" />
-                <span className="text-[10px] font-semibold text-white">Manutenção</span>
-              </button>
-              <button 
-                onClick={() => setShowOcorrenciaRapida(true)}
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-red-500"
-              >
-                <AlertTriangle className="w-4 h-4 text-white" />
-                <span className="text-[10px] font-semibold text-white">Ocorrência</span>
-              </button>
-              <button 
-                onClick={() => setShowAntesDepoisRapido(true)}
-                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-purple-500"
-              >
-                <Image className="w-4 h-4 text-white" />
-                <span className="text-[10px] font-semibold text-white">Antes/Depois</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Separador */}
-          <div className="px-6 mb-3">
-            <Separator className="bg-sidebar-border/50" />
-          </div>
-
           {/* Funções Rápidas - Atalhos personalizados */}
           <div className="px-3 mb-4">
             <div className="flex items-center justify-between mb-2 px-3">
