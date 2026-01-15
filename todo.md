@@ -956,3 +956,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar todas as funções completas ao filtro de tipos
 - [x] Adicionar todas as funções rápidas ao filtro de tipos
 - [x] Adicionar Ordem de Serviço ao filtro de tipos
+
+
+## Remoção: Botão Novo Projeto (15/01/2026)
+- [x] Remover botão "+ Novo Projeto" da página Meus Projetos

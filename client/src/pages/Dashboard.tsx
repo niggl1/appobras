@@ -1651,13 +1651,7 @@ function RevistasSection() {
             <h1 className="text-3xl font-bold mb-2">Meus Projetos</h1>
             <p className="text-purple-200 max-w-md">Crie e gerencie apps, revistas digitais e relatórios personalizados para sua organização</p>
           </div>
-          <Button 
-            className="bg-white text-purple-700 hover:bg-purple-50 shadow-lg shadow-purple-900/30 font-semibold px-6 py-3 h-auto"
-            onClick={() => toast.info('Funcionalidade em desenvolvimento')}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Novo Projeto
-          </Button>
+
         </div>
         {/* Stats */}
         <div className="relative z-10 grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/20">
