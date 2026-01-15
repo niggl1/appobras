@@ -303,6 +303,7 @@ export default function AdminUsuariosPage() {
                         <TableHead>Adimplência</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Tipo Conta</TableHead>
+                        <TableHead>Data Cadastro</TableHead>
                         <TableHead>Último Acesso</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -424,6 +425,12 @@ export default function AdminUsuariosPage() {
                           <TableCell>
                             <div className="flex items-center gap-1 text-sm text-gray-500">
                               <Calendar className="h-3 w-3" />
+                              {formatDate(usuario.createdAt)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Calendar className="h-3 w-3" />
                               {formatDate(usuario.lastSignedIn)}
                             </div>
                           </TableCell>
@@ -431,7 +438,7 @@ export default function AdminUsuariosPage() {
                       ))}
                       {usuariosData?.usuarios.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                          <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                             Nenhum usuário encontrado
                           </TableCell>
                         </TableRow>
