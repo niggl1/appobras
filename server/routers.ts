@@ -112,7 +112,8 @@ import {
   tarefasSimples,
   statusPersonalizados,
   camposRapidosTemplates,
-  adminLogs
+  adminLogs,
+  historicoAtividades
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -14429,6 +14430,216 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           page: input.page,
           totalPages: Math.ceil(total / input.limit),
         };
+      }),
+  }),
+
+  // ==================== HISTÓRICO DE ATIVIDADES ====================
+  historicoAtividades: router({
+    // Listar histórico com filtros avançados
+    listar: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        // Filtros
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "ordem_servico", "checklist", "antes_depois", "todos"]).optional().default("todos"),
+        acao: z.string().optional(),
+        protocolo: z.string().optional(),
+        funcionarioId: z.number().optional(),
+        dataInicio: z.string().optional(),
+        dataFim: z.string().optional(),
+        busca: z.string().optional(),
+        // Paginação
+        page: z.number().default(1),
+        limit: z.number().default(50),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const offset = (input.page - 1) * input.limit;
+        
+        // Construir condições de filtro
+        const conditions = [eq(historicoAtividades.condominioId, input.condominioId)];
+        
+        if (input.tipo && input.tipo !== "todos") {
+          conditions.push(eq(historicoAtividades.entidadeTipo, input.tipo));
+        }
+        
+        if (input.acao) {
+          conditions.push(eq(historicoAtividades.acao, input.acao as any));
+        }
+        
+        if (input.protocolo) {
+          conditions.push(like(historicoAtividades.entidadeProtocolo, `%${input.protocolo}%`));
+        }
+        
+        if (input.funcionarioId) {
+          conditions.push(eq(historicoAtividades.usuarioId, input.funcionarioId));
+        }
+        
+        if (input.dataInicio) {
+          conditions.push(gte(historicoAtividades.createdAt, new Date(input.dataInicio)));
+        }
+        
+        if (input.dataFim) {
+          const dataFim = new Date(input.dataFim);
+          dataFim.setHours(23, 59, 59, 999);
+          conditions.push(lte(historicoAtividades.createdAt, dataFim));
+        }
+        
+        if (input.busca) {
+          conditions.push(
+            or(
+              like(historicoAtividades.entidadeProtocolo, `%${input.busca}%`),
+              like(historicoAtividades.entidadeTitulo, `%${input.busca}%`),
+              like(historicoAtividades.descricao, `%${input.busca}%`),
+              like(historicoAtividades.usuarioNome, `%${input.busca}%`)
+            )!
+          );
+        }
+        
+        // Contar total
+        const [countResult] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(historicoAtividades)
+          .where(and(...conditions));
+        const total = countResult?.count || 0;
+        
+        // Buscar registros
+        const registros = await db
+          .select()
+          .from(historicoAtividades)
+          .where(and(...conditions))
+          .orderBy(desc(historicoAtividades.createdAt))
+          .limit(input.limit)
+          .offset(offset);
+        
+        return {
+          registros,
+          total,
+          page: input.page,
+          totalPages: Math.ceil(total / input.limit),
+        };
+      }),
+    
+    // Registrar nova atividade no histórico
+    registrar: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        entidadeTipo: z.enum(["vistoria", "manutencao", "ocorrencia", "ordem_servico", "checklist", "antes_depois"]),
+        entidadeId: z.number(),
+        entidadeProtocolo: z.string().optional(),
+        entidadeTitulo: z.string().optional(),
+        acao: z.enum([
+          "criado", "editado", "status_alterado", "comentario_adicionado",
+          "imagem_adicionada", "imagem_removida", "atribuido", "prioridade_alterada",
+          "agendado", "iniciado", "pausado", "retomado", "concluido",
+          "reaberto", "cancelado", "arquivado", "enviado", "compartilhado"
+        ]),
+        descricao: z.string().optional(),
+        valorAnterior: z.string().optional(),
+        valorNovo: z.string().optional(),
+        metadados: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [registro] = await db.insert(historicoAtividades).values({
+          condominioId: input.condominioId,
+          entidadeTipo: input.entidadeTipo,
+          entidadeId: input.entidadeId,
+          entidadeProtocolo: input.entidadeProtocolo,
+          entidadeTitulo: input.entidadeTitulo,
+          acao: input.acao,
+          descricao: input.descricao,
+          valorAnterior: input.valorAnterior,
+          valorNovo: input.valorNovo,
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+          metadados: input.metadados,
+        });
+        
+        return { id: registro.insertId };
+      }),
+    
+    // Obter estatísticas do histórico
+    estatisticas: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        dataInicio: z.string().optional(),
+        dataFim: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const conditions = [eq(historicoAtividades.condominioId, input.condominioId)];
+        
+        if (input.dataInicio) {
+          conditions.push(gte(historicoAtividades.createdAt, new Date(input.dataInicio)));
+        }
+        
+        if (input.dataFim) {
+          const dataFim = new Date(input.dataFim);
+          dataFim.setHours(23, 59, 59, 999);
+          conditions.push(lte(historicoAtividades.createdAt, dataFim));
+        }
+        
+        // Contar por tipo
+        const porTipo = await db
+          .select({
+            tipo: historicoAtividades.entidadeTipo,
+            total: sql<number>`count(*)`
+          })
+          .from(historicoAtividades)
+          .where(and(...conditions))
+          .groupBy(historicoAtividades.entidadeTipo);
+        
+        // Contar por ação
+        const porAcao = await db
+          .select({
+            acao: historicoAtividades.acao,
+            total: sql<number>`count(*)`
+          })
+          .from(historicoAtividades)
+          .where(and(...conditions))
+          .groupBy(historicoAtividades.acao);
+        
+        // Total geral
+        const [totalResult] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(historicoAtividades)
+          .where(and(...conditions));
+        
+        return {
+          total: totalResult?.count || 0,
+          porTipo,
+          porAcao,
+        };
+      }),
+    
+    // Listar funcionários que têm atividades registradas
+    funcionariosAtivos: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const funcionariosComAtividade = await db
+          .selectDistinct({
+            id: historicoAtividades.usuarioId,
+            nome: historicoAtividades.usuarioNome,
+          })
+          .from(historicoAtividades)
+          .where(and(
+            eq(historicoAtividades.condominioId, input.condominioId),
+            sql`${historicoAtividades.usuarioId} IS NOT NULL`
+          ))
+          .orderBy(historicoAtividades.usuarioNome);
+        
+        return funcionariosComAtividade;
       }),
   }),
 });

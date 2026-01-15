@@ -2188,3 +2188,63 @@ export const adminLogs = mysqlTable("admin_logs", {
 
 export type AdminLog = typeof adminLogs.$inferSelect;
 export type InsertAdminLog = typeof adminLogs.$inferInsert;
+
+
+// ==================== HISTÓRICO DE ATIVIDADES ====================
+// Histórico unificado para todas as funções operacionais e ordens de serviço
+export const historicoAtividades = mysqlTable("historico_atividades", {
+  id: int("id").autoincrement().primaryKey(),
+  condominioId: int("condominioId").references(() => condominios.id).notNull(),
+  
+  // Tipo de entidade (vistoria, manutencao, ocorrencia, ordem_servico, checklist, antes_depois)
+  entidadeTipo: mysqlEnum("entidadeTipo", [
+    "vistoria", 
+    "manutencao", 
+    "ocorrencia", 
+    "ordem_servico", 
+    "checklist",
+    "antes_depois"
+  ]).notNull(),
+  entidadeId: int("entidadeId").notNull(),
+  entidadeProtocolo: varchar("entidadeProtocolo", { length: 50 }),
+  entidadeTitulo: varchar("entidadeTitulo", { length: 255 }),
+  
+  // Tipo de ação realizada
+  acao: mysqlEnum("acao", [
+    "criado",
+    "editado", 
+    "status_alterado",
+    "comentario_adicionado",
+    "imagem_adicionada",
+    "imagem_removida",
+    "atribuido",
+    "prioridade_alterada",
+    "agendado",
+    "iniciado",
+    "pausado",
+    "retomado",
+    "concluido",
+    "reaberto",
+    "cancelado",
+    "arquivado",
+    "enviado",
+    "compartilhado"
+  ]).notNull(),
+  
+  // Detalhes da alteração
+  descricao: text("descricao"),
+  valorAnterior: text("valorAnterior"),
+  valorNovo: text("valorNovo"),
+  
+  // Quem realizou a ação
+  usuarioId: int("usuarioId").references(() => users.id),
+  usuarioNome: varchar("usuarioNome", { length: 255 }),
+  
+  // Metadados adicionais (JSON)
+  metadados: text("metadados"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type HistoricoAtividade = typeof historicoAtividades.$inferSelect;
+export type InsertHistoricoAtividade = typeof historicoAtividades.$inferInsert;

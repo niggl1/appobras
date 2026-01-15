@@ -929,3 +929,14 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Corrigir texto do endereço para não expandir o modal (break-words, line-clamp-2)
 
 - [x] Adicionar mapa miniatura no modal de Tarefas Simples para mostrar localização
+
+
+## Histórico para Funções Operacionais e OS (15/01/2026)
+- [x] Criar tabela de histórico no schema
+- [x] Adicionar histórico para Manutenções
+- [x] Adicionar histórico para Vistorias
+- [x] Adicionar histórico para Ocorrências
+- [x] Adicionar histórico para Ordens de Serviço
+- [x] Criar componente de visualização de histórico
+- [x] Adicionar item de menu em destaque para Histórico
+- [x] Busca inteligente por tipo, status, protocolo, funcionário e intervalo de datas

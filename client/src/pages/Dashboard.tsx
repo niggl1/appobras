@@ -132,6 +132,7 @@ import OrdemServicoDetalhe from "./OrdemServicoDetalhe";
 import OrdensServicoConfig from "./OrdensServicoConfig";
 import AdminUsuarios from "./AdminUsuarios";
 import AdminLogs from "./AdminLogs";
+import HistoricoAtividadesPage from "./HistoricoAtividades";
 
 // Estrutura do menu otimizada para gestão de manutenção
 // Cada item tem um funcaoId que mapeia para as funções do admin
@@ -177,6 +178,7 @@ const menuSections = [
       { id: "antes-depois", label: "Antes e Depois Completo", icon: ArrowLeftRight, funcaoId: "antes-depois" },
       { id: "funcoes-simples-antes-depois", label: "Antes/Depois Rápido", icon: Zap, funcaoId: "antes-depois-rapido", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
       { id: "vencimentos", label: "Agenda de Vencimentos", icon: CalendarClock, funcaoId: "agenda-vencimentos" },
+      { id: "historico", label: "⭐ Histórico de Atividades", icon: History, funcaoId: "historico" },
     ]
   },
   {
@@ -829,6 +831,7 @@ export default function Dashboard() {
           {currentSection?.startsWith("ordem-servico/") && <OrdemServicoDetalhe />}
           {currentSection === "admin-usuarios" && <AdminUsuarios />}
           {currentSection === "admin-logs" && <AdminLogs />}
+          {currentSection === "historico" && (condominios?.[0] ? <HistoricoAtividadesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
         </div>
       </main>
 
