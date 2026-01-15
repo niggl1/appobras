@@ -1032,3 +1032,12 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar página de redefinição de senha (/equipe/redefinir-senha)
 - [x] Adicionar link "Esqueci minha senha" na página de login
 - [x] Testar fluxo completo de recuperação
+
+
+## Histórico de Acessos para Membros da Equipe (15/01/2026)
+- [x] Criar tabela membroAcessos no schema do banco de dados
+- [x] Criar rotas tRPC para registar e listar acessos
+- [x] Implementar captura de IP e dispositivo no login
+- [x] Criar interface de visualização do histórico de acessos
+- [x] Adicionar opção no modal de equipe para ver histórico
+- [x] Testar fluxo completo (96 testes passando)

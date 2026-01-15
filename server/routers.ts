@@ -113,7 +113,8 @@ import {
   statusPersonalizados,
   camposRapidosTemplates,
   adminLogs,
-  historicoAtividades
+  historicoAtividades,
+  membroAcessos
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -7351,6 +7352,9 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Função auxiliar para parsear User-Agent
+    // parseUserAgent definido inline para evitar dependências externas
+
     // Login de membro da equipe
     login: publicProcedure
       .input(z.object({
@@ -7360,6 +7364,44 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         const db = await getDb();
         if (!db) throw new Error("Database not available");
+        
+        // Capturar informações do acesso
+        const userAgent = ctx.req.headers["user-agent"] || "";
+        const ip = ctx.req.headers["x-forwarded-for"]?.toString().split(",")[0]?.trim() 
+          || ctx.req.headers["x-real-ip"]?.toString() 
+          || ctx.req.socket?.remoteAddress 
+          || "";
+        
+        // Parsear User-Agent para extrair dispositivo, navegador e SO
+        const parseUA = (ua: string) => {
+          let dispositivo = "Desktop";
+          let navegador = "Desconhecido";
+          let sistemaOperacional = "Desconhecido";
+          
+          // Detectar dispositivo
+          if (/Mobile|Android|iPhone|iPad|iPod/i.test(ua)) {
+            dispositivo = /iPad/i.test(ua) ? "Tablet" : "Mobile";
+          }
+          
+          // Detectar navegador
+          if (/Chrome/i.test(ua) && !/Edge|Edg/i.test(ua)) navegador = "Chrome";
+          else if (/Firefox/i.test(ua)) navegador = "Firefox";
+          else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) navegador = "Safari";
+          else if (/Edge|Edg/i.test(ua)) navegador = "Edge";
+          else if (/Opera|OPR/i.test(ua)) navegador = "Opera";
+          else if (/MSIE|Trident/i.test(ua)) navegador = "Internet Explorer";
+          
+          // Detectar SO
+          if (/Windows/i.test(ua)) sistemaOperacional = "Windows";
+          else if (/iPhone|iPad|iPod/i.test(ua)) sistemaOperacional = "iOS";
+          else if (/Mac OS X|macOS/i.test(ua)) sistemaOperacional = "macOS";
+          else if (/Linux/i.test(ua) && !/Android/i.test(ua)) sistemaOperacional = "Linux";
+          else if (/Android/i.test(ua)) sistemaOperacional = "Android";
+          
+          return { dispositivo, navegador, sistemaOperacional };
+        };
+        
+        const { dispositivo, navegador, sistemaOperacional } = parseUA(userAgent);
         
         // Buscar membro pelo email
         const result = await db.select().from(membrosEquipe)
@@ -7377,6 +7419,19 @@ export const appRouter = router({
         
         // Verificar se tem senha cadastrada
         if (!membro.senha) {
+          // Registrar tentativa de acesso falha
+          await db.insert(membroAcessos).values({
+            membroId: membro.id,
+            condominioId: membro.condominioId,
+            ip,
+            userAgent,
+            dispositivo,
+            navegador,
+            sistemaOperacional,
+            tipoAcesso: "login",
+            sucesso: false,
+            motivoFalha: "Membro sem senha cadastrada",
+          });
           throw new Error("Este membro não possui acesso ao sistema");
         }
         
@@ -7385,8 +7440,34 @@ export const appRouter = router({
         const senhaValida = await bcrypt.compare(input.senha, membro.senha);
         
         if (!senhaValida) {
+          // Registrar tentativa de acesso falha
+          await db.insert(membroAcessos).values({
+            membroId: membro.id,
+            condominioId: membro.condominioId,
+            ip,
+            userAgent,
+            dispositivo,
+            navegador,
+            sistemaOperacional,
+            tipoAcesso: "login",
+            sucesso: false,
+            motivoFalha: "Senha inválida",
+          });
           throw new Error("Email ou senha inválidos");
         }
+        
+        // Registrar acesso bem-sucedido
+        await db.insert(membroAcessos).values({
+          membroId: membro.id,
+          condominioId: membro.condominioId,
+          ip,
+          userAgent,
+          dispositivo,
+          navegador,
+          sistemaOperacional,
+          tipoAcesso: "login",
+          sucesso: true,
+        });
         
         // Atualizar último acesso
         await db.update(membrosEquipe)
@@ -7650,6 +7731,196 @@ export const appRouter = router({
           { id: "gestao_organizacao", nome: "Gestão da Organização", descricao: "Configurar dados da organização" },
           { id: "equipe_gestao", nome: "Equipe de Gestão", descricao: "Gerenciar membros da equipe" },
         ];
+      }),
+
+    // Listar histórico de acessos de um membro
+    historicoAcessos: protectedProcedure
+      .input(z.object({
+        membroId: z.number(),
+        limite: z.number().optional().default(50),
+        pagina: z.number().optional().default(1),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return { acessos: [], total: 0 };
+        
+        const offset = (input.pagina - 1) * input.limite;
+        
+        // Buscar acessos
+        const acessos = await db.select().from(membroAcessos)
+          .where(eq(membroAcessos.membroId, input.membroId))
+          .orderBy(desc(membroAcessos.dataHora))
+          .limit(input.limite)
+          .offset(offset);
+        
+        // Contar total
+        const totalResult = await db.select({ count: sql<number>`count(*)` })
+          .from(membroAcessos)
+          .where(eq(membroAcessos.membroId, input.membroId));
+        
+        return {
+          acessos,
+          total: Number(totalResult[0]?.count || 0),
+        };
+      }),
+
+    // Listar histórico de acessos de todos os membros de um condomínio
+    historicoAcessosCondominio: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        limite: z.number().optional().default(50),
+        pagina: z.number().optional().default(1),
+        membroId: z.number().optional(),
+        tipoAcesso: z.enum(["login", "logout", "recuperacao_senha", "alteracao_senha"]).optional(),
+        apenasSuccesso: z.boolean().optional(),
+        dataInicio: z.string().optional(),
+        dataFim: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return { acessos: [], total: 0 };
+        
+        const offset = (input.pagina - 1) * input.limite;
+        
+        // Construir condições
+        const conditions = [eq(membroAcessos.condominioId, input.condominioId)];
+        
+        if (input.membroId) {
+          conditions.push(eq(membroAcessos.membroId, input.membroId));
+        }
+        if (input.tipoAcesso) {
+          conditions.push(eq(membroAcessos.tipoAcesso, input.tipoAcesso));
+        }
+        if (input.apenasSuccesso !== undefined) {
+          conditions.push(eq(membroAcessos.sucesso, input.apenasSuccesso));
+        }
+        if (input.dataInicio) {
+          conditions.push(gte(membroAcessos.dataHora, new Date(input.dataInicio)));
+        }
+        if (input.dataFim) {
+          conditions.push(lte(membroAcessos.dataHora, new Date(input.dataFim)));
+        }
+        
+        // Buscar acessos com dados do membro
+        const acessos = await db.select({
+          id: membroAcessos.id,
+          membroId: membroAcessos.membroId,
+          membroNome: membrosEquipe.nome,
+          membroCargo: membrosEquipe.cargo,
+          membroFoto: membrosEquipe.fotoUrl,
+          dataHora: membroAcessos.dataHora,
+          ip: membroAcessos.ip,
+          userAgent: membroAcessos.userAgent,
+          dispositivo: membroAcessos.dispositivo,
+          navegador: membroAcessos.navegador,
+          sistemaOperacional: membroAcessos.sistemaOperacional,
+          localizacao: membroAcessos.localizacao,
+          tipoAcesso: membroAcessos.tipoAcesso,
+          sucesso: membroAcessos.sucesso,
+          motivoFalha: membroAcessos.motivoFalha,
+        })
+          .from(membroAcessos)
+          .leftJoin(membrosEquipe, eq(membroAcessos.membroId, membrosEquipe.id))
+          .where(and(...conditions))
+          .orderBy(desc(membroAcessos.dataHora))
+          .limit(input.limite)
+          .offset(offset);
+        
+        // Contar total
+        const totalResult = await db.select({ count: sql<number>`count(*)` })
+          .from(membroAcessos)
+          .where(and(...conditions));
+        
+        return {
+          acessos,
+          total: Number(totalResult[0]?.count || 0),
+        };
+      }),
+
+    // Estatísticas de acessos
+    estatisticasAcessos: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        dias: z.number().optional().default(30),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const dataInicio = new Date();
+        dataInicio.setDate(dataInicio.getDate() - input.dias);
+        
+        // Total de acessos no período
+        const totalAcessos = await db.select({ count: sql<number>`count(*)` })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            gte(membroAcessos.dataHora, dataInicio)
+          ));
+        
+        // Acessos bem-sucedidos
+        const acessosSucesso = await db.select({ count: sql<number>`count(*)` })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            eq(membroAcessos.sucesso, true),
+            gte(membroAcessos.dataHora, dataInicio)
+          ));
+        
+        // Acessos falhos
+        const acessosFalha = await db.select({ count: sql<number>`count(*)` })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            eq(membroAcessos.sucesso, false),
+            gte(membroAcessos.dataHora, dataInicio)
+          ));
+        
+        // Membros únicos que acessaram
+        const membrosUnicos = await db.select({ count: sql<number>`count(distinct ${membroAcessos.membroId})` })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            eq(membroAcessos.sucesso, true),
+            gte(membroAcessos.dataHora, dataInicio)
+          ));
+        
+        // Dispositivos mais usados
+        const dispositivosResult = await db.select({
+          dispositivo: membroAcessos.dispositivo,
+          count: sql<number>`count(*)`,
+        })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            eq(membroAcessos.sucesso, true),
+            gte(membroAcessos.dataHora, dataInicio)
+          ))
+          .groupBy(membroAcessos.dispositivo)
+          .orderBy(desc(sql`count(*)`));
+        
+        // Navegadores mais usados
+        const navegadoresResult = await db.select({
+          navegador: membroAcessos.navegador,
+          count: sql<number>`count(*)`,
+        })
+          .from(membroAcessos)
+          .where(and(
+            eq(membroAcessos.condominioId, input.condominioId),
+            eq(membroAcessos.sucesso, true),
+            gte(membroAcessos.dataHora, dataInicio)
+          ))
+          .groupBy(membroAcessos.navegador)
+          .orderBy(desc(sql`count(*)`));
+        
+        return {
+          totalAcessos: Number(totalAcessos[0]?.count || 0),
+          acessosSucesso: Number(acessosSucesso[0]?.count || 0),
+          acessosFalha: Number(acessosFalha[0]?.count || 0),
+          membrosUnicos: Number(membrosUnicos[0]?.count || 0),
+          dispositivos: dispositivosResult.map(d => ({ nome: d.dispositivo || "Desconhecido", quantidade: Number(d.count) })),
+          navegadores: navegadoresResult.map(n => ({ nome: n.navegador || "Desconhecido", quantidade: Number(n.count) })),
+        };
       }),
   }),
 

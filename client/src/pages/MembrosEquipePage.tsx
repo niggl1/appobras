@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Phone, User, Briefcase, MessageCircle, Shield, Key, Mail, Eye, EyeOff, Lock, Unlock } from "lucide-react";
+import { Plus, Edit, Trash2, Phone, User, Briefcase, MessageCircle, Shield, Key, Mail, Eye, EyeOff, Lock, Unlock, History } from "lucide-react";
 import ImageUpload from "@/components/ImageUpload";
+import { MembroHistoricoAcessos } from "@/components/MembroHistoricoAcessos";
 
 interface MembrosEquipePageProps {
   condominioId: number;
@@ -40,6 +41,8 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [historicoMembroId, setHistoricoMembroId] = useState<number | null>(null);
+  const [historicoMembroNome, setHistoricoMembroNome] = useState("");
   const [formData, setFormData] = useState({
     nome: "",
     whatsapp: "",
@@ -616,6 +619,20 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
                   </div>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {membro.email && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+                      onClick={() => {
+                        setHistoricoMembroId(membro.id);
+                        setHistoricoMembroNome(membro.nome);
+                      }}
+                      title="Ver histórico de acessos"
+                    >
+                      <History className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -702,6 +719,22 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
             Adicionar Primeiro Membro
           </Button>
         </div>
+      )}
+
+      {/* Modal de Histórico de Acessos */}
+      {historicoMembroId && (
+        <MembroHistoricoAcessos
+          membroId={historicoMembroId}
+          membroNome={historicoMembroNome}
+          condominioId={condominioId}
+          open={!!historicoMembroId}
+          onOpenChange={(open) => {
+            if (!open) {
+              setHistoricoMembroId(null);
+              setHistoricoMembroNome("");
+            }
+          }}
+        />
       )}
     </div>
   );

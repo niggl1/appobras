@@ -1112,6 +1112,26 @@ export const membrosEquipe = mysqlTable("membros_equipe", {
 export type MembroEquipe = typeof membrosEquipe.$inferSelect;
 export type InsertMembroEquipe = typeof membrosEquipe.$inferInsert;
 
+// ==================== HISTÓRICO DE ACESSOS DE MEMBROS ====================
+export const membroAcessos = mysqlTable("membro_acessos", {
+  id: int("id").autoincrement().primaryKey(),
+  membroId: int("membroId").references(() => membrosEquipe.id).notNull(),
+  condominioId: int("condominioId").references(() => condominios.id).notNull(),
+  dataHora: timestamp("dataHora").defaultNow().notNull(),
+  ip: varchar("ip", { length: 45 }), // Suporta IPv6
+  userAgent: text("userAgent"),
+  dispositivo: varchar("dispositivo", { length: 100 }),
+  navegador: varchar("navegador", { length: 100 }),
+  sistemaOperacional: varchar("sistemaOperacional", { length: 100 }),
+  localizacao: varchar("localizacao", { length: 255 }),
+  tipoAcesso: mysqlEnum("tipoAcesso", ["login", "logout", "recuperacao_senha", "alteracao_senha"]).default("login"),
+  sucesso: boolean("sucesso").default(true),
+  motivoFalha: text("motivoFalha"),
+});
+
+export type MembroAcesso = typeof membroAcessos.$inferSelect;
+export type InsertMembroAcesso = typeof membroAcessos.$inferInsert;
+
 // ==================== LINKS COMPARTILHÁVEIS ====================
 export const linksCompartilhaveis = mysqlTable("links_compartilhaveis", {
   id: int("id").autoincrement().primaryKey(),
