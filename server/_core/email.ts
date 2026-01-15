@@ -466,3 +466,103 @@ export async function sendResumoDiarioVencimentos(params: {
     html,
   });
 }
+
+
+/**
+ * Envia email de recuperação de senha para membro da equipe
+ */
+export async function sendRecuperacaoSenhaEmail(params: {
+  destinatario: string;
+  nome: string;
+  token: string;
+  baseUrl: string;
+}): Promise<EmailResult> {
+  const { destinatario, nome, token, baseUrl } = params;
+
+  const linkRecuperacao = `${baseUrl}/equipe/redefinir-senha?token=${token}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
+      <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 30px 20px; border-radius: 16px 16px 0 0; text-align: center;">
+        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 28px;">🔐</span>
+        </div>
+        <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 600;">
+          Recuperação de Senha
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">
+          App Manutenção
+        </p>
+      </div>
+
+      <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <p style="color: #374151; font-size: 16px; margin: 0 0 20px 0;">
+          Olá <strong>${nome}</strong>,
+        </p>
+        
+        <p style="color: #6b7280; font-size: 14px; margin: 0 0 25px 0;">
+          Recebemos uma solicitação para redefinir a senha da sua conta no App Manutenção. 
+          Se você não fez esta solicitação, pode ignorar este email com segurança.
+        </p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${linkRecuperacao}" 
+             style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">
+            Redefinir Minha Senha
+          </a>
+        </div>
+
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; padding: 15px; border-radius: 10px; margin: 25px 0;">
+          <p style="color: #92400e; font-size: 13px; margin: 0;">
+            <strong>⚠️ Atenção:</strong> Este link é válido por <strong>1 hora</strong>. 
+            Após esse período, você precisará solicitar uma nova recuperação.
+          </p>
+        </div>
+
+        <p style="color: #9ca3af; font-size: 12px; margin: 20px 0 0 0;">
+          Se o botão não funcionar, copie e cole o link abaixo no seu navegador:
+        </p>
+        <p style="color: #6b7280; font-size: 11px; word-break: break-all; background: #f3f4f6; padding: 10px; border-radius: 6px; margin: 10px 0 0 0;">
+          ${linkRecuperacao}
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;">
+
+        <p style="text-align: center; color: #9ca3af; font-size: 12px; margin: 0;">
+          Este email foi enviado automaticamente pelo sistema App Manutenção.<br>
+          Por favor, não responda a este email.
+        </p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const text = `
+Olá ${nome},
+
+Recebemos uma solicitação para redefinir a senha da sua conta no App Manutenção.
+
+Para redefinir sua senha, acesse o link abaixo:
+${linkRecuperacao}
+
+Este link é válido por 1 hora.
+
+Se você não solicitou a recuperação de senha, ignore este email.
+
+---
+App Manutenção
+  `.trim();
+
+  return sendEmail({
+    to: destinatario,
+    subject: '🔐 Recuperação de Senha - App Manutenção',
+    html,
+    text,
+  });
+}

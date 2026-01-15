@@ -7504,6 +7504,132 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Solicitar recuperação de senha
+    solicitarRecuperacaoSenha: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar membro pelo email
+        const result = await db.select().from(membrosEquipe)
+          .where(and(
+            eq(membrosEquipe.email, input.email),
+            eq(membrosEquipe.ativo, true)
+          ))
+          .limit(1);
+        
+        // Sempre retornar sucesso para não revelar se o email existe
+        if (!result[0]) {
+          return { success: true, message: "Se o email estiver cadastrado, você receberá instruções de recuperação." };
+        }
+        
+        const membro = result[0];
+        
+        // Gerar token de recuperação
+        const crypto = await import("crypto");
+        const token = crypto.randomBytes(32).toString("hex");
+        const expiracao = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+        
+        // Salvar token no banco
+        await db.update(membrosEquipe)
+          .set({ 
+            resetToken: token, 
+            resetTokenExpira: expiracao 
+          })
+          .where(eq(membrosEquipe.id, membro.id));
+        
+        // Enviar email de recuperação
+        const { sendRecuperacaoSenhaEmail } = await import("./_core/email");
+        const baseUrl = ctx.req.headers.origin || `https://${ctx.req.headers.host}`;
+        
+        await sendRecuperacaoSenhaEmail({
+          destinatario: membro.email!,
+          nome: membro.nome,
+          token,
+          baseUrl,
+        });
+        
+        return { success: true, message: "Se o email estiver cadastrado, você receberá instruções de recuperação." };
+      }),
+
+    // Validar token de recuperação
+    validarTokenRecuperacao: publicProcedure
+      .input(z.object({
+        token: z.string(),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const result = await db.select().from(membrosEquipe)
+          .where(and(
+            eq(membrosEquipe.resetToken, input.token),
+            eq(membrosEquipe.ativo, true)
+          ))
+          .limit(1);
+        
+        if (!result[0]) {
+          return { valid: false, message: "Token inválido ou expirado." };
+        }
+        
+        const membro = result[0];
+        
+        // Verificar se o token expirou
+        if (!membro.resetTokenExpira || new Date() > new Date(membro.resetTokenExpira)) {
+          return { valid: false, message: "Token expirado. Solicite uma nova recuperação de senha." };
+        }
+        
+        return { valid: true, nome: membro.nome };
+      }),
+
+    // Redefinir senha com token
+    redefinirSenha: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        novaSenha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar membro pelo token
+        const result = await db.select().from(membrosEquipe)
+          .where(and(
+            eq(membrosEquipe.resetToken, input.token),
+            eq(membrosEquipe.ativo, true)
+          ))
+          .limit(1);
+        
+        if (!result[0]) {
+          throw new Error("Token inválido ou expirado.");
+        }
+        
+        const membro = result[0];
+        
+        // Verificar se o token expirou
+        if (!membro.resetTokenExpira || new Date() > new Date(membro.resetTokenExpira)) {
+          throw new Error("Token expirado. Solicite uma nova recuperação de senha.");
+        }
+        
+        // Hash da nova senha
+        const bcrypt = await import("bcrypt");
+        const senhaHash = await bcrypt.hash(input.novaSenha, 10);
+        
+        // Atualizar senha e limpar token
+        await db.update(membrosEquipe)
+          .set({ 
+            senha: senhaHash, 
+            resetToken: null, 
+            resetTokenExpira: null 
+          })
+          .where(eq(membrosEquipe.id, membro.id));
+        
+        return { success: true, message: "Senha redefinida com sucesso!" };
+      }),
+
     // Listar módulos disponíveis para permissões
     modulosDisponiveis: publicProcedure
       .query(() => {

@@ -43,6 +43,8 @@ import FuncionarioDashboard from "./pages/FuncionarioDashboard";
 import FuncionarioRecuperarSenha from "./pages/FuncionarioRecuperarSenha";
 import FuncionarioRedefinirSenha from "./pages/FuncionarioRedefinirSenha";
 import MembroLogin from "./pages/MembroLogin";
+import MembroEsqueciSenha from "./pages/MembroEsqueciSenha";
+import MembroRedefinirSenha from "./pages/MembroRedefinirSenha";
 import HistoricoAcessosPage from "./pages/HistoricoAcessosPage";
 import AppBuilder from "./pages/AppBuilder";
 import RelatorioBuilder from "./pages/RelatorioBuilder";
@@ -103,6 +105,8 @@ function Router() {
       
       {/* Portal do Membro da Equipe */}
       <Route path="/equipe/login" component={MembroLogin} />
+      <Route path="/equipe/esqueci-senha" component={MembroEsqueciSenha} />
+      <Route path="/equipe/redefinir-senha" component={MembroRedefinirSenha} />
       
       {/* Portal do Funcionário */}
       <Route path="/funcionario/login" component={FuncionarioLogin} />

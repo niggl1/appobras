@@ -1022,3 +1022,13 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Implementar filtro de menu baseado em permissões
 - [x] Bloquear acesso a rotas não autorizadas
 - [x] Testar sistema completo de permissões
+
+
+## Recuperação de Senha para Membros da Equipe (15/01/2026)
+- [x] Criar rota tRPC para solicitar recuperação de senha
+- [x] Criar rota tRPC para validar token e redefinir senha
+- [x] Criar template de email para recuperação de senha
+- [x] Criar página de solicitação de recuperação (/equipe/esqueci-senha)
+- [x] Criar página de redefinição de senha (/equipe/redefinir-senha)
+- [x] Adicionar link "Esqueci minha senha" na página de login
+- [x] Testar fluxo completo de recuperação
