@@ -672,3 +672,18 @@
 - [x] Integrar Resend no processamento de alertas de vencimento
 - [x] Remover código SMTP/Zoho desnecessário
 - [x] Testar envio de alerta de vencimento real
+
+
+## Bug: Segundo Menu Duplicado
+- [ ] Identificar segundo menu nas páginas de Ordem de Serviço e Agenda de Vencimentos
+- [ ] Remover menu duplicado
+- [ ] Testar correção
+
+
+## Fase 50: Configuração do Capacitor
+- [x] Instalar @capacitor/core e @capacitor/cli
+- [x] Criar capacitor.config.ts
+- [x] Fazer build da aplicação
+- [x] Adicionar plataforma Android
+- [x] Adicionar plataforma iOS
+- [x] Testar configuração
