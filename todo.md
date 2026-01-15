@@ -723,3 +723,8 @@
 - [x] Substituir as duas logos do menu lateral pela logo completa "APP MANUTENÇÃO"
 - [x] Remover logo da área de conteúdo (Agenda de Vencimentos e Ordens de Serviço)
 - [x] Testar alterações
+
+
+## Bug: Ícone pequeno duplicado no menu lateral
+- [ ] Remover ícone pequeno que aparece ao lado da nova logo
+- [ ] Testar alteração
