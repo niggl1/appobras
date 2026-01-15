@@ -335,7 +335,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <AlertTriangle className="h-6 w-6 text-primary" />
-            Ocorrências
+            Ocorrências Completas
           </h2>
           <p className="text-muted-foreground">
             Registre e acompanhe ocorrências da organização

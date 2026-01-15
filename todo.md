@@ -967,3 +967,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Verificar se todas as páginas existem
 - [x] Verificar se todas as funções estão implementadas
 - [x] Todas as rotas estão corretas e funcionando
+
+
+## Ajuste de Textos - Títulos das Páginas (15/01/2026)
+- [x] Alterar "Antes e Depois" para "Antes e Depois Completa"
+- [x] Alterar "Ocorrências" para "Ocorrências Completas"
+- [x] Alterar "Vistorias" para "Vistorias Completas"

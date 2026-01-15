@@ -7594,7 +7594,7 @@ function AntesDepoisSection() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Antes e Depois</h1>
+          <h1 className="text-2xl font-serif font-bold text-foreground">Antes e Depois Completa</h1>
           <p className="text-muted-foreground">Mostre a transformação de melhorias realizadas</p>
         </div>
         <Card>
@@ -7611,7 +7611,7 @@ function AntesDepoisSection() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Antes e Depois</h1>
+          <h1 className="text-2xl font-serif font-bold text-foreground">Antes e Depois Completa</h1>
           <p className="text-muted-foreground">Mostre a transformação de melhorias realizadas</p>
         </div>
         <div className="flex items-center gap-2">
