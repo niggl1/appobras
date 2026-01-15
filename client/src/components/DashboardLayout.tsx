@@ -752,33 +752,34 @@ function DashboardLayoutContent({
               })}
             </SidebarMenu>
             
-            {/* Menu de Administração - apenas para admins */}
-            {user?.role === 'admin' && (
-              <div className="mt-4 pt-4 border-t border-border/50">
-                <div className="px-3 py-2">
-                  <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Administração</span>
-                </div>
-                <SidebarMenu>
-                  {adminMenuItems.map((item) => (
-                    <SidebarMenuItem key={item.path}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={location === item.path}
-                        tooltip={item.label}
-                      >
-                        <a href={item.path} className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-orange-500" />
-                          <span>{item.label}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </div>
-            )}
           </SidebarContent>
 
-          <SidebarFooter className="p-3 border-t">
+          <SidebarFooter className="p-3 border-t flex flex-col gap-3">
+            {/* Menu de Administração - apenas para admins */}
+            {user?.role === 'admin' && (
+              <div className="pb-3 border-b border-border/50">
+                <div className="px-1 py-1 mb-2">
+                  <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Administração</span>
+                </div>
+                <div className="space-y-1">
+                  {adminMenuItems.map((item) => (
+                    <a 
+                      key={item.path}
+                      href={item.path} 
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                        location === item.path 
+                          ? "bg-orange-100 text-orange-700 font-medium" 
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 text-orange-500" />
+                      <span>{item.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">

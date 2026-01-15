@@ -756,3 +756,11 @@
 - [x] Adicionar link no menu lateral (apenas para admins)
 - [x] Testar funcionalidades
 - [x] Salvar checkpoint
+
+## Fase 53: Correção do Menu de Administração
+
+### Bug
+- [x] Links Admin Usuários e Admin Funções não aparecem no menu para usuários admin
+- [x] Verificar se o menu está sendo renderizado corretamente
+- [x] Garantir que o role do usuário está sendo lido corretamente
+- [x] Mover menu de admin para o SidebarFooter para evitar sobreposição
