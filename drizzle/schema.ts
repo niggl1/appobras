@@ -17,6 +17,13 @@ export const users = mysqlTable("users", {
   resetTokenExpira: timestamp("resetTokenExpira"),
   // Tipo de conta: sindico, administradora ou admin
   tipoConta: mysqlEnum("tipoConta", ["sindico", "administradora", "admin"]).default("sindico"),
+  // Novos campos para gestão de usuários
+  tipoUsuario: mysqlEnum("tipoUsuario", ["usuario", "pequena_empresa", "media_empresa"]).default("usuario"),
+  diasUtilizacao: int("diasUtilizacao").default(0),
+  cidade: varchar("cidade", { length: 100 }),
+  adimplente: boolean("adimplente").default(true),
+  bloqueado: boolean("bloqueado").default(false),
+  motivoBloqueio: text("motivoBloqueio"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

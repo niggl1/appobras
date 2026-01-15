@@ -1,18 +1,31 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, AlertTriangle } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const searchString = useSearch();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mensagemBloqueio, setMensagemBloqueio] = useState<string | null>(null);
+
+  // Verificar se usuário foi redirecionado por bloqueio
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const bloqueado = params.get("bloqueado");
+    const mensagem = params.get("mensagem");
+    if (bloqueado === "true" && mensagem) {
+      setMensagemBloqueio(decodeURIComponent(mensagem));
+    }
+  }, [searchString]);
 
   const loginMutation = trpc.auth.loginLocal.useMutation({
     onSuccess: (data) => {
@@ -47,6 +60,17 @@ export default function Login() {
           </Link>
           <p className="text-muted-foreground mt-2">Acesse sua conta</p>
         </div>
+
+        {/* Alerta de Bloqueio */}
+        {mensagemBloqueio && (
+          <Alert variant="destructive" className="mb-4 bg-red-50 border-red-200">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Acesso Bloqueado</AlertTitle>
+            <AlertDescription>
+              {mensagemBloqueio}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Card className="shadow-xl border-0">
           <CardHeader className="space-y-1 pb-4">

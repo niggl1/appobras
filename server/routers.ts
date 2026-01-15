@@ -225,6 +225,11 @@ export const appRouter = router({
           throw new Error("Email ou senha incorretos");
         }
         
+        // Verificar se usuário está bloqueado
+        if (user.bloqueado) {
+          throw new Error(user.motivoBloqueio || "Para continuar a utilizar escolha um dos planos pagos.");
+        }
+        
         // Atualizar último login
         await db.update(users).set({ lastSignedIn: new Date() }).where(eq(users.id, user.id));
         
@@ -14047,6 +14052,12 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           email: users.email,
           role: users.role,
           tipoConta: users.tipoConta,
+          tipoUsuario: users.tipoUsuario,
+          diasUtilizacao: users.diasUtilizacao,
+          cidade: users.cidade,
+          adimplente: users.adimplente,
+          bloqueado: users.bloqueado,
+          motivoBloqueio: users.motivoBloqueio,
           loginMethod: users.loginMethod,
           avatarUrl: users.avatarUrl,
           phone: users.phone,
@@ -14104,12 +14115,18 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         };
       }),
 
-    // Atualizar usuário (role, tipoConta)
+    // Atualizar usuário (role, tipoConta, tipoUsuario, etc)
     atualizar: protectedProcedure
       .input(z.object({
         id: z.number(),
         role: z.enum(["user", "admin", "sindico", "morador"]).optional(),
         tipoConta: z.enum(["sindico", "administradora", "admin"]).optional(),
+        tipoUsuario: z.enum(["usuario", "pequena_empresa", "media_empresa"]).optional(),
+        diasUtilizacao: z.number().optional(),
+        cidade: z.string().optional(),
+        adimplente: z.boolean().optional(),
+        bloqueado: z.boolean().optional(),
+        motivoBloqueio: z.string().optional(),
         name: z.string().optional(),
         phone: z.string().optional(),
       }))
@@ -14143,6 +14160,11 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           antes: {
             role: usuarioAnterior.role,
             tipoConta: usuarioAnterior.tipoConta,
+            tipoUsuario: usuarioAnterior.tipoUsuario,
+            diasUtilizacao: usuarioAnterior.diasUtilizacao,
+            cidade: usuarioAnterior.cidade,
+            adimplente: usuarioAnterior.adimplente,
+            bloqueado: usuarioAnterior.bloqueado,
             name: usuarioAnterior.name,
             phone: usuarioAnterior.phone,
           },

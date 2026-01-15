@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { 
@@ -29,8 +30,13 @@ import {
   RefreshCw,
   Building2,
   User,
+  Ban,
+  CheckCircle,
+  XCircle,
+  MapPin,
+  Clock,
 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
@@ -52,6 +58,12 @@ const TIPO_CONTA_LABELS: Record<string, string> = {
   admin: "Admin Sistema",
 };
 
+const TIPO_USUARIO_LABELS: Record<string, string> = {
+  usuario: "Usuário",
+  pequena_empresa: "Pequena Empresa",
+  media_empresa: "Média Empresa",
+};
+
 export default function AdminUsuariosPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("");
@@ -59,6 +71,7 @@ export default function AdminUsuariosPage() {
   const [page, setPage] = useState(1);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<any>(null);
+  const [blockConfirm, setBlockConfirm] = useState<any>(null);
 
   // Buscar usuários
   const { data: usuariosData, isLoading, refetch } = trpc.adminUsuarios.listar.useQuery({
@@ -106,6 +119,12 @@ export default function AdminUsuariosPage() {
       id: editingUser.id,
       role: editingUser.role,
       tipoConta: editingUser.tipoConta,
+      tipoUsuario: editingUser.tipoUsuario,
+      diasUtilizacao: editingUser.diasUtilizacao ? Number(editingUser.diasUtilizacao) : undefined,
+      cidade: editingUser.cidade,
+      adimplente: editingUser.adimplente,
+      bloqueado: editingUser.bloqueado,
+      motivoBloqueio: editingUser.motivoBloqueio,
       name: editingUser.name,
       phone: editingUser.phone,
     });
@@ -114,6 +133,24 @@ export default function AdminUsuariosPage() {
   const handleDeleteUser = () => {
     if (!deleteConfirm) return;
     excluirMutation.mutate({ id: deleteConfirm.id });
+  };
+
+  const handleBlockUser = () => {
+    if (!blockConfirm) return;
+    atualizarMutation.mutate({
+      id: blockConfirm.id,
+      bloqueado: true,
+      motivoBloqueio: "Para continuar a utilizar escolha um dos planos pagos.",
+    });
+    setBlockConfirm(null);
+  };
+
+  const handleUnblockUser = (usuario: any) => {
+    atualizarMutation.mutate({
+      id: usuario.id,
+      bloqueado: false,
+      motivoBloqueio: "",
+    });
   };
 
   const formatDate = (date: Date | string | null) => {
@@ -259,17 +296,19 @@ export default function AdminUsuariosPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Usuário</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Perfil</TableHead>
-                        <TableHead>Tipo de Conta</TableHead>
-                        <TableHead>Método de Login</TableHead>
+                        <TableHead>Tipo Usuário</TableHead>
+                        <TableHead>Cidade</TableHead>
+                        <TableHead>Dias Uso</TableHead>
+                        <TableHead>Adimplência</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Tipo Conta</TableHead>
                         <TableHead>Último Acesso</TableHead>
                         <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {usuariosData?.usuarios.map((usuario) => (
-                        <TableRow key={usuario.id}>
+                        <TableRow key={usuario.id} className={usuario.bloqueado ? "bg-red-50" : ""}>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               {usuario.avatarUrl ? (
@@ -285,22 +324,52 @@ export default function AdminUsuariosPage() {
                               )}
                               <div>
                                 <p className="font-medium text-gray-900">{usuario.name || "Sem nome"}</p>
-                                {usuario.phone && (
-                                  <p className="text-xs text-gray-500">{usuario.phone}</p>
-                                )}
+                                <p className="text-xs text-gray-500">{usuario.email || "-"}</p>
                               </div>
                             </div>
                           </TableCell>
                           <TableCell>
+                            <Badge variant="outline" className="font-normal">
+                              {TIPO_USUARIO_LABELS[usuario.tipoUsuario || "usuario"] || "Usuário"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
                             <div className="flex items-center gap-1 text-gray-600">
-                              <Mail className="h-3 w-3" />
-                              {usuario.email || "-"}
+                              <MapPin className="h-3 w-3" />
+                              {usuario.cidade || "-"}
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={ROLE_COLORS[usuario.role] || "bg-gray-100"}>
-                              {ROLE_LABELS[usuario.role] || usuario.role}
-                            </Badge>
+                            <div className="flex items-center gap-1 text-gray-600">
+                              <Clock className="h-3 w-3" />
+                              {usuario.diasUtilizacao || 0} dias
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {usuario.adimplente === false ? (
+                              <Badge className="bg-red-100 text-red-700 border-red-200">
+                                <XCircle className="h-3 w-3 mr-1" />
+                                Inadimplente
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-green-100 text-green-700 border-green-200">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Adimplente
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {usuario.bloqueado ? (
+                              <Badge className="bg-red-100 text-red-700 border-red-200">
+                                <Ban className="h-3 w-3 mr-1" />
+                                Bloqueado
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-green-100 text-green-700 border-green-200">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Ativo
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell>
                             {usuario.tipoConta ? (
@@ -310,11 +379,6 @@ export default function AdminUsuariosPage() {
                             ) : (
                               <span className="text-sm text-gray-400">-</span>
                             )}
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-sm text-gray-600 capitalize">
-                              {usuario.loginMethod || "OAuth"}
-                            </span>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -334,6 +398,25 @@ export default function AdminUsuariosPage() {
                                   <Edit className="h-4 w-4 mr-2" />
                                   Editar
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {usuario.bloqueado ? (
+                                  <DropdownMenuItem 
+                                    onClick={() => handleUnblockUser(usuario)}
+                                    className="text-green-600"
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                    Desbloquear
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem 
+                                    onClick={() => setBlockConfirm(usuario)}
+                                    className="text-orange-600"
+                                  >
+                                    <Ban className="h-4 w-4 mr-2" />
+                                    Bloquear
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem 
                                   onClick={() => setDeleteConfirm(usuario)}
                                   className="text-red-600"
@@ -348,7 +431,7 @@ export default function AdminUsuariosPage() {
                       ))}
                       {usuariosData?.usuarios.length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                          <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                             Nenhum usuário encontrado
                           </TableCell>
                         </TableRow>
@@ -390,7 +473,7 @@ export default function AdminUsuariosPage() {
 
         {/* Modal de Edição */}
         <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Editar Usuário</DialogTitle>
               <DialogDescription>
@@ -398,53 +481,136 @@ export default function AdminUsuariosPage() {
               </DialogDescription>
             </DialogHeader>
             {editingUser && (
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>Nome</Label>
-                  <Input
-                    value={editingUser.name || ""}
-                    onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                  />
+              <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nome</Label>
+                    <Input
+                      value={editingUser.name || ""}
+                      onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Telefone</Label>
+                    <Input
+                      value={editingUser.phone || ""}
+                      onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+                    />
+                  </div>
                 </div>
+                
                 <div className="space-y-2">
-                  <Label>Telefone</Label>
-                  <Input
-                    value={editingUser.phone || ""}
-                    onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Perfil (Role)</Label>
+                  <Label>Tipo de Usuário</Label>
                   <Select
-                    value={editingUser.role}
-                    onValueChange={(v) => setEditingUser({ ...editingUser, role: v })}
+                    value={editingUser.tipoUsuario || "usuario"}
+                    onValueChange={(v) => setEditingUser({ ...editingUser, tipoUsuario: v })}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="user">Usuário</SelectItem>
-                      <SelectItem value="sindico">Síndico</SelectItem>
-                      <SelectItem value="morador">Morador</SelectItem>
-                      <SelectItem value="admin">Administrador</SelectItem>
+                      <SelectItem value="usuario">Usuário</SelectItem>
+                      <SelectItem value="pequena_empresa">Pequena Empresa</SelectItem>
+                      <SelectItem value="media_empresa">Média Empresa</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label>Tipo de Conta</Label>
-                  <Select
-                    value={editingUser.tipoConta || ""}
-                    onValueChange={(v) => setEditingUser({ ...editingUser, tipoConta: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sindico">Síndico</SelectItem>
-                      <SelectItem value="administradora">Administradora</SelectItem>
-                      <SelectItem value="admin">Admin Sistema</SelectItem>
-                    </SelectContent>
-                  </Select>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Cidade</Label>
+                    <Input
+                      value={editingUser.cidade || ""}
+                      onChange={(e) => setEditingUser({ ...editingUser, cidade: e.target.value })}
+                      placeholder="Ex: São Paulo"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Dias de Utilização</Label>
+                    <Input
+                      type="number"
+                      value={editingUser.diasUtilizacao || 0}
+                      onChange={(e) => setEditingUser({ ...editingUser, diasUtilizacao: parseInt(e.target.value) || 0 })}
+                      min={0}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Perfil (Role)</Label>
+                    <Select
+                      value={editingUser.role}
+                      onValueChange={(v) => setEditingUser({ ...editingUser, role: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">Usuário</SelectItem>
+                        <SelectItem value="sindico">Síndico</SelectItem>
+                        <SelectItem value="morador">Morador</SelectItem>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipo de Conta</Label>
+                    <Select
+                      value={editingUser.tipoConta || "sindico"}
+                      onValueChange={(v) => setEditingUser({ ...editingUser, tipoConta: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sindico">Síndico</SelectItem>
+                        <SelectItem value="administradora">Administradora</SelectItem>
+                        <SelectItem value="admin">Admin Sistema</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-4 space-y-4 bg-gray-50">
+                  <h4 className="font-medium text-gray-900">Status Financeiro e Acesso</h4>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Adimplente</Label>
+                      <p className="text-xs text-gray-500">Usuário está em dia com pagamentos</p>
+                    </div>
+                    <Switch
+                      checked={editingUser.adimplente !== false}
+                      onCheckedChange={(checked) => setEditingUser({ ...editingUser, adimplente: checked })}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Bloqueado</Label>
+                      <p className="text-xs text-gray-500">Impede o acesso ao sistema</p>
+                    </div>
+                    <Switch
+                      checked={editingUser.bloqueado === true}
+                      onCheckedChange={(checked) => setEditingUser({ 
+                        ...editingUser, 
+                        bloqueado: checked,
+                        motivoBloqueio: checked ? "Para continuar a utilizar escolha um dos planos pagos." : ""
+                      })}
+                    />
+                  </div>
+
+                  {editingUser.bloqueado && (
+                    <div className="space-y-2">
+                      <Label>Motivo do Bloqueio</Label>
+                      <Input
+                        value={editingUser.motivoBloqueio || ""}
+                        onChange={(e) => setEditingUser({ ...editingUser, motivoBloqueio: e.target.value })}
+                        placeholder="Mensagem exibida ao usuário"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -459,6 +625,44 @@ export default function AdminUsuariosPage() {
               >
                 {atualizarMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Salvar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de Confirmação de Bloqueio */}
+        <Dialog open={!!blockConfirm} onOpenChange={() => setBlockConfirm(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-orange-600 flex items-center gap-2">
+                <Ban className="h-5 w-5" />
+                Bloquear Usuário
+              </DialogTitle>
+              <DialogDescription>
+                Tem certeza que deseja bloquear o usuário <strong>{blockConfirm?.name || blockConfirm?.email}</strong>?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <p className="text-sm text-orange-800">
+                  <strong>Mensagem exibida ao usuário:</strong>
+                </p>
+                <p className="text-sm text-orange-700 mt-1 italic">
+                  "Para continuar a utilizar escolha um dos planos pagos."
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setBlockConfirm(null)}>
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleBlockUser}
+                disabled={atualizarMutation.isPending}
+                className="bg-orange-500 hover:bg-orange-600"
+              >
+                {atualizarMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Bloquear
               </Button>
             </DialogFooter>
           </DialogContent>

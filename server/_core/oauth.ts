@@ -28,6 +28,14 @@ export function registerOAuthRoutes(app: Express) {
         return;
       }
 
+      // Verificar se usuário existe e está bloqueado
+      const existingUser = await db.getUserByOpenId(userInfo.openId);
+      if (existingUser?.bloqueado) {
+        const mensagem = encodeURIComponent(existingUser.motivoBloqueio || "Para continuar a utilizar escolha um dos planos pagos.");
+        res.redirect(302, `/login?bloqueado=true&mensagem=${mensagem}`);
+        return;
+      }
+
       await db.upsertUser({
         openId: userInfo.openId,
         name: userInfo.name || null,

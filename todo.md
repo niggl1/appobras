@@ -850,3 +850,44 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Remover referências no Dashboard.tsx
 - [x] Remover arquivo AssistenteCriacao.tsx
 - [x] Testar que não há erros
+
+
+## Fase 63: Novos Campos na Tabela de Usuários
+### Schema
+- [ ] Adicionar campo tipoUsuario (usuario/pequena_empresa/media_empresa)
+- [ ] Adicionar campo diasUtilizacao
+- [ ] Adicionar campo cidade
+- [ ] Adicionar campo adimplente (boolean)
+- [ ] Adicionar campo bloqueado (boolean)
+- [ ] Executar migração do banco de dados
+
+### Backend
+- [ ] Atualizar rotas de listar/atualizar usuários para incluir novos campos
+- [ ] Criar rota para bloquear/desbloquear usuário
+
+### Frontend
+- [ ] Adicionar colunas na tabela de AdminUsuarios
+- [ ] Implementar seletor de tipo de usuário
+- [ ] Implementar indicador visual de adimplência (verde/vermelho)
+- [ ] Implementar botão de bloqueio
+- [ ] Criar modal de bloqueio com mensagem
+
+### Sistema de Bloqueio
+- [ ] Verificar status de bloqueio no login
+- [ ] Exibir mensagem "Para continuar a utilizar escolha um dos planos pagos"
+
+
+## Fase 63: Novos Campos na Tabela de Usuários
+### Backend
+- [x] Adicionar campos tipoUsuario, diasUtilizacao, cidade, adimplente, bloqueado, motivoBloqueio no schema
+- [x] Executar migração do banco de dados
+- [x] Atualizar rotas tRPC para suportar novos campos
+
+### Frontend
+- [x] Atualizar tabela AdminUsuarios com novas colunas
+- [x] Adicionar seletor de tipo de usuário (Usuário/Pequena Empresa/Média Empresa)
+- [x] Exibir dias de utilização
+- [x] Exibir cidade
+- [x] Exibir status de adimplência (verde/vermelho)
+- [x] Implementar funcionalidade de bloqueio com mensagem
+- [x] Exibir mensagem de bloqueio na tela de login
