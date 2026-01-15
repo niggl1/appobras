@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
+// DashboardLayout removido - agora renderizado dentro do Dashboard.tsx
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -245,7 +245,7 @@ export default function NotificarMoradorPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -749,8 +749,8 @@ export default function NotificarMoradorPage() {
             nome: condominio.nome,
           }}
           onPrint={handlePrint}
-        />
-      )}
-    </DashboardLayout>
+      />
+    )}
+    </>
   );
 }
