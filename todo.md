@@ -981,3 +981,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Alterar "Vistorias" para "Vistorias Completas"
 - [x] Alterar "Manutenções" para "Manutenções Completas"
 - [x] Alterar "Checklists" para "Checklists Completos"
+
+
+## Adicionar Módulos de Funções Rápidas (15/01/2026)
+- [x] Adicionar Vistoria Rápida
+- [x] Adicionar Manutenção Rápida
+- [x] Adicionar Ocorrência Rápida
+- [x] Adicionar Checklist Rápido
+- [x] Adicionar Antes/Depois Rápido

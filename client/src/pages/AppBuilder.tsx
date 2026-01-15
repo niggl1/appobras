@@ -116,6 +116,12 @@ const availableModules: Omit<AppModule, "enabled" | "order">[] = [
   { id: "ordem_servico", key: "ordem_servico", title: "Ordens de Serviço", icon: ClipboardPen, color: "text-white", bgColor: "bg-teal-600" },
   { id: "realizacoes", key: "realizacoes", title: "Realizações", icon: Award, color: "text-white", bgColor: "bg-yellow-600" },
   { id: "vistorias", key: "vistorias", title: "Vistorias Completas", icon: Search, color: "text-white", bgColor: "bg-emerald-500" },
+  // Funções Rápidas
+  { id: "vistoria_rapida", key: "vistoria_rapida", title: "Vistoria Rápida", icon: Zap, color: "text-white", bgColor: "bg-emerald-400" },
+  { id: "manutencao_rapida", key: "manutencao_rapida", title: "Manutenção Rápida", icon: Zap, color: "text-white", bgColor: "bg-slate-500" },
+  { id: "ocorrencia_rapida", key: "ocorrencia_rapida", title: "Ocorrência Rápida", icon: Zap, color: "text-white", bgColor: "bg-yellow-400" },
+  { id: "checklist_rapido", key: "checklist_rapido", title: "Checklist Rápido", icon: Zap, color: "text-white", bgColor: "bg-teal-400" },
+  { id: "antes_depois_rapido", key: "antes_depois_rapido", title: "Antes/Depois Rápido", icon: Zap, color: "text-white", bgColor: "bg-violet-400" },
 ];
 
 // Componente de módulo arrastável
