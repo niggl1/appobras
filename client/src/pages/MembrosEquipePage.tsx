@@ -104,7 +104,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
               Novo Membro
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] sm:max-w-md overflow-hidden p-0">
+          <DialogContent className="w-[95vw] sm:max-w-md overflow-y-auto max-h-[90vh] p-0">
             <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
               <DialogHeader className="space-y-1">
                 <DialogTitle className="flex items-center gap-2 text-white text-lg">

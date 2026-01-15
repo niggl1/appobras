@@ -1005,3 +1005,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Deixar visual profissional
 - [x] Separar Funções Completas e Funções Rápidas em categorias
 - [x] Adicionar 5 módulos de funções rápidas (Vistoria, Manutenção, Ocorrência, Checklist, Antes/Depois)
+
+
+## Correção: Modal de Equipe de Gestão Cortado (15/01/2026)
+- [x] Ajustar modal de Equipe de Gestão que está cortado em cima e em baixo
