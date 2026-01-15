@@ -904,3 +904,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Atualizar TarefasSimplesModal para suportar checklist
 - [x] Adicionar interface de itens do checklist no modal
 - [x] Testar integração completa
+
+
+## Correção - Botão Novo Livro
+- [x] Corrigir botão "Novo Livro" que redirecionava para /dashboard/criar-projeto (rota removida)
+- [x] Atualizar redirecionamento para /dashboard/revistas onde o usuário pode criar livros de manutenção
+- [x] Corrigir dropdown "Novo Projeto" no menu lateral para mesma rota

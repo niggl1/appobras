@@ -546,7 +546,7 @@ export default function Dashboard() {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start" className="w-56">
-                        <DropdownMenuItem onClick={() => setLocation("/dashboard/criar-projeto")} className="cursor-pointer font-medium">
+                        <DropdownMenuItem onClick={() => setLocation("/dashboard/revistas")} className="cursor-pointer font-medium">
                           <Plus className="h-4 w-4 mr-2" />
                           + Novo Projeto
                         </DropdownMenuItem>
@@ -1309,7 +1309,7 @@ function OverviewSection({ user }: { user: any }) {
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1">Livro de Manutenção</h3>
             <p className="text-sm text-muted-foreground mb-4">Livros interativos com funcionalidades</p>
-            <Link href="/dashboard/criar-projeto">
+            <Link href="/dashboard/revistas">
               <button className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md shadow-purple-500/25 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center justify-center gap-2">
                 <Plus className="w-4 h-4" />
                 Novo Livro
