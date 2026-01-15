@@ -295,6 +295,7 @@ export default function AdminUsuariosPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">Ações</TableHead>
                         <TableHead>Usuário</TableHead>
                         <TableHead>Tipo Usuário</TableHead>
                         <TableHead>Cidade</TableHead>
@@ -303,12 +304,52 @@ export default function AdminUsuariosPage() {
                         <TableHead>Status</TableHead>
                         <TableHead>Tipo Conta</TableHead>
                         <TableHead>Último Acesso</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {usuariosData?.usuarios.map((usuario) => (
                         <TableRow key={usuario.id} className={usuario.bloqueado ? "bg-red-50" : ""}>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start">
+                                <DropdownMenuItem onClick={() => setEditingUser({ ...usuario })}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {usuario.bloqueado ? (
+                                  <DropdownMenuItem 
+                                    onClick={() => handleUnblockUser(usuario)}
+                                    className="text-green-600"
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                    Desbloquear
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem 
+                                    onClick={() => setBlockConfirm(usuario)}
+                                    className="text-orange-600"
+                                  >
+                                    <Ban className="h-4 w-4 mr-2" />
+                                    Bloquear
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => setDeleteConfirm(usuario)}
+                                  className="text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Excluir
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               {usuario.avatarUrl ? (
@@ -385,47 +426,6 @@ export default function AdminUsuariosPage() {
                               <Calendar className="h-3 w-3" />
                               {formatDate(usuario.lastSignedIn)}
                             </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => setEditingUser({ ...usuario })}>
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                {usuario.bloqueado ? (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleUnblockUser(usuario)}
-                                    className="text-green-600"
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-2" />
-                                    Desbloquear
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem 
-                                    onClick={() => setBlockConfirm(usuario)}
-                                    className="text-orange-600"
-                                  >
-                                    <Ban className="h-4 w-4 mr-2" />
-                                    Bloquear
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => setDeleteConfirm(usuario)}
-                                  className="text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))}
