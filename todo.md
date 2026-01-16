@@ -1463,3 +1463,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar ícone Users para diferenciar
 - [x] Testar visibilidade em diferentes resoluções
 - [x] Todos os 121 testes passando
+
+## Fase 56: Corrigir Botao de Compartilhamento no Modal de Criacao
+- [x] Identificar que osIdCriada nunca era setado
+- [x] Adicionar logica para setar osIdCriada apos criar OS
+- [x] Nao fechar modal para deixar botao visivel
+- [x] Testar funcionalidade (121 testes passando)
+- [x] Botao Compartilhar com Equipe agora visivel no modal apos criar

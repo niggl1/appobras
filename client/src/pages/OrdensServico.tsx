@@ -270,8 +270,13 @@ export default function OrdensServico() {
         tempoEstimadoMinutos: novaOS.tempoEstimadoMinutos,
       });
 
+      // Setar osIdCriada para mostrar botão de compartilhamento
+      if (result?.id) {
+        setOsIdCriada(result.id);
+      }
+
       toast.success("Ordem de serviço criada com sucesso!");
-      setShowNovaOS(false);
+      // Nao fechar modal para deixar botao de compartilhamento visivel
       setNovaOS({
         responsavelPrincipal: "",
         protocolo: "",
