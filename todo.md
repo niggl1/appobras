@@ -1259,3 +1259,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar nova seção antes da seção CTA final
 - [x] Adicionar 3 cards com características do contrato
 - [x] Aplicar design com gradiente laranja
+
+
+## Adicionar Botão "Baixar o contrato" (17/01/2026)
+- [x] Adicionar botão de download na seção "Conheça nosso contrato"
+- [x] Configurar link para arquivo /contrato.pdf
+- [x] Aplicar estilo com gradiente laranja

@@ -568,7 +568,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
               {[
                 {
                   title: "Sem Compromisso Longo",
@@ -601,6 +601,15 @@ export default function Home() {
                   <p className="text-gray-600">{item.description}</p>
                 </motion.div>
               ))}
+            </div>
+
+            <div className="text-center">
+              <a href="/contrato.pdf" download className="inline-block">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Baixar o contrato
+                </Button>
+              </a>
             </div>
           </motion.div>
         </div>
