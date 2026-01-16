@@ -1355,3 +1355,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar campo de lista de material com botão de +
 - [x] Adicionar campo de responsável acima do título
 - [x] Adicionar campo de protocolo
+
+
+## Implementar Modais para Criar Novos Itens (17/01/2026)
+- [x] Criar modal para adicionar nova categoria
+- [x] Criar modal para adicionar nova prioridade
+- [x] Criar modal para adicionar novo setor
+- [x] Integrar mutations de criação com os modais
+- [x] Atualizar lista após criar novo item
