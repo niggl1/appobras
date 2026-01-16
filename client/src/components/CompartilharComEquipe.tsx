@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { 
   Share2, 
@@ -13,7 +14,11 @@ import {
   Send,
   CheckCircle,
   User,
-  Phone
+  Phone,
+  Eye,
+  Bell,
+  Clock,
+  ExternalLink
 } from "lucide-react";
 
 interface MembroEquipe {
@@ -27,9 +32,10 @@ interface MembroEquipe {
 
 interface CompartilharComEquipeProps {
   condominioId: number;
-  tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois";
+  tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois" | "ordem_servico" | "tarefa_simples";
   itemId: number;
   itemTitulo: string;
+  itemProtocolo?: string;
   itemDescricao?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -40,6 +46,7 @@ export function CompartilharComEquipe({
   tipo,
   itemId,
   itemTitulo,
+  itemProtocolo,
   itemDescricao,
   open,
   onOpenChange,
@@ -49,12 +56,14 @@ export function CompartilharComEquipe({
   const [enviando, setEnviando] = useState(false);
   const [enviadosPorWhatsapp, setEnviadosPorWhatsapp] = useState<number[]>([]);
   const [enviadosPorEmail, setEnviadosPorEmail] = useState<number[]>([]);
+  const [rastreamentoAtivo, setRastreamentoAtivo] = useState(true);
 
   const { data: membros, isLoading } = trpc.membroEquipe.list.useQuery(
     { condominioId },
     { enabled: open }
   );
 
+  // Mutation para envio simples (sem rastreamento)
   const enviarEmailMutation = trpc.membroEquipe.enviarCompartilhamento.useMutation({
     onSuccess: (result) => {
       if (result.sucesso) {
@@ -69,6 +78,12 @@ export function CompartilharComEquipe({
     },
   });
 
+  // Mutation para criar compartilhamento com rastreamento
+  const criarCompartilhamentoMutation = trpc.membroEquipe.criarCompartilhamento.useMutation();
+  
+  // Mutation para enviar email com link rastreável
+  const enviarRastreavelMutation = trpc.membroEquipe.enviarCompartilhamentoRastreavel.useMutation();
+
   const getTipoLabel = () => {
     switch (tipo) {
       case "vistoria": return "Vistoria";
@@ -76,6 +91,8 @@ export function CompartilharComEquipe({
       case "ocorrencia": return "Ocorrência";
       case "checklist": return "Checklist";
       case "antes_depois": return "Antes e Depois";
+      case "ordem_servico": return "Ordem de Serviço";
+      case "tarefa_simples": return "Tarefa";
       default: return "Item";
     }
   };
@@ -84,6 +101,9 @@ export function CompartilharComEquipe({
     const tipoLabel = getTipoLabel();
     let mensagem = `*${tipoLabel}*\n\n`;
     mensagem += `📋 *Título:* ${itemTitulo}\n`;
+    if (itemProtocolo) {
+      mensagem += `🔢 *Protocolo:* ${itemProtocolo}\n`;
+    }
     if (itemDescricao) {
       mensagem += `📝 *Descrição:* ${itemDescricao}\n`;
     }
@@ -113,19 +133,63 @@ export function CompartilharComEquipe({
     }
   };
 
-  const handleEnviarWhatsApp = (membro: MembroEquipe) => {
+  const handleEnviarWhatsApp = async (membro: MembroEquipe) => {
     if (!membro.whatsapp) {
       toast.error("Este membro não tem WhatsApp cadastrado");
       return;
     }
 
-    const mensagem = getMensagemBase();
-    const numeroLimpo = membro.whatsapp.replace(/\D/g, "");
-    const url = `https://wa.me/${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
-    
-    window.open(url, "_blank");
-    setEnviadosPorWhatsapp(prev => [...prev, membro.id]);
-    toast.success(`WhatsApp aberto para ${membro.nome}`);
+    // Se rastreamento ativo, criar compartilhamento primeiro
+    if (rastreamentoAtivo) {
+      try {
+        const result = await criarCompartilhamentoMutation.mutateAsync({
+          condominioId,
+          destinatarioId: membro.id,
+          destinatarioNome: membro.nome,
+          destinatarioEmail: membro.email || undefined,
+          destinatarioTelefone: membro.whatsapp || undefined,
+          tipoItem: tipo,
+          itemId,
+          itemProtocolo,
+          itemTitulo,
+          canalEnvio: "whatsapp",
+          mensagem: mensagemPersonalizada || undefined,
+        });
+
+        const baseUrl = window.location.origin;
+        const linkRastreavel = `${baseUrl}${result.linkVisualizacao}`;
+        
+        const tipoLabel = getTipoLabel();
+        let mensagem = `*${tipoLabel}*\n\n`;
+        mensagem += `📋 *Título:* ${itemTitulo}\n`;
+        if (itemProtocolo) {
+          mensagem += `🔢 *Protocolo:* ${itemProtocolo}\n`;
+        }
+        if (mensagemPersonalizada) {
+          mensagem += `\n💬 *Mensagem:* ${mensagemPersonalizada}\n`;
+        }
+        mensagem += `\n🔗 *Ver detalhes:* ${linkRastreavel}`;
+        mensagem += `\n\n_Você será notificado quando visualizar._`;
+        mensagem += `\n_Compartilhado via App Manutenção_`;
+
+        const numeroLimpo = membro.whatsapp.replace(/\D/g, "");
+        const url = `https://wa.me/${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+        
+        window.open(url, "_blank");
+        setEnviadosPorWhatsapp(prev => [...prev, membro.id]);
+        toast.success(`WhatsApp aberto para ${membro.nome} (com rastreamento)`);
+      } catch (error) {
+        toast.error("Erro ao criar link rastreável");
+      }
+    } else {
+      const mensagem = getMensagemBase();
+      const numeroLimpo = membro.whatsapp.replace(/\D/g, "");
+      const url = `https://wa.me/${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      
+      window.open(url, "_blank");
+      setEnviadosPorWhatsapp(prev => [...prev, membro.id]);
+      toast.success(`WhatsApp aberto para ${membro.nome}`);
+    }
   };
 
   const handleEnviarEmail = async (membro: MembroEquipe) => {
@@ -136,16 +200,49 @@ export function CompartilharComEquipe({
 
     setEnviando(true);
     try {
-      await enviarEmailMutation.mutateAsync({
-        membroId: membro.id,
-        email: membro.email,
-        nome: membro.nome,
-        tipo,
-        itemId,
-        itemTitulo,
-        itemDescricao: itemDescricao || "",
-        mensagemPersonalizada,
-      });
+      if (rastreamentoAtivo) {
+        // Criar compartilhamento com rastreamento
+        const compartilhamento = await criarCompartilhamentoMutation.mutateAsync({
+          condominioId,
+          destinatarioId: membro.id,
+          destinatarioNome: membro.nome,
+          destinatarioEmail: membro.email,
+          destinatarioTelefone: membro.whatsapp || undefined,
+          tipoItem: tipo,
+          itemId,
+          itemProtocolo,
+          itemTitulo,
+          canalEnvio: "email",
+          mensagem: mensagemPersonalizada || undefined,
+        });
+
+        // Enviar email com link rastreável
+        const result = await enviarRastreavelMutation.mutateAsync({
+          compartilhamentoId: compartilhamento.id,
+          baseUrl: window.location.origin,
+        });
+
+        if (result.sucesso) {
+          toast.success(`Email enviado para ${membro.email} (com rastreamento)`);
+          setEnviadosPorEmail(prev => [...prev, membro.id]);
+        } else {
+          toast.error(`Erro ao enviar: ${result.erro}`);
+        }
+      } else {
+        // Envio simples sem rastreamento
+        await enviarEmailMutation.mutateAsync({
+          membroId: membro.id,
+          email: membro.email,
+          nome: membro.nome,
+          tipo: tipo as "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois",
+          itemId,
+          itemTitulo,
+          itemDescricao: itemDescricao || "",
+          mensagemPersonalizada,
+        });
+      }
+    } catch (error) {
+      toast.error("Erro ao enviar email");
     } finally {
       setEnviando(false);
     }
@@ -162,7 +259,7 @@ export function CompartilharComEquipe({
     if (metodo === "whatsapp") {
       for (const membro of membrosParaEnviar) {
         if (membro.whatsapp) {
-          handleEnviarWhatsApp(membro);
+          await handleEnviarWhatsApp(membro);
         }
       }
     } else {
@@ -208,6 +305,30 @@ export function CompartilharComEquipe({
 
         {/* Conteúdo */}
         <div className="overflow-y-auto max-h-[60vh] px-6 py-4">
+          {/* Opção de Rastreamento */}
+          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-800 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-green-800 dark:text-green-200 text-sm">
+                    Notificar quando visualizado
+                  </p>
+                  <p className="text-xs text-green-600 dark:text-green-400">
+                    Receba um email quando o destinatário abrir
+                  </p>
+                </div>
+              </div>
+              <Checkbox
+                checked={rastreamentoAtivo}
+                onCheckedChange={(checked) => setRastreamentoAtivo(checked as boolean)}
+                className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+              />
+            </div>
+          </div>
+
           {/* Mensagem Personalizada */}
           <div className="mb-4">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
@@ -384,6 +505,12 @@ export function CompartilharComEquipe({
                 <>
                   <CheckCircle className="w-4 h-4 inline mr-1 text-green-500" />
                   {enviadosPorWhatsapp.length + enviadosPorEmail.length} enviado(s)
+                  {rastreamentoAtivo && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      <Eye className="w-3 h-3 mr-1" />
+                      Com rastreamento
+                    </Badge>
+                  )}
                 </>
               )}
             </span>
@@ -403,9 +530,10 @@ export function CompartilharComEquipe({
 // Botão de compartilhar para usar nas páginas
 interface BotaoCompartilharProps {
   condominioId: number;
-  tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois";
+  tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois" | "ordem_servico" | "tarefa_simples";
   itemId: number;
   itemTitulo: string;
+  itemProtocolo?: string;
   itemDescricao?: string;
   variant?: "default" | "ghost" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
@@ -417,6 +545,7 @@ export function BotaoCompartilhar({
   tipo,
   itemId,
   itemTitulo,
+  itemProtocolo,
   itemDescricao,
   variant = "ghost",
   size = "sm",
@@ -441,6 +570,7 @@ export function BotaoCompartilhar({
         tipo={tipo}
         itemId={itemId}
         itemTitulo={itemTitulo}
+        itemProtocolo={itemProtocolo}
         itemDescricao={itemDescricao}
         open={open}
         onOpenChange={setOpen}

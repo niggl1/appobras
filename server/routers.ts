@@ -114,7 +114,10 @@ import {
   camposRapidosTemplates,
   adminLogs,
   historicoAtividades,
-  membroAcessos
+  membroAcessos,
+  compartilhamentosEquipe,
+  compartilhamentoVisualizacoes,
+  notificacoesVisualizacao
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -8292,6 +8295,465 @@ export const appRouter = router({
             erro: error instanceof Error ? error.message : "Erro desconhecido",
           };
         }
+      }),
+
+    // ==================== COMPARTILHAMENTOS COM RASTREAMENTO ====================
+    
+    // Criar compartilhamento com token para rastreamento
+    criarCompartilhamento: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        destinatarioId: z.number(),
+        destinatarioNome: z.string(),
+        destinatarioEmail: z.string().email().optional(),
+        destinatarioTelefone: z.string().optional(),
+        tipoItem: z.enum(["vistoria", "manutencao", "ocorrencia", "checklist", "antes_depois", "ordem_servico", "tarefa_simples"]),
+        itemId: z.number(),
+        itemProtocolo: z.string().optional(),
+        itemTitulo: z.string(),
+        canalEnvio: z.enum(["email", "whatsapp", "ambos"]).default("email"),
+        mensagem: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const crypto = await import('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
+        
+        // Definir expiração (7 dias)
+        const expiraEm = new Date();
+        expiraEm.setDate(expiraEm.getDate() + 7);
+        
+        const [result] = await db.insert(compartilhamentosEquipe).values({
+          condominioId: input.condominioId,
+          remetenteId: ctx.user?.id,
+          remetenteNome: ctx.user?.name || "Sistema",
+          destinatarioId: input.destinatarioId,
+          destinatarioNome: input.destinatarioNome,
+          destinatarioEmail: input.destinatarioEmail,
+          destinatarioTelefone: input.destinatarioTelefone,
+          tipoItem: input.tipoItem,
+          itemId: input.itemId,
+          itemProtocolo: input.itemProtocolo,
+          itemTitulo: input.itemTitulo,
+          token,
+          canalEnvio: input.canalEnvio,
+          mensagem: input.mensagem,
+          expiraEm,
+        });
+        
+        return {
+          id: result.insertId,
+          token,
+          linkVisualizacao: `/compartilhado/${token}`,
+        };
+      }),
+
+    // Enviar compartilhamento por email com link rastreável
+    enviarCompartilhamentoRastreavel: protectedProcedure
+      .input(z.object({
+        compartilhamentoId: z.number(),
+        baseUrl: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar compartilhamento
+        const [compartilhamento] = await db.select().from(compartilhamentosEquipe)
+          .where(eq(compartilhamentosEquipe.id, input.compartilhamentoId))
+          .limit(1);
+        
+        if (!compartilhamento) throw new Error("Compartilhamento não encontrado");
+        if (!compartilhamento.destinatarioEmail) throw new Error("Destinatário não tem email cadastrado");
+        
+        const getTipoLabel = (tipo: string) => {
+          switch (tipo) {
+            case "vistoria": return "Vistoria";
+            case "manutencao": return "Manutenção";
+            case "ocorrencia": return "Ocorrência";
+            case "checklist": return "Checklist";
+            case "antes_depois": return "Antes e Depois";
+            case "ordem_servico": return "Ordem de Serviço";
+            case "tarefa_simples": return "Tarefa";
+            default: return "Item";
+          }
+        };
+        
+        const tipoLabel = getTipoLabel(compartilhamento.tipoItem);
+        const linkVisualizacao = `${input.baseUrl}/compartilhado/${compartilhamento.token}`;
+        
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #EA580C 0%, #F97316 100%); border-radius: 16px 16px 0 0; padding: 32px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">
+                  📋 ${tipoLabel} Compartilhada
+                </h1>
+              </div>
+              
+              <!-- Content -->
+              <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <p style="color: #374151; font-size: 16px; margin: 0 0 24px 0;">
+                  Olá <strong>${compartilhamento.destinatarioNome}</strong>,
+                </p>
+                
+                <p style="color: #6B7280; font-size: 14px; margin: 0 0 24px 0;">
+                  <strong>${compartilhamento.remetenteNome}</strong> compartilhou uma ${tipoLabel.toLowerCase()} com você:
+                </p>
+                
+                <!-- Item Card -->
+                <div style="background: #FFF7ED; border-left: 4px solid #EA580C; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                  <h2 style="color: #EA580C; margin: 0 0 8px 0; font-size: 18px;">
+                    ${compartilhamento.itemTitulo}
+                  </h2>
+                  ${compartilhamento.itemProtocolo ? `
+                  <p style="color: #6B7280; margin: 0; font-size: 14px;">
+                    Protocolo: ${compartilhamento.itemProtocolo}
+                  </p>
+                  ` : ''}
+                </div>
+                
+                ${compartilhamento.mensagem ? `
+                <!-- Mensagem Personalizada -->
+                <div style="background: #F3F4F6; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                  <p style="color: #374151; margin: 0; font-size: 14px; font-style: italic;">
+                    "💬 ${compartilhamento.mensagem}"
+                  </p>
+                </div>
+                ` : ''}
+                
+                <!-- Botão de Visualização -->
+                <div style="text-align: center; margin: 32px 0;">
+                  <a href="${linkVisualizacao}" style="display: inline-block; background: linear-gradient(135deg, #EA580C 0%, #F97316 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                    👁️ Visualizar ${tipoLabel}
+                  </a>
+                </div>
+                
+                <p style="color: #9CA3AF; font-size: 12px; margin: 24px 0 0 0; text-align: center;">
+                  Este link expira em 7 dias. O remetente será notificado quando você visualizar.
+                </p>
+              </div>
+              
+              <!-- Footer -->
+              <div style="text-align: center; padding: 20px;">
+                <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                  App Manutenção - Sistema de Gestão de Manutenção
+                </p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+        
+        const { sendEmail } = await import("./_core/email");
+        const result = await sendEmail({
+          to: compartilhamento.destinatarioEmail,
+          subject: `${tipoLabel} compartilhada: ${compartilhamento.itemTitulo}`,
+          html: htmlContent,
+        });
+        
+        // Atualizar status de envio
+        await db.update(compartilhamentosEquipe)
+          .set({ emailEnviado: result.success })
+          .where(eq(compartilhamentosEquipe.id, input.compartilhamentoId));
+        
+        return {
+          sucesso: result.success,
+          erro: result.error || null,
+        };
+      }),
+
+    // Registar visualização de compartilhamento (chamado pela página pública)
+    registarVisualizacao: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        ip: z.string().optional(),
+        userAgent: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar compartilhamento pelo token
+        const [compartilhamento] = await db.select().from(compartilhamentosEquipe)
+          .where(and(
+            eq(compartilhamentosEquipe.token, input.token),
+            eq(compartilhamentosEquipe.ativo, true)
+          ))
+          .limit(1);
+        
+        if (!compartilhamento) {
+          return { sucesso: false, erro: "Compartilhamento não encontrado ou expirado" };
+        }
+        
+        // Verificar se expirou
+        if (compartilhamento.expiraEm && new Date(compartilhamento.expiraEm) < new Date()) {
+          return { sucesso: false, erro: "Este link expirou" };
+        }
+        
+        // Detectar dispositivo e navegador
+        const ua = input.userAgent || "";
+        let dispositivo = "Desktop";
+        let navegador = "Desconhecido";
+        let sistemaOperacional = "Desconhecido";
+        
+        if (/iPhone|iPad|iPod/i.test(ua)) {
+          dispositivo = "iOS";
+          sistemaOperacional = "iOS";
+        } else if (/Android/i.test(ua)) {
+          dispositivo = "Android";
+          sistemaOperacional = "Android";
+        } else if (/Windows/i.test(ua)) {
+          sistemaOperacional = "Windows";
+        } else if (/Mac/i.test(ua)) {
+          sistemaOperacional = "macOS";
+        } else if (/Linux/i.test(ua)) {
+          sistemaOperacional = "Linux";
+        }
+        
+        if (/Chrome/i.test(ua) && !/Edge/i.test(ua)) navegador = "Chrome";
+        else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) navegador = "Safari";
+        else if (/Firefox/i.test(ua)) navegador = "Firefox";
+        else if (/Edge/i.test(ua)) navegador = "Edge";
+        else if (/Opera|OPR/i.test(ua)) navegador = "Opera";
+        
+        // Registar visualização
+        const [visualizacao] = await db.insert(compartilhamentoVisualizacoes).values({
+          compartilhamentoId: compartilhamento.id,
+          ip: input.ip,
+          userAgent: input.userAgent,
+          dispositivo,
+          navegador,
+          sistemaOperacional,
+        });
+        
+        // Criar notificação para o remetente
+        if (compartilhamento.remetenteId) {
+          await db.insert(notificacoesVisualizacao).values({
+            compartilhamentoId: compartilhamento.id,
+            visualizacaoId: visualizacao.insertId,
+            usuarioId: compartilhamento.remetenteId,
+          });
+          
+          // Enviar email de notificação ao remetente
+          const [remetente] = await db.select().from(users)
+            .where(eq(users.id, compartilhamento.remetenteId))
+            .limit(1);
+          
+          if (remetente?.email) {
+            const getTipoLabel = (tipo: string) => {
+              switch (tipo) {
+                case "vistoria": return "Vistoria";
+                case "manutencao": return "Manutenção";
+                case "ocorrencia": return "Ocorrência";
+                case "checklist": return "Checklist";
+                case "antes_depois": return "Antes e Depois";
+                case "ordem_servico": return "Ordem de Serviço";
+                case "tarefa_simples": return "Tarefa";
+                default: return "Item";
+              }
+            };
+            
+            const tipoLabel = getTipoLabel(compartilhamento.tipoItem);
+            const dataVisualizacao = new Date().toLocaleString("pt-BR", { 
+              dateStyle: "short", 
+              timeStyle: "short" 
+            });
+            
+            const htmlNotificacao = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              </head>
+              <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <!-- Header -->
+                  <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 16px 16px 0 0; padding: 32px; text-align: center;">
+                    <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">
+                      ✅ Compartilhamento Visualizado
+                    </h1>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <p style="color: #374151; font-size: 16px; margin: 0 0 24px 0;">
+                      Olá <strong>${remetente.name || "Usuário"}</strong>,
+                    </p>
+                    
+                    <p style="color: #6B7280; font-size: 14px; margin: 0 0 24px 0;">
+                      <strong>${compartilhamento.destinatarioNome}</strong> visualizou a ${tipoLabel.toLowerCase()} que você compartilhou:
+                    </p>
+                    
+                    <!-- Item Card -->
+                    <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                      <h2 style="color: #059669; margin: 0 0 8px 0; font-size: 18px;">
+                        ${compartilhamento.itemTitulo}
+                      </h2>
+                      <p style="color: #6B7280; margin: 0; font-size: 14px;">
+                        Visualizado em: ${dataVisualizacao}
+                      </p>
+                      <p style="color: #6B7280; margin: 8px 0 0 0; font-size: 14px;">
+                        Dispositivo: ${dispositivo} | Navegador: ${navegador}
+                      </p>
+                    </div>
+                    
+                    <p style="color: #9CA3AF; font-size: 12px; margin: 24px 0 0 0; text-align: center;">
+                      Este email foi enviado automaticamente pelo App Manutenção.
+                    </p>
+                  </div>
+                  
+                  <!-- Footer -->
+                  <div style="text-align: center; padding: 20px;">
+                    <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                      App Manutenção - Sistema de Gestão de Manutenção
+                    </p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+            
+            const { sendEmail } = await import("./_core/email");
+            await sendEmail({
+              to: remetente.email,
+              subject: `✅ ${compartilhamento.destinatarioNome} visualizou: ${compartilhamento.itemTitulo}`,
+              html: htmlNotificacao,
+            });
+            
+            // Atualizar notificação como email enviado
+            await db.update(notificacoesVisualizacao)
+              .set({ emailEnviado: true, emailEnviadoEm: new Date() })
+              .where(eq(notificacoesVisualizacao.visualizacaoId, visualizacao.insertId));
+          }
+        }
+        
+        return {
+          sucesso: true,
+          compartilhamento: {
+            tipoItem: compartilhamento.tipoItem,
+            itemId: compartilhamento.itemId,
+            itemTitulo: compartilhamento.itemTitulo,
+            itemProtocolo: compartilhamento.itemProtocolo,
+            remetenteNome: compartilhamento.remetenteNome,
+          },
+        };
+      }),
+
+    // Listar compartilhamentos enviados pelo usuário
+    listarCompartilhamentos: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        pagina: z.number().default(1),
+        porPagina: z.number().default(20),
+      }))
+      .query(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) return { compartilhamentos: [], total: 0 };
+        
+        const offset = (input.pagina - 1) * input.porPagina;
+        
+        const compartilhamentos = await db.select().from(compartilhamentosEquipe)
+          .where(and(
+            eq(compartilhamentosEquipe.condominioId, input.condominioId),
+            eq(compartilhamentosEquipe.remetenteId, ctx.user!.id)
+          ))
+          .orderBy(desc(compartilhamentosEquipe.createdAt))
+          .limit(input.porPagina)
+          .offset(offset);
+        
+        // Buscar visualizações para cada compartilhamento
+        const compartilhamentosComVisualizacoes = await Promise.all(
+          compartilhamentos.map(async (c) => {
+            const visualizacoes = await db.select().from(compartilhamentoVisualizacoes)
+              .where(eq(compartilhamentoVisualizacoes.compartilhamentoId, c.id))
+              .orderBy(desc(compartilhamentoVisualizacoes.dataVisualizacao));
+            
+            return {
+              ...c,
+              visualizacoes,
+              totalVisualizacoes: visualizacoes.length,
+              primeiraVisualizacao: visualizacoes[visualizacoes.length - 1]?.dataVisualizacao || null,
+              ultimaVisualizacao: visualizacoes[0]?.dataVisualizacao || null,
+            };
+          })
+        );
+        
+        const [{ count }] = await db.select({ count: sql<number>`count(*)` })
+          .from(compartilhamentosEquipe)
+          .where(and(
+            eq(compartilhamentosEquipe.condominioId, input.condominioId),
+            eq(compartilhamentosEquipe.remetenteId, ctx.user!.id)
+          ));
+        
+        return {
+          compartilhamentos: compartilhamentosComVisualizacoes,
+          total: Number(count),
+        };
+      }),
+
+    // Listar notificações de visualização não lidas
+    listarNotificacoesVisualizacao: protectedProcedure
+      .query(async ({ ctx }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        const notificacoes = await db.select({
+          notificacao: notificacoesVisualizacao,
+          compartilhamento: compartilhamentosEquipe,
+          visualizacao: compartilhamentoVisualizacoes,
+        })
+          .from(notificacoesVisualizacao)
+          .innerJoin(compartilhamentosEquipe, eq(notificacoesVisualizacao.compartilhamentoId, compartilhamentosEquipe.id))
+          .innerJoin(compartilhamentoVisualizacoes, eq(notificacoesVisualizacao.visualizacaoId, compartilhamentoVisualizacoes.id))
+          .where(and(
+            eq(notificacoesVisualizacao.usuarioId, ctx.user!.id),
+            eq(notificacoesVisualizacao.lida, false)
+          ))
+          .orderBy(desc(notificacoesVisualizacao.createdAt))
+          .limit(50);
+        
+        return notificacoes;
+      }),
+
+    // Marcar notificação como lida
+    marcarNotificacaoLida: protectedProcedure
+      .input(z.object({ notificacaoId: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(notificacoesVisualizacao)
+          .set({ lida: true, lidaEm: new Date() })
+          .where(eq(notificacoesVisualizacao.id, input.notificacaoId));
+        
+        return { sucesso: true };
+      }),
+
+    // Marcar todas as notificações como lidas
+    marcarTodasNotificacoesLidas: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(notificacoesVisualizacao)
+          .set({ lida: true, lidaEm: new Date() })
+          .where(and(
+            eq(notificacoesVisualizacao.usuarioId, ctx.user!.id),
+            eq(notificacoesVisualizacao.lida, false)
+          ));
+        
+        return { sucesso: true };
       }),
   }),
 

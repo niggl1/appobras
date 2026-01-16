@@ -1067,3 +1067,17 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Integrar botão nas páginas de Checklists
 - [ ] Integrar botão nas páginas de Antes e Depois
 - [x] Testar fluxo completo (102 testes passando)
+
+
+## Sistema de Notificações de Visualização de Compartilhamentos (16/01/2026)
+- [x] Criar tabela compartilhamentos_equipe no schema (remetente, destinatário, tipo, itemId, token)
+- [x] Criar tabela compartilhamento_visualizacoes (compartilhamentoId, dataVisualizacao, ip, dispositivo)
+- [x] Criar tabela notificacoes_visualizacao para notificar remetentes
+- [x] Criar rota tRPC para criar compartilhamento com token
+- [x] Criar rota tRPC para registar visualização
+- [x] Criar rota tRPC para listar compartilhamentos do usuário
+- [x] Criar página pública /compartilhado/:token para visualizar item
+- [x] Registar visualização quando página for aberta
+- [x] Enviar email ao remetente quando destinatário visualizar
+- [x] Atualizar componente CompartilharComEquipe com opção de rastreamento
+- [x] Testar fluxo completo (102 testes passando)

@@ -2278,3 +2278,98 @@ export const historicoAtividades = mysqlTable("historico_atividades", {
 
 export type HistoricoAtividade = typeof historicoAtividades.$inferSelect;
 export type InsertHistoricoAtividade = typeof historicoAtividades.$inferInsert;
+
+
+// ==================== COMPARTILHAMENTOS COM EQUIPE ====================
+// Regista compartilhamentos de itens com membros da equipe
+export const compartilhamentosEquipe = mysqlTable("compartilhamentos_equipe", {
+  id: int("id").autoincrement().primaryKey(),
+  condominioId: int("condominioId").references(() => condominios.id).notNull(),
+  
+  // Quem compartilhou
+  remetenteId: int("remetenteId").references(() => users.id),
+  remetenteNome: varchar("remetenteNome", { length: 255 }),
+  
+  // Destinatário (membro da equipe)
+  destinatarioId: int("destinatarioId").references(() => membrosEquipe.id).notNull(),
+  destinatarioNome: varchar("destinatarioNome", { length: 255 }),
+  destinatarioEmail: varchar("destinatarioEmail", { length: 320 }),
+  destinatarioTelefone: varchar("destinatarioTelefone", { length: 20 }),
+  
+  // Item compartilhado
+  tipoItem: mysqlEnum("tipoItem", ["vistoria", "manutencao", "ocorrencia", "checklist", "antes_depois", "ordem_servico", "tarefa_simples"]).notNull(),
+  itemId: int("itemId").notNull(),
+  itemProtocolo: varchar("itemProtocolo", { length: 50 }),
+  itemTitulo: varchar("itemTitulo", { length: 255 }),
+  
+  // Token único para acesso
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  
+  // Canal de envio
+  canalEnvio: mysqlEnum("canalEnvio", ["email", "whatsapp", "ambos"]).default("email"),
+  
+  // Status
+  emailEnviado: boolean("emailEnviado").default(false),
+  whatsappEnviado: boolean("whatsappEnviado").default(false),
+  
+  // Mensagem personalizada
+  mensagem: text("mensagem"),
+  
+  // Validade
+  expiraEm: timestamp("expiraEm"),
+  ativo: boolean("ativo").default(true),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CompartilhamentoEquipe = typeof compartilhamentosEquipe.$inferSelect;
+export type InsertCompartilhamentoEquipe = typeof compartilhamentosEquipe.$inferInsert;
+
+// ==================== VISUALIZAÇÕES DE COMPARTILHAMENTOS ====================
+// Regista quando um destinatário visualiza o item compartilhado
+export const compartilhamentoVisualizacoes = mysqlTable("compartilhamento_visualizacoes", {
+  id: int("id").autoincrement().primaryKey(),
+  compartilhamentoId: int("compartilhamentoId").references(() => compartilhamentosEquipe.id).notNull(),
+  
+  // Data/hora da visualização
+  dataVisualizacao: timestamp("dataVisualizacao").defaultNow().notNull(),
+  
+  // Informações do dispositivo
+  ip: varchar("ip", { length: 45 }), // Suporta IPv6
+  userAgent: text("userAgent"),
+  dispositivo: varchar("dispositivo", { length: 100 }),
+  navegador: varchar("navegador", { length: 100 }),
+  sistemaOperacional: varchar("sistemaOperacional", { length: 100 }),
+  
+  // Duração da visualização (em segundos)
+  duracaoSegundos: int("duracaoSegundos"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CompartilhamentoVisualizacao = typeof compartilhamentoVisualizacoes.$inferSelect;
+export type InsertCompartilhamentoVisualizacao = typeof compartilhamentoVisualizacoes.$inferInsert;
+
+// ==================== NOTIFICAÇÕES DE VISUALIZAÇÃO ====================
+// Notificações enviadas ao remetente quando o destinatário visualiza
+export const notificacoesVisualizacao = mysqlTable("notificacoes_visualizacao", {
+  id: int("id").autoincrement().primaryKey(),
+  compartilhamentoId: int("compartilhamentoId").references(() => compartilhamentosEquipe.id).notNull(),
+  visualizacaoId: int("visualizacaoId").references(() => compartilhamentoVisualizacoes.id).notNull(),
+  
+  // Destinatário da notificação (remetente original)
+  usuarioId: int("usuarioId").references(() => users.id).notNull(),
+  
+  // Status
+  lida: boolean("lida").default(false),
+  lidaEm: timestamp("lidaEm"),
+  
+  // Email de notificação
+  emailEnviado: boolean("emailEnviado").default(false),
+  emailEnviadoEm: timestamp("emailEnviadoEm"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type NotificacaoVisualizacao = typeof notificacoesVisualizacao.$inferSelect;
+export type InsertNotificacaoVisualizacao = typeof notificacoesVisualizacao.$inferInsert;

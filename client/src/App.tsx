@@ -46,6 +46,7 @@ import MembroLogin from "./pages/MembroLogin";
 import MembroEsqueciSenha from "./pages/MembroEsqueciSenha";
 import MembroRedefinirSenha from "./pages/MembroRedefinirSenha";
 import HistoricoAcessosPage from "./pages/HistoricoAcessosPage";
+import CompartilhadoPage from "./pages/CompartilhadoPage";
 import AppBuilder from "./pages/AppBuilder";
 import RelatorioBuilder from "./pages/RelatorioBuilder";
 import OrdensServico from "@/pages/OrdensServico";
@@ -87,6 +88,7 @@ function Router() {
       
       {/* Shared item routes */}
       <Route path="/compartilhado/:tipo/:token" component={ItemCompartilhadoPage} />
+      <Route path="/compartilhado/:token" component={CompartilhadoPage} />
       
       {/* Public registration */}
       <Route path="/cadastro/:token" component={CadastroMorador} />
