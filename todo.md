@@ -1102,3 +1102,45 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Incluir estatísticas e lista de compartilhamentos nos relatórios
 - [x] Testar exportação PDF
 - [x] Testar exportação Excel (102 testes passando)
+
+
+## Função Timeline - Operacional/Manutenção (16/01/2026)
+- [ ] Criar tabelas no schema: timeline, timeline_responsaveis, timeline_locais, timeline_status, timeline_prioridades, timeline_titulos
+- [ ] Criar rotas tRPC para CRUD de Timeline e configurações (responsáveis, locais, status, prioridades, títulos)
+- [ ] Criar página de criação de Timeline com formulário
+  - [ ] Dropdown Responsável (obrigatório) com botão "+"
+  - [ ] Dropdown Local/Item com botão "+"
+  - [ ] Dropdown Status com botão "+"
+  - [ ] Dropdown Prioridade com botão "+"
+  - [ ] Dropdown Título (obrigatório) com botão "+"
+  - [ ] Upload de imagens
+  - [ ] Campo de descrição
+  - [ ] Registo automático de data, horário e localização
+  - [ ] Botão "Salvar e continuar depois" (rascunho)
+  - [ ] Botão "Compartilhar com equipe"
+  - [ ] Botão "Enviar"
+- [ ] Criar página de visualização premium da Timeline
+  - [ ] Link público bonito
+  - [ ] Botão para gerar PDF
+  - [ ] Botão para registar/confirmar
+- [ ] Criar página de histórico de Timelines
+  - [ ] Lista de todas as timelines
+  - [ ] Filtros por status, responsável, data
+  - [ ] Ações de editar, excluir, visualizar
+- [ ] Adicionar entrada no menu lateral (Operacional/Manutenção > Timeline)
+- [ ] Testar fluxo completo
+
+
+## Função Timeline - Operacional/Manutenção (16/01/2026)
+- [x] Criar tabelas no schema (timelines, timeline_responsaveis, timeline_locais, timeline_status, timeline_prioridades, timeline_titulos, timeline_imagens, timeline_eventos, timeline_compartilhamentos)
+- [x] Criar rotas tRPC para CRUD de configurações (responsáveis, locais, status, prioridades, títulos)
+- [x] Criar rotas tRPC para CRUD de timelines
+- [x] Criar página de criação com formulário completo
+- [x] Implementar dropdowns com botão + para adicionar novos itens
+- [x] Implementar upload de múltiplas imagens com compressão
+- [x] Implementar ações: Salvar rascunho, Compartilhar com equipe, Enviar
+- [x] Criar página de visualização premium com link público (/timeline/:token)
+- [x] Implementar geração de PDF
+- [x] Criar página de histórico com filtros e estatísticas
+- [x] Adicionar entrada no menu lateral (Operacional/Manutenção > Timeline e Histórico Timeline)
+- [x] Testar fluxo completo (102 testes passando)

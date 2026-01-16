@@ -327,6 +327,40 @@ export async function sendAlertaVencimentoEmail(params: {
  * Templates de email para notificações
  */
 export const emailTemplates = {
+  compartilhamentoTimeline: (params: { nomeDestinatario: string; nomeRemetente: string; titulo: string; protocolo: string; linkVisualizacao: string }) => {
+    const { nomeDestinatario, nomeRemetente, titulo, protocolo, linkVisualizacao } = params;
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f4f6;">
+        <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 25px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">Timeline Compartilhada</h1>
+          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Protocolo: ${protocolo}</p>
+        </div>
+        <div style="background: white; padding: 25px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <p style="color: #4b5563; margin: 0 0 15px 0;">Olá <strong>${nomeDestinatario}</strong>,</p>
+          <p style="color: #4b5563; margin: 0 0 20px 0;"><strong>${nomeRemetente}</strong> compartilhou uma timeline com você:</p>
+          <div style="background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; margin: 0 0 25px 0; border-radius: 0 8px 8px 0;">
+            <h3 style="color: #c2410c; margin: 0 0 5px 0; font-size: 16px;">${titulo}</h3>
+            <p style="color: #9a3412; margin: 0; font-size: 13px;">Protocolo: ${protocolo}</p>
+          </div>
+          <div style="text-align: center; margin: 25px 0;">
+            <a href="${linkVisualizacao}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; text-decoration: none; padding: 14px 35px; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);">Visualizar Timeline</a>
+          </div>
+          <p style="text-align: center; color: #9ca3af; font-size: 12px; margin: 25px 0 0 0; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+            Este email foi enviado automaticamente pelo sistema App Manutenção.
+          </p>
+        </div>
+      </body>
+      </html>
+    `;
+  },
+
   notificacao: (params: { condominioNome: string; titulo: string; mensagem: string }) => {
     const { condominioNome, titulo, mensagem } = params;
     

@@ -117,7 +117,17 @@ import {
   membroAcessos,
   compartilhamentosEquipe,
   compartilhamentoVisualizacoes,
-  notificacoesVisualizacao
+  notificacoesVisualizacao,
+  // Timeline
+  timelineResponsaveis,
+  timelineLocais,
+  timelineStatus,
+  timelinePrioridades,
+  timelineTitulos,
+  timelines,
+  timelineImagens,
+  timelineEventos,
+  timelineCompartilhamentos
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -16614,6 +16624,746 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           total,
           page: input.page,
           totalPages: Math.ceil(total / input.limit),
+        };
+      }),
+  }),
+
+  // ==================== TIMELINE ====================
+  timeline: router({
+    // ==================== CONFIGURAÇÕES - RESPONSÁVEIS ====================
+    listarResponsaveis: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelineResponsaveis)
+          .where(and(
+            eq(timelineResponsaveis.condominioId, input.condominioId),
+            eq(timelineResponsaveis.ativo, true)
+          ))
+          .orderBy(timelineResponsaveis.nome);
+      }),
+
+    criarResponsavel: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        nome: z.string().min(2),
+        cargo: z.string().optional(),
+        email: z.string().email().optional(),
+        telefone: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const result = await db.insert(timelineResponsaveis).values(input);
+        return { id: result[0].insertId };
+      }),
+
+    atualizarResponsavel: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        nome: z.string().min(2).optional(),
+        cargo: z.string().optional(),
+        email: z.string().email().optional(),
+        telefone: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const { id, ...data } = input;
+        await db.update(timelineResponsaveis).set(data).where(eq(timelineResponsaveis.id, id));
+        return { success: true };
+      }),
+
+    excluirResponsavel: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.update(timelineResponsaveis).set({ ativo: false }).where(eq(timelineResponsaveis.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== CONFIGURAÇÕES - LOCAIS ====================
+    listarLocais: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelineLocais)
+          .where(and(
+            eq(timelineLocais.condominioId, input.condominioId),
+            eq(timelineLocais.ativo, true)
+          ))
+          .orderBy(timelineLocais.nome);
+      }),
+
+    criarLocal: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        nome: z.string().min(2),
+        descricao: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const result = await db.insert(timelineLocais).values(input);
+        return { id: result[0].insertId };
+      }),
+
+    excluirLocal: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.update(timelineLocais).set({ ativo: false }).where(eq(timelineLocais.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== CONFIGURAÇÕES - STATUS ====================
+    listarStatus: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelineStatus)
+          .where(and(
+            eq(timelineStatus.condominioId, input.condominioId),
+            eq(timelineStatus.ativo, true)
+          ))
+          .orderBy(timelineStatus.ordem);
+      }),
+
+    criarStatus: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        nome: z.string().min(2),
+        cor: z.string().optional(),
+        icone: z.string().optional(),
+        ordem: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const result = await db.insert(timelineStatus).values(input);
+        return { id: result[0].insertId };
+      }),
+
+    excluirStatus: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.update(timelineStatus).set({ ativo: false }).where(eq(timelineStatus.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== CONFIGURAÇÕES - PRIORIDADES ====================
+    listarPrioridades: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelinePrioridades)
+          .where(and(
+            eq(timelinePrioridades.condominioId, input.condominioId),
+            eq(timelinePrioridades.ativo, true)
+          ))
+          .orderBy(timelinePrioridades.nivel);
+      }),
+
+    criarPrioridade: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        nome: z.string().min(2),
+        cor: z.string().optional(),
+        icone: z.string().optional(),
+        nivel: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const result = await db.insert(timelinePrioridades).values(input);
+        return { id: result[0].insertId };
+      }),
+
+    excluirPrioridade: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.update(timelinePrioridades).set({ ativo: false }).where(eq(timelinePrioridades.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== CONFIGURAÇÕES - TÍTULOS ====================
+    listarTitulos: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelineTitulos)
+          .where(and(
+            eq(timelineTitulos.condominioId, input.condominioId),
+            eq(timelineTitulos.ativo, true)
+          ))
+          .orderBy(timelineTitulos.titulo);
+      }),
+
+    criarTitulo: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        titulo: z.string().min(2),
+        descricaoPadrao: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        const result = await db.insert(timelineTitulos).values(input);
+        return { id: result[0].insertId };
+      }),
+
+    excluirTitulo: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.update(timelineTitulos).set({ ativo: false }).where(eq(timelineTitulos.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== TIMELINE - CRUD PRINCIPAL ====================
+    listar: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        estado: z.enum(["rascunho", "enviado", "registado"]).optional(),
+        responsavelId: z.number().optional(),
+        statusId: z.number().optional(),
+        prioridadeId: z.number().optional(),
+        busca: z.string().optional(),
+        limite: z.number().default(50),
+        pagina: z.number().default(1),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return { items: [], total: 0 };
+        
+        const conditions = [eq(timelines.condominioId, input.condominioId)];
+        if (input.estado) conditions.push(eq(timelines.estado, input.estado));
+        if (input.responsavelId) conditions.push(eq(timelines.responsavelId, input.responsavelId));
+        if (input.statusId) conditions.push(eq(timelines.statusId, input.statusId));
+        if (input.prioridadeId) conditions.push(eq(timelines.prioridadeId, input.prioridadeId));
+        if (input.busca) conditions.push(or(
+          like(timelines.titulo, `%${input.busca}%`),
+          like(timelines.protocolo, `%${input.busca}%`),
+          like(timelines.descricao, `%${input.busca}%`)
+        ) as any);
+        
+        const offset = (input.pagina - 1) * input.limite;
+        
+        const items = await db.select().from(timelines)
+          .where(and(...conditions))
+          .orderBy(desc(timelines.createdAt))
+          .limit(input.limite)
+          .offset(offset);
+        
+        const [countResult] = await db.select({ count: sql<number>`count(*)` }).from(timelines)
+          .where(and(...conditions));
+        
+        return { items, total: Number(countResult?.count || 0) };
+      }),
+
+    obter: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const [timeline] = await db.select().from(timelines).where(eq(timelines.id, input.id));
+        if (!timeline) return null;
+        
+        // Buscar dados relacionados
+        const [responsavel] = timeline.responsavelId 
+          ? await db.select().from(timelineResponsaveis).where(eq(timelineResponsaveis.id, timeline.responsavelId))
+          : [null];
+        const [local] = timeline.localId 
+          ? await db.select().from(timelineLocais).where(eq(timelineLocais.id, timeline.localId))
+          : [null];
+        const [status] = timeline.statusId 
+          ? await db.select().from(timelineStatus).where(eq(timelineStatus.id, timeline.statusId))
+          : [null];
+        const [prioridade] = timeline.prioridadeId 
+          ? await db.select().from(timelinePrioridades).where(eq(timelinePrioridades.id, timeline.prioridadeId))
+          : [null];
+        
+        const imagens = await db.select().from(timelineImagens)
+          .where(eq(timelineImagens.timelineId, input.id))
+          .orderBy(timelineImagens.ordem);
+        
+        const eventos = await db.select().from(timelineEventos)
+          .where(eq(timelineEventos.timelineId, input.id))
+          .orderBy(desc(timelineEventos.createdAt));
+        
+        return {
+          ...timeline,
+          responsavel,
+          local,
+          status,
+          prioridade,
+          imagens,
+          eventos,
+        };
+      }),
+
+    criar: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        responsavelId: z.number(),
+        titulo: z.string().min(2),
+        localId: z.number().optional(),
+        statusId: z.number().optional(),
+        prioridadeId: z.number().optional(),
+        tituloPredefId: z.number().optional(),
+        descricao: z.string().optional(),
+        localizacaoGps: z.string().optional(),
+        latitude: z.string().optional(),
+        longitude: z.string().optional(),
+        estado: z.enum(["rascunho", "enviado", "registado"]).default("rascunho"),
+        imagens: z.array(z.object({
+          url: z.string(),
+          legenda: z.string().optional(),
+        })).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Gerar protocolo único
+        const now = new Date();
+        const ano = now.getFullYear();
+        const mes = String(now.getMonth() + 1).padStart(2, "0");
+        const dia = String(now.getDate()).padStart(2, "0");
+        const hora = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        const seg = String(now.getSeconds()).padStart(2, "0");
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
+        const protocolo = `TL-${ano}${mes}${dia}-${hora}${min}${seg}-${random}`;
+        
+        // Gerar token público
+        const tokenPublico = nanoid(32);
+        
+        const { imagens, ...timelineData } = input;
+        
+        const result = await db.insert(timelines).values({
+          ...timelineData,
+          protocolo,
+          tokenPublico,
+          horaRegistro: `${hora}:${min}:${seg}`,
+          criadoPor: ctx.user?.id,
+          criadoPorNome: ctx.user?.name || "Sistema",
+        });
+        
+        const timelineId = Number(result[0].insertId);
+        
+        // Inserir imagens
+        if (imagens && imagens.length > 0) {
+          await db.insert(timelineImagens).values(
+            imagens.map((img, idx) => ({
+              timelineId,
+              url: img.url,
+              legenda: img.legenda,
+              ordem: idx,
+            }))
+          );
+        }
+        
+        // Registar evento de criação
+        await db.insert(timelineEventos).values({
+          timelineId,
+          tipo: "criacao",
+          descricao: "Timeline criada",
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+        });
+        
+        return { id: timelineId, protocolo, tokenPublico };
+      }),
+
+    atualizar: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        responsavelId: z.number().optional(),
+        titulo: z.string().min(2).optional(),
+        localId: z.number().nullable().optional(),
+        statusId: z.number().nullable().optional(),
+        prioridadeId: z.number().nullable().optional(),
+        descricao: z.string().optional(),
+        estado: z.enum(["rascunho", "enviado", "registado"]).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const { id, ...data } = input;
+        
+        // Buscar dados anteriores para histórico
+        const [anterior] = await db.select().from(timelines).where(eq(timelines.id, id));
+        
+        await db.update(timelines).set(data).where(eq(timelines.id, id));
+        
+        // Registar evento de edição
+        await db.insert(timelineEventos).values({
+          timelineId: id,
+          tipo: "edicao",
+          descricao: "Timeline atualizada",
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+          dadosAnteriores: JSON.stringify(anterior),
+          dadosNovos: JSON.stringify(data),
+        });
+        
+        return { success: true };
+      }),
+
+    excluir: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Excluir imagens, eventos e compartilhamentos relacionados
+        await db.delete(timelineImagens).where(eq(timelineImagens.timelineId, input.id));
+        await db.delete(timelineEventos).where(eq(timelineEventos.timelineId, input.id));
+        await db.delete(timelineCompartilhamentos).where(eq(timelineCompartilhamentos.timelineId, input.id));
+        await db.delete(timelines).where(eq(timelines.id, input.id));
+        
+        return { success: true };
+      }),
+
+    // ==================== TIMELINE - IMAGENS ====================
+    adicionarImagem: protectedProcedure
+      .input(z.object({
+        timelineId: z.number(),
+        url: z.string(),
+        legenda: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Obter próxima ordem
+        const [maxOrdem] = await db.select({ max: sql<number>`MAX(ordem)` })
+          .from(timelineImagens)
+          .where(eq(timelineImagens.timelineId, input.timelineId));
+        
+        const result = await db.insert(timelineImagens).values({
+          ...input,
+          ordem: (maxOrdem?.max || 0) + 1,
+        });
+        
+        // Registar evento
+        await db.insert(timelineEventos).values({
+          timelineId: input.timelineId,
+          tipo: "imagem",
+          descricao: "Imagem adicionada",
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+        });
+        
+        return { id: result[0].insertId };
+      }),
+
+    removerImagem: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        await db.delete(timelineImagens).where(eq(timelineImagens.id, input.id));
+        return { success: true };
+      }),
+
+    // ==================== TIMELINE - COMPARTILHAMENTO ====================
+    compartilhar: protectedProcedure
+      .input(z.object({
+        timelineId: z.number(),
+        membroEquipeId: z.number().optional(),
+        membroNome: z.string(),
+        membroEmail: z.string().optional(),
+        membroTelefone: z.string().optional(),
+        canalEnvio: z.enum(["email", "whatsapp", "ambos"]).default("email"),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const result = await db.insert(timelineCompartilhamentos).values(input);
+        
+        // Registar evento
+        await db.insert(timelineEventos).values({
+          timelineId: input.timelineId,
+          tipo: "compartilhamento",
+          descricao: `Compartilhado com ${input.membroNome} via ${input.canalEnvio}`,
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+        });
+        
+        // Buscar timeline para enviar email
+        const [timeline] = await db.select().from(timelines).where(eq(timelines.id, input.timelineId));
+        
+        if (input.membroEmail && (input.canalEnvio === "email" || input.canalEnvio === "ambos")) {
+          const linkVisualizacao = `${process.env.VITE_APP_URL || ""}/timeline/${timeline?.tokenPublico}`;
+          
+          await sendEmail({
+            to: input.membroEmail,
+            subject: `Timeline Compartilhada: ${timeline?.titulo}`,
+            html: emailTemplates.compartilhamentoTimeline({
+              nomeDestinatario: input.membroNome,
+              nomeRemetente: ctx.user?.name || "Sistema",
+              titulo: timeline?.titulo || "",
+              protocolo: timeline?.protocolo || "",
+              linkVisualizacao,
+            }),
+          });
+        }
+        
+        return { id: result[0].insertId };
+      }),
+
+    listarCompartilhamentos: protectedProcedure
+      .input(z.object({ timelineId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        return db.select().from(timelineCompartilhamentos)
+          .where(eq(timelineCompartilhamentos.timelineId, input.timelineId))
+          .orderBy(desc(timelineCompartilhamentos.createdAt));
+      }),
+
+    // ==================== TIMELINE - VISUALIZAÇÃO PÚBLICA ====================
+    obterPorToken: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const [timeline] = await db.select().from(timelines)
+          .where(eq(timelines.tokenPublico, input.token));
+        
+        if (!timeline) return null;
+        
+        // Buscar dados relacionados
+        const [responsavel] = timeline.responsavelId 
+          ? await db.select().from(timelineResponsaveis).where(eq(timelineResponsaveis.id, timeline.responsavelId))
+          : [null];
+        const [local] = timeline.localId 
+          ? await db.select().from(timelineLocais).where(eq(timelineLocais.id, timeline.localId))
+          : [null];
+        const [status] = timeline.statusId 
+          ? await db.select().from(timelineStatus).where(eq(timelineStatus.id, timeline.statusId))
+          : [null];
+        const [prioridade] = timeline.prioridadeId 
+          ? await db.select().from(timelinePrioridades).where(eq(timelinePrioridades.id, timeline.prioridadeId))
+          : [null];
+        
+        const imagens = await db.select().from(timelineImagens)
+          .where(eq(timelineImagens.timelineId, timeline.id))
+          .orderBy(timelineImagens.ordem);
+        
+        return {
+          ...timeline,
+          responsavel,
+          local,
+          status,
+          prioridade,
+          imagens,
+        };
+      }),
+
+    registarVisualizacao: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        compartilhamentoId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [timeline] = await db.select().from(timelines)
+          .where(eq(timelines.tokenPublico, input.token));
+        
+        if (!timeline) return { success: false };
+        
+        // Registar evento de visualização
+        await db.insert(timelineEventos).values({
+          timelineId: timeline.id,
+          tipo: "visualizacao",
+          descricao: "Timeline visualizada",
+        });
+        
+        // Atualizar compartilhamento se fornecido
+        if (input.compartilhamentoId) {
+          await db.update(timelineCompartilhamentos)
+            .set({ visualizado: true, dataVisualizacao: new Date() })
+            .where(eq(timelineCompartilhamentos.id, input.compartilhamentoId));
+        }
+        
+        return { success: true };
+      }),
+
+    // ==================== TIMELINE - PDF ====================
+    gerarPdf: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [timeline] = await db.select().from(timelines).where(eq(timelines.id, input.id));
+        if (!timeline) throw new Error("Timeline não encontrada");
+        
+        // Buscar dados relacionados
+        const [responsavel] = timeline.responsavelId 
+          ? await db.select().from(timelineResponsaveis).where(eq(timelineResponsaveis.id, timeline.responsavelId))
+          : [null];
+        const [local] = timeline.localId 
+          ? await db.select().from(timelineLocais).where(eq(timelineLocais.id, timeline.localId))
+          : [null];
+        const [status] = timeline.statusId 
+          ? await db.select().from(timelineStatus).where(eq(timelineStatus.id, timeline.statusId))
+          : [null];
+        const [prioridade] = timeline.prioridadeId 
+          ? await db.select().from(timelinePrioridades).where(eq(timelinePrioridades.id, timeline.prioridadeId))
+          : [null];
+        
+        const imagens = await db.select().from(timelineImagens)
+          .where(eq(timelineImagens.timelineId, input.id))
+          .orderBy(timelineImagens.ordem);
+        
+        // Gerar PDF usando jsPDF
+        const { jsPDF } = await import('jspdf');
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 15;
+        
+        // Header com gradiente laranja
+        doc.setFillColor(249, 115, 22);
+        doc.rect(0, 0, pageWidth, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TIMELINE', margin, 12);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Protocolo: ${timeline.protocolo}`, margin, 20);
+        
+        let yPos = 35;
+        
+        // Título
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(timeline.titulo, margin, yPos);
+        yPos += 10;
+        
+        // Informações principais
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        
+        const info = [
+          ['Responsável:', responsavel?.nome || '-'],
+          ['Local:', local?.nome || '-'],
+          ['Status:', status?.nome || '-'],
+          ['Prioridade:', prioridade?.nome || '-'],
+          ['Data:', new Date(timeline.dataRegistro).toLocaleDateString('pt-BR')],
+          ['Hora:', timeline.horaRegistro || '-'],
+          ['Estado:', timeline.estado],
+        ];
+        
+        for (const [label, value] of info) {
+          doc.setFont('helvetica', 'bold');
+          doc.text(String(label), margin, yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.text(String(value), margin + 30, yPos);
+          yPos += 6;
+        }
+        
+        yPos += 5;
+        
+        // Descrição
+        if (timeline.descricao) {
+          doc.setFont('helvetica', 'bold');
+          doc.text('Descrição:', margin, yPos);
+          yPos += 6;
+          doc.setFont('helvetica', 'normal');
+          const descLines = doc.splitTextToSize(timeline.descricao, pageWidth - 2 * margin);
+          for (const line of descLines) {
+            if (yPos > 280) { doc.addPage(); yPos = 20; }
+            doc.text(line, margin, yPos);
+            yPos += 5;
+          }
+        }
+        
+        // Rodapé
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')} por ${ctx.user?.name || 'Sistema'}`, margin, 290);
+        
+        // Registar evento
+        await db.insert(timelineEventos).values({
+          timelineId: input.id,
+          tipo: "pdf",
+          descricao: "PDF gerado",
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+        });
+        
+        const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
+        
+        return {
+          data: pdfBuffer.toString('base64'),
+          filename: `timeline_${timeline.protocolo}.pdf`,
+          mimeType: 'application/pdf',
+        };
+      }),
+
+    // ==================== TIMELINE - REGISTAR (FINALIZAR) ====================
+    registar: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(timelines)
+          .set({ estado: "registado" })
+          .where(eq(timelines.id, input.id));
+        
+        // Registar evento
+        await db.insert(timelineEventos).values({
+          timelineId: input.id,
+          tipo: "registro",
+          descricao: "Timeline registada/finalizada",
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name || "Sistema",
+        });
+        
+        return { success: true };
+      }),
+
+    // ==================== TIMELINE - ESTATÍSTICAS ====================
+    estatisticas: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return { total: 0, rascunhos: 0, enviados: 0, registados: 0 };
+        
+        const all = await db.select().from(timelines)
+          .where(eq(timelines.condominioId, input.condominioId));
+        
+        return {
+          total: all.length,
+          rascunhos: all.filter(t => t.estado === "rascunho").length,
+          enviados: all.filter(t => t.estado === "enviado").length,
+          registados: all.filter(t => t.estado === "registado").length,
         };
       }),
   }),

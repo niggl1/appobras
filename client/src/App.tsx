@@ -48,6 +48,7 @@ import MembroRedefinirSenha from "./pages/MembroRedefinirSenha";
 import HistoricoAcessosPage from "./pages/HistoricoAcessosPage";
 import CompartilhadoPage from "./pages/CompartilhadoPage";
 import CompartilhamentosPage from "./pages/CompartilhamentosPage";
+import TimelineVisualizarPage from "./pages/TimelineVisualizarPage";
 import AppBuilder from "./pages/AppBuilder";
 import RelatorioBuilder from "./pages/RelatorioBuilder";
 import OrdensServico from "@/pages/OrdensServico";
@@ -58,6 +59,7 @@ import AppViewer from "./pages/AppViewer";
 import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
 import AppRedefinirSenha from "./pages/AppRedefinirSenha";
+import TimelinePage from "./pages/TimelinePage";
 import GestorRedefinirSenha from "./pages/GestorRedefinirSenha";
 import RelatoriosManutencaoPage from "./pages/RelatoriosManutencaoPage";
 import WhatsAppButton from "./components/WhatsAppButton";
@@ -90,6 +92,7 @@ function Router() {
       {/* Shared item routes */}
       <Route path="/compartilhado/:tipo/:token" component={ItemCompartilhadoPage} />
       <Route path="/compartilhado/:token" component={CompartilhadoPage} />
+      <Route path="/timeline/:token">{(params) => <TimelineVisualizarPage token={params.token} />}</Route>
       
       {/* Public registration */}
       <Route path="/cadastro/:token" component={CadastroMorador} />

@@ -107,6 +107,8 @@ import ImageGallery, { ImageThumbnails } from "@/components/ImageGallery";
 import { LocationMiniMap } from "@/components/LocationMiniMap";
 import VistoriasPage from "./VistoriasPage";
 import ManutencoesPage from "./ManutencoesPage";
+import TimelinePage from "./TimelinePage";
+import TimelineHistoricoPage from "./TimelineHistoricoPage";
 import OcorrenciasPage from "./OcorrenciasPage";
 import ChecklistsPage from "./ChecklistsPage";
 import { PainelControloPage } from "./PainelControloPage";
@@ -181,6 +183,8 @@ const menuSections = [
       { id: "antes-depois", label: "Antes e Depois Completo", icon: ArrowLeftRight, funcaoId: "antes-depois" },
       { id: "funcoes-simples-antes-depois", label: "Antes/Depois Rápido", icon: Zap, funcaoId: "antes-depois-rapido", path: "/dashboard/funcoes-simples?tipo=antes_depois" },
       { id: "vencimentos", label: "Agenda de Vencimentos", icon: CalendarClock, funcaoId: "agenda-vencimentos" },
+      { id: "timeline", label: "Timeline", icon: Clock, funcaoId: "timeline" },
+      { id: "timeline-historico", label: "Histórico Timeline", icon: History, funcaoId: "timeline" },
     ]
   },
   {
@@ -858,6 +862,8 @@ export default function Dashboard() {
           {currentSection === "admin-usuarios" && <AdminUsuarios />}
           {currentSection === "admin-logs" && <AdminLogs />}
           {currentSection === "historico" && (condominios?.[0] ? <HistoricoAtividadesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline" && (condominios?.[0] ? <TimelinePage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline-historico" && (condominios?.[0] ? <TimelineHistoricoPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
         </div>
       </main>
 
