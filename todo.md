@@ -1289,3 +1289,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar campo editável para data do contrato
 - [x] Adicionar campo editável para local do contrato
 - [x] Adicionar campos para responsável (nome, CPF, cargo)
+
+
+## Criar Apresentação em PDF (17/01/2026)
+- [x] Remover seção premium do site
+- [x] Criar arquivo Markdown com apresentação
+- [x] Converter para PDF
