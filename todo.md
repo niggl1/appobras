@@ -1535,3 +1535,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Fase 53: Corrigir erro Map container not found
 - [x] Corrigir erro do mapa na página de Funções Simples (checklist)
+
+
+## Fase 54: Renomear Funções Simples para Funções Rápidas + Container Premium
+- [x] Renomear "Funções Simples" para "Funções Rápidas" em todos os ficheiros
+- [x] Criar container premium bonito para a página de Funções Rápidas
+- [x] Testar alterações no navegador

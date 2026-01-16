@@ -184,119 +184,135 @@ export default function HistoricoTarefasSimples() {
 
   return (
     <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
-                <FileText className="h-6 w-6 text-white" />
+        {/* Container Premium - Funções Rápidas */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 p-6 shadow-2xl">
+          {/* Elementos decorativos de fundo */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-amber-400/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
+          <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2" />
+          
+          {/* Conteúdo do Header */}
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30">
+                  <FileText className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">
+                    Funções Rápidas
+                  </h1>
+                  <p className="text-white/80 text-sm mt-1">
+                    Registre vistorias, manutenções e ocorrências em segundos
+                  </p>
+                </div>
               </div>
-              Funções Simples
-            </h1>
-            <p className="text-gray-500 mt-1">
-              Histórico de vistorias, manutenções, ocorrências e antes/depois
-            </p>
-          </div>
 
-          {/* Seletor de Organização */}
-          {condominios && condominios.length > 1 && (
-            <Select
-              value={condominioId?.toString()}
-              onValueChange={(v) => setCondominioId(Number(v))}
-            >
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Selecione a organização" />
-              </SelectTrigger>
-              <SelectContent>
-                {condominios.map((c) => (
-                  <SelectItem key={c.id} value={c.id.toString()}>
-                    {c.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+              {/* Seletor de Organização */}
+              {condominios && condominios.length > 1 && (
+                <Select
+                  value={condominioId?.toString()}
+                  onValueChange={(v) => setCondominioId(Number(v))}
+                >
+                  <SelectTrigger className="w-[200px] bg-white/20 border-white/30 text-white backdrop-blur-sm">
+                    <SelectValue placeholder="Selecione a organização" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {condominios.map((c) => (
+                      <SelectItem key={c.id} value={c.id.toString()}>
+                        {c.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Botões de Ação Rápida - Dentro do container premium */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {(Object.keys(tipoConfig) as TipoTarefa[]).map((tipo) => {
+                const config = tipoConfig[tipo];
+                const Icon = config.icon;
+                return (
+                  <button
+                    key={tipo}
+                    onClick={() => abrirNovaComTipo(tipo)}
+                    className="group relative overflow-hidden bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 rounded-2xl p-4 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative z-10 flex flex-col items-center gap-2">
+                      <div className="p-2 bg-white/20 rounded-xl group-hover:bg-white/30 transition-colors">
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <span className="text-sm font-semibold text-white">{config.label}</span>
+                      <span className="text-xs text-white/70 flex items-center gap-1">
+                        <Plus className="h-3 w-3" /> Nova
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Cards de Estatísticas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-md bg-gradient-to-br from-gray-50 to-white">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 hover:shadow-xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{estatisticas.total}</p>
+                  <p className="text-sm text-gray-500 font-medium">Total</p>
+                  <p className="text-3xl font-bold text-gray-900">{estatisticas.total}</p>
                 </div>
-                <div className="p-3 bg-gray-100 rounded-xl">
-                  <FileText className="h-5 w-5 text-gray-600" />
+                <div className="p-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl shadow-inner">
+                  <FileText className="h-6 w-6 text-gray-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-gradient-to-br from-gray-50 to-white">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 hover:shadow-xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Rascunhos</p>
-                  <p className="text-2xl font-bold text-gray-600">{estatisticas.rascunhos}</p>
+                  <p className="text-sm text-gray-500 font-medium">Rascunhos</p>
+                  <p className="text-3xl font-bold text-gray-600">{estatisticas.rascunhos}</p>
                 </div>
-                <div className="p-3 bg-gray-100 rounded-xl">
-                  <Edit className="h-5 w-5 text-gray-500" />
+                <div className="p-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl shadow-inner">
+                  <Edit className="h-6 w-6 text-gray-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-gradient-to-br from-orange-50 to-white">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-white hover:shadow-xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-orange-600">Enviados</p>
-                  <p className="text-2xl font-bold text-orange-600">{estatisticas.enviados}</p>
+                  <p className="text-sm text-orange-600 font-medium">Enviados</p>
+                  <p className="text-3xl font-bold text-orange-600">{estatisticas.enviados}</p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-xl">
-                  <Send className="h-5 w-5 text-orange-500" />
+                <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl shadow-inner">
+                  <Send className="h-6 w-6 text-orange-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-gradient-to-br from-green-50 to-white">
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-white hover:shadow-xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-600">Concluídos</p>
-                  <p className="text-2xl font-bold text-green-600">{estatisticas.concluidos}</p>
+                  <p className="text-sm text-green-600 font-medium">Concluídos</p>
+                  <p className="text-3xl font-bold text-green-600">{estatisticas.concluidos}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-xl">
-                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <div className="p-3 bg-gradient-to-br from-green-100 to-green-200 rounded-xl shadow-inner">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Botões de Ação Rápida */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {(Object.keys(tipoConfig) as TipoTarefa[]).map((tipo) => {
-            const config = tipoConfig[tipo];
-            const Icon = config.icon;
-            return (
-              <Button
-                key={tipo}
-                onClick={() => abrirNovaComTipo(tipo)}
-                className="h-auto py-4 flex flex-col items-center gap-2 text-white shadow-lg hover:shadow-xl transition-all"
-                style={{
-                  background: `linear-gradient(135deg, ${config.cor} 0%, ${config.cor}dd 100%)`,
-                }}
-              >
-                <Icon className="h-6 w-6" />
-                <span className="text-sm font-medium">{config.label}</span>
-                <span className="text-xs opacity-80">+ Nova</span>
-              </Button>
-            );
-          })}
         </div>
 
         {/* Filtros */}
