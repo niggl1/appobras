@@ -1549,6 +1549,7 @@ export const FUNCOES_DISPONIVEIS = [
   { id: "checklists", nome: "Checklists", categoria: "operacional", descricao: "Listas de verificação" },
   { id: "antes-depois", nome: "Antes e Depois", categoria: "operacional", descricao: "Registro de melhorias" },
   { id: "ordens-servico", nome: "Ordens de Serviço", categoria: "operacional", descricao: "Gestão de ordens de serviço" },
+  { id: "timeline", nome: "Timeline", categoria: "operacional", descricao: "Registro de eventos e atualizações" },
   { id: "votacoes", nome: "Votações", categoria: "interativo", descricao: "Sistema de votações" },
   { id: "classificados", nome: "Classificados", categoria: "interativo", descricao: "Classificados dos moradores" },
   { id: "achados-perdidos", nome: "Achados e Perdidos", categoria: "interativo", descricao: "Itens perdidos e encontrados" },

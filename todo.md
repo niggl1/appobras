@@ -1169,3 +1169,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar botão de configuração de notificações na página de histórico
 - [x] Opções configuráveis: mudança de status, atualizações, novas imagens, comentários
 - [x] Destinatários configuráveis: responsável, criador, emails adicionais
+
+
+## Bug: Timeline não aparece no menu lateral (16/01/2026)
+- [x] Adicionar Timeline e Histórico Timeline ao menu lateral (adicionado à lista FUNCOES_DISPONIVEIS)
