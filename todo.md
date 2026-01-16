@@ -1243,3 +1243,8 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 ## Unificar Suporte Técnico em Todos os Planos (17/01/2026)
 - [x] Alterar "Suporte técnico prioritário" para "Suporte técnico" no plano Pequenas Equipes
 - [x] Alterar "Suporte técnico 24/7" para "Suporte técnico" no plano Equipes Médias
+
+
+## Substituir Logo do Cabeçalho (17/01/2026)
+- [x] Copiar nova logo para pasta public
+- [x] Atualizar referência da logo no cabeçalho da página inicial

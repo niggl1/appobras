@@ -44,7 +44,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <div className="container flex items-center justify-between h-16">
           <Link href="/" className="flex items-center">
-            <img src="/logo-manutencao-completa.png" alt="App Manutenção" className="h-14 object-contain" />
+            <img src="/logo-manutencao-header.png" alt="App Manutenção" className="h-14 object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
