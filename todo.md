@@ -1093,3 +1093,12 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar rota no App.tsx (/dashboard/compartilhamentos)
 - [x] Adicionar entrada no menu lateral (Gestão da Organização > Compartilhamentos)
 - [x] Testar funcionalidade completa (102 testes passando)
+
+
+## Exportação de Relatório de Compartilhamentos (16/01/2026)
+- [x] Criar rota tRPC para exportar compartilhamentos em PDF
+- [x] Criar rota tRPC para exportar compartilhamentos em Excel
+- [x] Adicionar botões de exportação na página de compartilhamentos
+- [x] Incluir estatísticas e lista de compartilhamentos nos relatórios
+- [x] Testar exportação PDF
+- [x] Testar exportação Excel (102 testes passando)

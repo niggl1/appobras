@@ -8755,6 +8755,260 @@ export const appRouter = router({
         
         return { sucesso: true };
       }),
+
+    // Exportar compartilhamentos para Excel
+    exportarExcel: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar compartilhamentos
+        const compartilhamentos = await db.select({
+          compartilhamento: compartilhamentosEquipe,
+          membro: membrosEquipe,
+        })
+          .from(compartilhamentosEquipe)
+          .leftJoin(membrosEquipe, eq(compartilhamentosEquipe.destinatarioId, membrosEquipe.id))
+          .where(eq(compartilhamentosEquipe.condominioId, input.condominioId))
+          .orderBy(desc(compartilhamentosEquipe.createdAt));
+        
+        // Buscar visualizações para cada compartilhamento
+        const compartilhamentosComVisualizacoes = await Promise.all(
+          compartilhamentos.map(async (c) => {
+            const visualizacoes = await db.select()
+              .from(compartilhamentoVisualizacoes)
+              .where(eq(compartilhamentoVisualizacoes.compartilhamentoId, c.compartilhamento.id));
+            return {
+              ...c.compartilhamento,
+              destinatarioNome: c.membro?.nome || "Desconhecido",
+              destinatarioEmail: c.membro?.email,
+              totalVisualizacoes: visualizacoes.length,
+              primeiraVisualizacao: visualizacoes.length > 0 ? visualizacoes[0].dataVisualizacao : null,
+              ultimaVisualizacao: visualizacoes.length > 0 ? visualizacoes[visualizacoes.length - 1].dataVisualizacao : null,
+            };
+          })
+        );
+        
+        // Gerar Excel usando exceljs
+        const ExcelJS = await import("exceljs");
+        const workbook = new ExcelJS.default.Workbook();
+        const worksheet = workbook.addWorksheet("Compartilhamentos");
+        
+        // Cabeçalho
+        worksheet.columns = [
+          { header: "ID", key: "id", width: 8 },
+          { header: "Tipo", key: "tipo", width: 15 },
+          { header: "Protocolo", key: "protocolo", width: 20 },
+          { header: "Título", key: "titulo", width: 30 },
+          { header: "Destinatário", key: "destinatario", width: 25 },
+          { header: "Email", key: "email", width: 30 },
+          { header: "Canal", key: "canal", width: 12 },
+          { header: "Data Envio", key: "dataEnvio", width: 18 },
+          { header: "Visualizações", key: "visualizacoes", width: 14 },
+          { header: "Status", key: "status", width: 15 },
+          { header: "Última Visualização", key: "ultimaVisualizacao", width: 18 },
+        ];
+        
+        // Estilo do cabeçalho
+        worksheet.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
+        worksheet.getRow(1).fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFF6B00" },
+        };
+        
+        // Dados
+        compartilhamentosComVisualizacoes.forEach((c, index) => {
+          const row = worksheet.addRow({
+            id: c.id,
+            tipo: c.tipoItem === "vistoria" ? "Vistoria" : c.tipoItem === "manutencao" ? "Manutenção" : c.tipoItem === "ocorrencia" ? "Ocorrência" : "Checklist",
+            protocolo: c.itemProtocolo || "-",
+            titulo: c.itemTitulo || "-",
+            destinatario: c.destinatarioNome,
+            email: c.destinatarioEmail || "-",
+            canal: c.canalEnvio === "email" ? "Email" : c.canalEnvio === "whatsapp" ? "WhatsApp" : "Ambos",
+            dataEnvio: new Date(c.createdAt).toLocaleString("pt-BR"),
+            visualizacoes: c.totalVisualizacoes,
+            status: c.totalVisualizacoes > 0 ? "Visualizado" : "Pendente",
+            ultimaVisualizacao: c.ultimaVisualizacao ? new Date(c.ultimaVisualizacao).toLocaleString("pt-BR") : "-",
+          });
+          
+          // Cor de fundo alternada
+          if (index % 2 === 1) {
+            row.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFF5F5F5" },
+            };
+          }
+          
+          // Cor para status
+          const statusCell = row.getCell("status");
+          if (c.totalVisualizacoes > 0) {
+            statusCell.font = { color: { argb: "FF22C55E" } };
+          } else {
+            statusCell.font = { color: { argb: "FFFBBF24" } };
+          }
+        });
+        
+        // Bordas
+        worksheet.eachRow((row) => {
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        });
+        
+        // Gerar buffer
+        const buffer = await workbook.xlsx.writeBuffer();
+        return {
+          data: Buffer.from(buffer as ArrayBuffer).toString("base64"),
+          filename: `compartilhamentos_${new Date().toISOString().split("T")[0]}.xlsx`,
+        };
+      }),
+
+    // Exportar compartilhamentos para PDF
+    exportarPdf: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar compartilhamentos
+        const compartilhamentos = await db.select({
+          compartilhamento: compartilhamentosEquipe,
+          membro: membrosEquipe,
+        })
+          .from(compartilhamentosEquipe)
+          .leftJoin(membrosEquipe, eq(compartilhamentosEquipe.destinatarioId, membrosEquipe.id))
+          .where(eq(compartilhamentosEquipe.condominioId, input.condominioId))
+          .orderBy(desc(compartilhamentosEquipe.createdAt));
+        
+        // Buscar visualizações para cada compartilhamento
+        const compartilhamentosComVisualizacoes = await Promise.all(
+          compartilhamentos.map(async (c) => {
+            const visualizacoes = await db.select()
+              .from(compartilhamentoVisualizacoes)
+              .where(eq(compartilhamentoVisualizacoes.compartilhamentoId, c.compartilhamento.id));
+            return {
+              ...c.compartilhamento,
+              destinatarioNome: c.membro?.nome || "Desconhecido",
+              destinatarioEmail: c.membro?.email,
+              totalVisualizacoes: visualizacoes.length,
+            };
+          })
+        );
+        
+        // Estatísticas
+        const totalEnviados = compartilhamentosComVisualizacoes.length;
+        const totalVisualizados = compartilhamentosComVisualizacoes.filter(c => c.totalVisualizacoes > 0).length;
+        const totalPendentes = totalEnviados - totalVisualizados;
+        const taxaVisualizacao = totalEnviados > 0 ? Math.round((totalVisualizados / totalEnviados) * 100) : 0;
+        
+        // Gerar PDF
+        const PDFDocument = (await import("pdfkit")).default;
+        const doc = new PDFDocument({ margin: 40, size: "A4" });
+        const chunks: Buffer[] = [];
+        
+        doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+        
+        // Cabeçalho
+        doc.fontSize(20).fillColor("#FF6B00").text("Relatório de Compartilhamentos", { align: "center" });
+        doc.moveDown(0.5);
+        doc.fontSize(10).fillColor("#666666").text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, { align: "center" });
+        doc.moveDown(1.5);
+        
+        // Estatísticas
+        doc.fontSize(14).fillColor("#333333").text("Resumo", { underline: true });
+        doc.moveDown(0.5);
+        doc.fontSize(11).fillColor("#444444");
+        doc.text(`Total Enviados: ${totalEnviados}`);
+        doc.text(`Visualizados: ${totalVisualizados}`);
+        doc.text(`Pendentes: ${totalPendentes}`);
+        doc.text(`Taxa de Visualização: ${taxaVisualizacao}%`);
+        doc.moveDown(1.5);
+        
+        // Tabela de compartilhamentos
+        doc.fontSize(14).fillColor("#333333").text("Lista de Compartilhamentos", { underline: true });
+        doc.moveDown(0.5);
+        
+        // Cabeçalho da tabela
+        const tableTop = doc.y;
+        const colWidths = [80, 120, 100, 80, 80, 60];
+        const headers = ["Tipo", "Destinatário", "Protocolo", "Canal", "Data", "Status"];
+        
+        doc.fontSize(9).fillColor("#FFFFFF");
+        doc.rect(40, tableTop, 515, 18).fill("#FF6B00");
+        let xPos = 45;
+        headers.forEach((header, i) => {
+          doc.text(header, xPos, tableTop + 5, { width: colWidths[i], align: "left" });
+          xPos += colWidths[i];
+        });
+        
+        // Linhas da tabela
+        let yPos = tableTop + 20;
+        doc.fillColor("#333333");
+        
+        compartilhamentosComVisualizacoes.slice(0, 30).forEach((c, index) => {
+          if (yPos > 750) {
+            doc.addPage();
+            yPos = 50;
+          }
+          
+          // Fundo alternado
+          if (index % 2 === 1) {
+            doc.rect(40, yPos - 2, 515, 16).fill("#F5F5F5");
+            doc.fillColor("#333333");
+          }
+          
+          xPos = 45;
+          const tipo = c.tipoItem === "vistoria" ? "Vistoria" : c.tipoItem === "manutencao" ? "Manutenção" : c.tipoItem === "ocorrencia" ? "Ocorrência" : "Checklist";
+          const canal = c.canalEnvio === "email" ? "Email" : c.canalEnvio === "whatsapp" ? "WhatsApp" : "Ambos";
+          const data = new Date(c.createdAt).toLocaleDateString("pt-BR");
+          const status = c.totalVisualizacoes > 0 ? "Visualizado" : "Pendente";
+          
+          doc.fontSize(8);
+          doc.text(tipo, xPos, yPos, { width: colWidths[0], align: "left" });
+          xPos += colWidths[0];
+          doc.text(c.destinatarioNome.substring(0, 20), xPos, yPos, { width: colWidths[1], align: "left" });
+          xPos += colWidths[1];
+          doc.text(c.itemProtocolo?.substring(0, 15) || "-", xPos, yPos, { width: colWidths[2], align: "left" });
+          xPos += colWidths[2];
+          doc.text(canal, xPos, yPos, { width: colWidths[3], align: "left" });
+          xPos += colWidths[3];
+          doc.text(data, xPos, yPos, { width: colWidths[4], align: "left" });
+          xPos += colWidths[4];
+          
+          // Status com cor
+          doc.fillColor(c.totalVisualizacoes > 0 ? "#22C55E" : "#FBBF24");
+          doc.text(status, xPos, yPos, { width: colWidths[5], align: "left" });
+          doc.fillColor("#333333");
+          
+          yPos += 16;
+        });
+        
+        if (compartilhamentosComVisualizacoes.length > 30) {
+          doc.moveDown(1);
+          doc.fontSize(9).fillColor("#666666").text(`... e mais ${compartilhamentosComVisualizacoes.length - 30} compartilhamentos`, { align: "center" });
+        }
+        
+        doc.end();
+        
+        return new Promise<{ data: string; filename: string }>((resolve) => {
+          doc.on("end", () => {
+            const pdfBuffer = Buffer.concat(chunks);
+            resolve({
+              data: pdfBuffer.toString("base64"),
+              filename: `compartilhamentos_${new Date().toISOString().split("T")[0]}.pdf`,
+            });
+          });
+        });
+      }),
   }),
 
   // ==================== LINKS COMPARTILHÁVEIS ====================

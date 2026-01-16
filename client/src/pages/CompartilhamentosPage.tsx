@@ -35,7 +35,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Send,
-  ExternalLink
+  ExternalLink,
+  Download,
+  FileSpreadsheet
 } from "lucide-react";
 
 interface Compartilhamento {
@@ -82,6 +84,39 @@ export default function CompartilhamentosPage() {
   const [busca, setBusca] = useState("");
   const [compartilhamentoSelecionado, setCompartilhamentoSelecionado] = useState<Compartilhamento | null>(null);
   const [modalDetalhesAberto, setModalDetalhesAberto] = useState(false);
+  const [exportandoPdf, setExportandoPdf] = useState(false);
+  const [exportandoExcel, setExportandoExcel] = useState(false);
+
+  // Mutations para exportação
+  const exportarExcelMutation = trpc.membroEquipe.exportarExcel.useMutation({
+    onSuccess: (result) => {
+      const link = document.createElement("a");
+      link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${result.data}`;
+      link.download = result.filename;
+      link.click();
+      toast.success("Excel exportado com sucesso!");
+      setExportandoExcel(false);
+    },
+    onError: () => {
+      toast.error("Erro ao exportar Excel");
+      setExportandoExcel(false);
+    },
+  });
+
+  const exportarPdfMutation = trpc.membroEquipe.exportarPdf.useMutation({
+    onSuccess: (result) => {
+      const link = document.createElement("a");
+      link.href = `data:application/pdf;base64,${result.data}`;
+      link.download = result.filename;
+      link.click();
+      toast.success("PDF exportado com sucesso!");
+      setExportandoPdf(false);
+    },
+    onError: () => {
+      toast.error("Erro ao exportar PDF");
+      setExportandoPdf(false);
+    },
+  });
 
   // Buscar condomínio ativo do usuário
   const { data: condominios } = trpc.condominio.list.useQuery();
@@ -111,7 +146,7 @@ export default function CompartilhamentosPage() {
       const termoBusca = busca.toLowerCase();
       const matchTitulo = c.itemTitulo?.toLowerCase().includes(termoBusca);
       const matchProtocolo = c.itemProtocolo?.toLowerCase().includes(termoBusca);
-      const matchDestinatario = c.destinatarioNome.toLowerCase().includes(termoBusca);
+      const matchDestinatario = c.destinatarioNome?.toLowerCase().includes(termoBusca);
       if (!matchTitulo && !matchProtocolo && !matchDestinatario) return false;
     }
     
@@ -223,14 +258,40 @@ export default function CompartilhamentosPage() {
             Acompanhe todos os itens compartilhados com a equipe
           </p>
         </div>
-        <Button
-          onClick={() => refetch()}
-          variant="outline"
-          className="gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Atualizar
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              if (!condominioAtivo?.id) return;
+              setExportandoExcel(true);
+              exportarExcelMutation.mutate({ condominioId: condominioAtivo.id });
+            }}
+            disabled={exportandoExcel || compartilhamentos.length === 0}
+            className="gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            {exportandoExcel ? "Exportando..." : "Excel"}
+          </Button>
+          <Button
+            onClick={() => {
+              if (!condominioAtivo?.id) return;
+              setExportandoPdf(true);
+              exportarPdfMutation.mutate({ condominioId: condominioAtivo.id });
+            }}
+            disabled={exportandoPdf || compartilhamentos.length === 0}
+            className="gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white border-0"
+          >
+            <Download className="h-4 w-4" />
+            {exportandoPdf ? "Exportando..." : "PDF"}
+          </Button>
+          <Button
+            onClick={() => refetch()}
+            variant="outline"
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Atualizar
+          </Button>
+        </div>
       </div>
 
       {/* Estatísticas */}
@@ -520,8 +581,8 @@ export default function CompartilhamentosPage() {
                     <div>
                       <p className="text-gray-500">Canal</p>
                       <p className="font-medium flex items-center gap-1">
-                        {getCanalIcon(compartilhamentoSelecionado.canalEnvio)}
-                        {compartilhamentoSelecionado.canalEnvio === "email" ? "Email" : compartilhamentoSelecionado.canalEnvio === "whatsapp" ? "WhatsApp" : "Ambos"}
+                        {getCanalIcon(compartilhamentoSelecionado.canalEnvio || "email")}
+                        {(compartilhamentoSelecionado.canalEnvio || "email") === "email" ? "Email" : compartilhamentoSelecionado.canalEnvio === "whatsapp" ? "WhatsApp" : "Ambos"}
                       </p>
                     </div>
                     <div>
