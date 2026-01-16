@@ -195,7 +195,6 @@ const menuSections = [
     icon: ClipboardList,
     items: [
       { id: "ordens-servico", label: "Todas as OS", icon: ClipboardList, funcaoId: "ordens-servico" },
-      { id: "ordens-servico/nova", label: "Nova OS", icon: Plus, funcaoId: "ordens-servico" },
       { id: "ordens-servico/configuracoes", label: "Configurações", icon: Settings, funcaoId: "ordens-servico" },
     ]
   },

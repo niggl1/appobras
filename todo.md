@@ -1527,3 +1527,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Integrar TemplateSelector no campo Responsável Principal
 - [x] Integrar TemplateSelector no campo Título
 - [x] Testar salvamento e busca de templates personalizados
+
+
+## Fase 52: Remover opção Nova OS do menu lateral
+- [x] Remover item "+ Nova OS" do submenu de Ordens de Serviço
