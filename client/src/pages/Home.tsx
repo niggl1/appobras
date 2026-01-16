@@ -397,9 +397,9 @@ export default function Home() {
           >
             {/* Plano 1 Usuário - R$99 */}
             <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="bg-gradient-to-r from-gray-500 to-gray-600 p-6 text-center">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
                 <h3 className="text-2xl font-bold text-white mb-2">1 Usuário</h3>
-                <p className="text-gray-100">Para começar</p>
+                <p className="text-orange-100">Para começar</p>
               </div>
               <CardContent className="p-8">
                 <div className="text-center mb-8">
@@ -439,9 +439,8 @@ export default function Home() {
             </Card>
 
             {/* Plano 3 Usuários - R$199 */}
-            <Card className="border-2 border-orange-500 shadow-2xl bg-white overflow-hidden scale-105">
+            <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
-                <div className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold text-white mb-2">Recomendado</div>
                 <h3 className="text-2xl font-bold text-white mb-2">3 Usuários</h3>
                 <p className="text-orange-100">Mais recursos e prioridade</p>
               </div>
@@ -484,9 +483,9 @@ export default function Home() {
 
             {/* Plano 5 Usuários - R$299 */}
             <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="bg-gradient-to-r from-gray-700 to-gray-800 p-6 text-center">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
                 <h3 className="text-2xl font-bold text-white mb-2">5 Usuários</h3>
-                <p className="text-gray-100">Solução completa</p>
+                <p className="text-orange-100">Solução completa</p>
               </div>
               <CardContent className="p-8">
                 <div className="text-center mb-8">

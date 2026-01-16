@@ -1220,3 +1220,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Renomear "Plano Básico" para "1 Usuário"
 - [x] Renomear "Plano Profissional" para "3 Usuários"
 - [x] Renomear "Plano Enterprise" para "5 Usuários"
+
+
+## Unificar Design dos Planos (17/01/2026)
+- [x] Deixar os 3 planos com design laranja uniforme
+- [x] Remover selo "Recomendado" do plano de 3 usuários
+- [x] Remover scale-105 do plano de 3 usuários
