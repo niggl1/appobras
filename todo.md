@@ -1420,3 +1420,17 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar descrição de localização
 - [x] Corrigir erros de JSX e estrutura do modal
 - [x] Executar testes (107 testes passando)
+
+## Fase 52: Geração de Relatório em PDF
+- [x] Implementar função de geração de PDF com PDFKit
+- [x] Integrar imagens da OS no PDF (URLs incluídas)
+- [x] Adicionar mapa com localização GPS (link para Google Maps)
+- [x] Incluir informações da OS (protocolo, responsável, materiais, descrição do serviço, prazo para conclusão)
+- [x] Criar botão de download de PDF na página de detalhe
+- [x] Implementar mutation tRPC generatePDF
+- [x] Criar rota HTTP /api/ordens-servico/:id/pdf
+- [x] Testar geração de PDF com múltiplas imagens (5 testes passando)
+- [x] Testar geração de PDF sem imagens
+- [x] Testar localização GPS no PDF
+- [x] Testar com caracteres especiais
+- [x] Testar com muitos materiais

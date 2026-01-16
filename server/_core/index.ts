@@ -38,6 +38,37 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Cron job routes for automated tasks
   registerCronRoutes(app);
+  // Rota para gerar PDF de Ordem de Serviço
+  app.get("/api/ordens-servico/:id/pdf", async (req, res) => {
+    try {
+      const osId = parseInt(req.params.id);
+      if (isNaN(osId)) {
+        return res.status(400).json({ error: "ID inválido" });
+      }
+
+      // Usar a mutation de PDF via tRPC
+      const context = await createContext({ req, res });
+      const caller = appRouter.createCaller(context);
+      
+      const result = await caller.ordensServico.generatePDF({ osId });
+      
+      if (!result.success) {
+        return res.status(500).json({ error: "Erro ao gerar PDF" });
+      }
+
+      // Converter base64 para buffer
+      const pdfBuffer = Buffer.from(result.pdfBase64, "base64");
+      
+      // Enviar como download
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${result.filename}"`);
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      res.status(500).json({ error: "Erro ao gerar PDF" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",
