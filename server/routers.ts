@@ -15006,6 +15006,88 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         
         return { success: true };
       }),
+
+    uploadImagem: protectedProcedure
+      .input(z.object({
+        ordemServicoId: z.number(),
+        fileName: z.string(),
+        fileType: z.string(),
+        fileData: z.string(),
+        descricao: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        if (!allowedTypes.includes(input.fileType)) {
+          throw new Error("Tipo de ficheiro nao suportado");
+        }
+        
+        const base64Data = input.fileData.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        const maxSize = 100 * 1024 * 1024;
+        if (buffer.length > maxSize) {
+          throw new Error("Ficheiro muito grande. Maximo 100MB.");
+        }
+        
+        const ext = input.fileName.split(".").pop() || "jpg";
+        const uniqueId = nanoid(10);
+        const fileKey = `os-imagens/${input.ordemServicoId}/${uniqueId}.${ext}`;
+        
+        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        
+        const [result] = await db.insert(osImagens).values({
+          ordemServicoId: input.ordemServicoId,
+          url,
+          fileKey,
+          tamanhoOriginal: buffer.length,
+          mimeType: input.fileType,
+          descricao: input.descricao,
+          uploadedBy: ctx.user.id,
+        });
+        
+        await db.insert(osTimeline).values({
+          ordemServicoId: input.ordemServicoId,
+          tipo: "nova_imagem",
+          descricao: `Imagem adicionada: ${input.fileName}`,
+          usuarioId: ctx.user.id,
+          usuarioNome: ctx.user.name || "Usuario",
+        });
+        
+        return { success: true, id: result.insertId, url };
+      }),
+
+    listarImagens: protectedProcedure
+      .input(z.object({ ordemServicoId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const imagens = await db.select().from(osImagens)
+          .where(eq(osImagens.ordemServicoId, input.ordemServicoId))
+          .orderBy(desc(osImagens.createdAt));
+        
+        return imagens;
+      }),
+
+    deletarImagem: protectedProcedure
+      .input(z.object({ imagemId: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [imagem] = await db.select().from(osImagens)
+          .where(eq(osImagens.id, input.imagemId));
+        
+        if (!imagem) throw new Error("Imagem nao encontrada");
+        
+        await db.delete(osImagens).where(eq(osImagens.id, input.imagemId));
+        
+        return { success: true };
+      }),
+
   }),
 
   // ==================== FUNÇÕES RÁPIDAS ====================

@@ -2599,3 +2599,4 @@ export const timelineNotificacoesHistorico = mysqlTable("timeline_notificacoes_h
 
 export type TimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferSelect;
 export type InsertTimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferInsert;
+

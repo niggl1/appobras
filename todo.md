@@ -1385,3 +1385,13 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Definir seções claras no formulário
 - [x] Adicionar ícones e visual premium
 - [x] Testar responsividade
+
+
+## Adicionar Upload de Imagens no Modal de Nova OS (17/01/2026)
+- [x] Criar tabela para armazenar imagens de ordens de serviço
+- [x] Implementar upload de imagens com compressão
+- [x] Adicionar validação de tamanho (máx 100MB)
+- [ ] Adicionar campo de upload no modal
+- [ ] Exibir preview das imagens selecionadas
+- [ ] Permitir remover imagens antes de salvar
+- [ ] Integrar imagens ao criar nova OS
