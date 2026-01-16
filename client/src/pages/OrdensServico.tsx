@@ -346,14 +346,27 @@ export default function OrdensServico() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label className="text-sm font-medium">Responsável Principal</Label>
-                          <Input
-                            placeholder="Nome do responsável"
-                            value={novaOS.responsavelPrincipal}
-                            onChange={(e) =>
-                              setNovaOS({ ...novaOS, responsavelPrincipal: e.target.value })
-                            }
-                            className="mt-1"
-                          />
+                          <div className="flex gap-2 mt-1">
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="bg-orange-500 hover:bg-orange-600 text-white px-3"
+                              onClick={() => {
+                                // Abrir modal para adicionar responsável
+                                toast.info("Funcionalidade de adicionar responsável em desenvolvimento");
+                              }}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                            <Input
+                              placeholder="Nome do responsável"
+                              value={novaOS.responsavelPrincipal}
+                              onChange={(e) =>
+                                setNovaOS({ ...novaOS, responsavelPrincipal: e.target.value })
+                              }
+                              className="flex-1"
+                            />
+                          </div>
                         </div>
                         <div>
                           <Label className="text-sm font-medium">Protocolo (Auto-gerado)</Label>
@@ -396,14 +409,27 @@ export default function OrdensServico() {
                     <div className="space-y-4">
                       <div>
                         <Label className="text-sm font-medium">Título *</Label>
-                        <Input
-                          placeholder="Ex: Reparo na bomba d'água"
-                          value={novaOS.titulo}
-                          onChange={(e) =>
-                            setNovaOS({ ...novaOS, titulo: e.target.value })
-                          }
-                          className="mt-1"
-                        />
+                        <div className="flex gap-2 mt-1">
+                          <Button
+                            type="button"
+                            size="sm"
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-3"
+                            onClick={() => {
+                              // Abrir modal para adicionar título de template
+                              toast.info("Funcionalidade de templates de título em desenvolvimento");
+                            }}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                          <Input
+                            placeholder="Ex: Reparo na bomba d'água"
+                            value={novaOS.titulo}
+                            onChange={(e) =>
+                              setNovaOS({ ...novaOS, titulo: e.target.value })
+                            }
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
                       <div>
                         <Label className="text-sm font-medium">Descrição Detalhada</Label>
