@@ -1340,3 +1340,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar campo de material necessário abaixo de tempo estimado
 - [x] Adicionar botão de + para adicionar materiais
 - [x] Adicionar campo de quantidade no modal de material
+
+
+## Bug: Campos Não Aparecem no Formulário de Nova Ordem (17/01/2026)
+- [x] Verificar por que os campos responsável e protocolo não aparecem
+- [x] Verificar por que os botões de + não aparecem
+- [x] Verificar por que o campo de material não aparece
+- [x] Corrigir formulário de nova ordem de serviço

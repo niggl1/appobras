@@ -614,6 +614,278 @@ export default function OrdemServicoDetalhe() {
     );
   }
 
+  // Renderizar formulário de criação para nova ordem
+  if (isNovaOrdem && !ordem) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h1 className="text-3xl font-bold text-gray-800">Nova Ordem de Serviço</h1>
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/dashboard/ordens-servico")}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Responsável */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <Label className="text-gray-700 font-semibold">Responsável *</Label>
+                  <Input
+                    value={editForm.responsavelPrincipal || ''}
+                    onChange={(e) => setEditForm({ ...editForm, responsavelPrincipal: e.target.value })}
+                    className="mt-2 border-amber-200"
+                    placeholder="Nome do responsável"
+                  />
+                </div>
+                <div>
+                  <Label className="text-gray-700 font-semibold">Protocolo</Label>
+                  <Input
+                    value={editForm.protocolo || ''}
+                    onChange={(e) => setEditForm({ ...editForm, protocolo: e.target.value })}
+                    className="mt-2 border-amber-200"
+                    placeholder="Número do protocolo"
+                  />
+                </div>
+              </div>
+
+              {/* Título */}
+              <div>
+                <Label className="text-gray-700 font-semibold">Título *</Label>
+                <Input
+                  value={editForm.titulo}
+                  onChange={(e) => setEditForm({ ...editForm, titulo: e.target.value })}
+                  className="mt-2 border-amber-200"
+                  placeholder="Ex: Reparo na bomba d'água"
+                />
+              </div>
+
+              {/* Descrição */}
+              <div>
+                <Label className="text-gray-700 font-semibold">Descrição</Label>
+                <Textarea
+                  value={editForm.descricao}
+                  onChange={(e) => setEditForm({ ...editForm, descricao: e.target.value })}
+                  className="mt-2 border-amber-200 min-h-[100px]"
+                  placeholder="Descreva detalhadamente o serviço a ser realizado..."
+                />
+              </div>
+
+              {/* Categoria, Prioridade, Setor */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-700 font-semibold">Categoria</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowGerenciarCategorias(true)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Select
+                    value={editForm.categoriaId}
+                    onValueChange={(v) => setEditForm({ ...editForm, categoriaId: v })}
+                  >
+                    <SelectTrigger className="mt-2 border-amber-200">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categorias?.map((c) => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-700 font-semibold">Prioridade</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowGerenciarPrioridades(true)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Select
+                    value={editForm.prioridadeId}
+                    onValueChange={(v) => setEditForm({ ...editForm, prioridadeId: v })}
+                  >
+                    <SelectTrigger className="mt-2 border-amber-200">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {prioridades?.map((p) => (
+                        <SelectItem key={p.id} value={String(p.id)}>
+                          {p.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-700 font-semibold">Setor</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowGerenciarSetores(true)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Select
+                    value={editForm.setorId}
+                    onValueChange={(v) => setEditForm({ ...editForm, setorId: v })}
+                  >
+                    <SelectTrigger className="mt-2 border-amber-200">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {setores?.map((s) => (
+                        <SelectItem key={s.id} value={String(s.id)}>
+                          {s.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Tempo Estimado */}
+              <div>
+                <Label className="text-gray-700 font-semibold">Tempo Estimado</Label>
+                <div className="grid grid-cols-3 gap-4 mt-2">
+                  <div>
+                    <Label className="text-xs text-gray-500">Dias</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={editForm.tempoEstimadoDias}
+                      onChange={(e) => setEditForm({ ...editForm, tempoEstimadoDias: parseInt(e.target.value) || 0 })}
+                      className="border-amber-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">Horas</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={editForm.tempoEstimadoHoras}
+                      onChange={(e) => setEditForm({ ...editForm, tempoEstimadoHoras: parseInt(e.target.value) || 0 })}
+                      className="border-amber-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">Minutos</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={editForm.tempoEstimadoMinutos}
+                      onChange={(e) => setEditForm({ ...editForm, tempoEstimadoMinutos: parseInt(e.target.value) || 0 })}
+                      className="border-amber-200"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Material Necessário */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-gray-700 font-semibold">Material Necessário</Label>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setShowAddMaterial(true)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {materiais && materiais.length > 0 ? (
+                  <div className="space-y-2">
+                    {materiais.map((m, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-amber-50 p-3 rounded-lg">
+                        <span className="text-sm text-gray-700">{m.nome} - Qtd: {m.quantidade} {m.unidade}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            const newMateriais = materiais.filter((_, i) => i !== idx);
+                            refetchMateriais();
+                          }}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Nenhum material adicionado</p>
+                )}
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex gap-4 pt-6 border-t">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-white hover:from-amber-500 hover:to-yellow-500"
+                  onClick={() => {
+                    if (!editForm.titulo) {
+                      alert('Por favor, preencha o título');
+                      return;
+                    }
+                    if (!condominioAtivo?.id) {
+                      alert('Nenhum condomínio selecionado');
+                      return;
+                    }
+                    const createOSMutation = trpc.ordensServico.create.useMutation();
+                    createOSMutation.mutate({
+                      condominioId: condominioAtivo.id,
+                      titulo: editForm.titulo,
+                      descricao: editForm.descricao || undefined,
+                      categoriaId: editForm.categoriaId ? parseInt(editForm.categoriaId) : undefined,
+                      prioridadeId: editForm.prioridadeId ? parseInt(editForm.prioridadeId) : undefined,
+                      setorId: editForm.setorId ? parseInt(editForm.setorId) : undefined,
+                      tempoEstimadoDias: editForm.tempoEstimadoDias,
+                      tempoEstimadoHoras: editForm.tempoEstimadoHoras,
+                      tempoEstimadoMinutos: editForm.tempoEstimadoMinutos,
+                    });
+                  }}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Criar Ordem de Serviço
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => navigate("/dashboard/ordens-servico")}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Usar ordem ou objeto vazio para nova ordem
   const ordemAtual = ordem || {} as any;
   
