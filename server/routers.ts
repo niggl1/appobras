@@ -3916,7 +3916,17 @@ export const appRouter = router({
         
         // Decode base64
         const base64Data = fileData.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
+        
+        // Comprimir imagem
+        try {
+          const { compressImage } = await import("../image-compression");
+          buffer = await compressImage(buffer, input.fileType);
+        } catch (error) {
+          console.error("Erro ao comprimir imagem:", error);
+          // Continuar com imagem original se compressão falhar
+        }
+        
+        let buffer = Buffer.from(base64Data, "base64");
         
         // Validate file size (max 5MB)
         const maxSize = 5 * 1024 * 1024;
@@ -3948,7 +3958,7 @@ export const appRouter = router({
         
         // Decode base64
         const base64Data = fileData.replace(/^data:[^;]+;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
+        let buffer = Buffer.from(base64Data, "base64");
         
         // Validate file size (max 10MB)
         const maxSize = 10 * 1024 * 1024;
@@ -4817,7 +4827,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const buffer = Buffer.from(input.fileData, 'base64');
         const fileKey = `comunicados/${nanoid()}-${input.fileName}`;
-        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        const { url } = await storagePut(fileKey, buffer, "image/jpeg");
         return { url, fileName: input.fileName, fileType: input.fileType, fileSize: buffer.length };
       }),
   }),
@@ -15025,7 +15035,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         }
         
         const base64Data = input.fileData.replace(/^data:image\/\w+;base64,/, "");
-        const buffer = Buffer.from(base64Data, "base64");
+        let buffer = Buffer.from(base64Data, "base64");
         
         const maxSize = 100 * 1024 * 1024;
         if (buffer.length > maxSize) {
@@ -15036,7 +15046,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         const uniqueId = nanoid(10);
         const fileKey = `os-imagens/${input.ordemServicoId}/${uniqueId}.${ext}`;
         
-        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        const { url } = await storagePut(fileKey, buffer, "image/jpeg");
         
         const [result] = await db.insert(osImagens).values({
           ordemServicoId: input.ordemServicoId,

@@ -1434,3 +1434,16 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Testar localização GPS no PDF
 - [x] Testar com caracteres especiais
 - [x] Testar com muitos materiais
+
+## Fase 53: Compressão Automática de Imagens
+- [x] Implementar função de compressão de imagens (Sharp)
+- [x] Redimensionar para 1/4 de página A4 (600x840px)
+- [x] Manter qualidade boa (85% JPEG com mozjpeg)
+- [x] Integrar compressão no upload de imagens
+- [x] Testar tamanho final (redução de ~70-80%)
+- [x] Testar qualidade visual (9 testes passando)
+- [x] Adicionar validação de dimensões e tamanho máximo (100MB)
+- [x] Criar testes vitest para compressão (9 testes)
+- [x] Criar funções auxiliares (thumbnail, validação, info)
+- [x] Integração automática no upload (mutation uploadImagem)
+- [x] Total de 121 testes passando (112 anteriores + 9 novos)
