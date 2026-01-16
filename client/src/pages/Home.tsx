@@ -588,8 +588,7 @@ export default function Home() {
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-              <img src="/logo-manutencao.png" alt="App Manutenção" className="w-10 h-10 object-contain" />
-              <span className="font-bold text-xl text-orange-400">App Manutenção</span>
+              <img src="/logo-manutencao-header.png" alt="App Manutenção" className="h-10 object-contain" />
             </div>
             <p className="text-gray-400 text-sm">
               © 2025 App Manutenção. Todos os direitos reservados.

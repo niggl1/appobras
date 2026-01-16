@@ -1248,3 +1248,8 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 ## Substituir Logo do Cabeçalho (17/01/2026)
 - [x] Copiar nova logo para pasta public
 - [x] Atualizar referência da logo no cabeçalho da página inicial
+
+
+## Substituir Logo do Rodapé (17/01/2026)
+- [x] Substituir logo do rodapé pela nova logo
+- [x] Remover texto "App Manutenção" do rodapé
