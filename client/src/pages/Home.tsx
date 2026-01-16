@@ -460,7 +460,7 @@ export default function Home() {
                     "Vistorias e Checklists",
                     "Relatórios profissionais",
                     "App mobile incluso",
-                    "Suporte técnico prioritário",
+                    "Suporte técnico",
                     "Atualizações gratuitas",
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export default function Home() {
                     "Vistorias e Checklists",
                     "Relatórios profissionais",
                     "App mobile incluso",
-                    "Suporte técnico 24/7",
+                    "Suporte técnico",
                     "Atualizações gratuitas",
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">

@@ -1238,3 +1238,8 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar retângulo com cantos arredondados embaixo dos planos
 - [x] Adicionar mensagem "Para equipes maiores entre em contato com o nosso suporte"
 - [x] Adicionar botão de contato/suporte
+
+
+## Unificar Suporte Técnico em Todos os Planos (17/01/2026)
+- [x] Alterar "Suporte técnico prioritário" para "Suporte técnico" no plano Pequenas Equipes
+- [x] Alterar "Suporte técnico 24/7" para "Suporte técnico" no plano Equipes Médias
