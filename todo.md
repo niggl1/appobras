@@ -1277,3 +1277,15 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar botão de compartilhamento
 - [x] Alterar botão da página inicial para "Visualizar Contrato"
 - [x] Instalar pacote html2pdf.js
+
+
+## Expandir Contrato com Informações Completas (17/01/2026)
+- [x] Adicionar dados completos do App Group (CNPJ, endereço, etc)
+- [x] Adicionar formas de reajuste do contrato
+- [x] Adicionar período de 1 ano renovável até manifestação contrária
+- [x] Adicionar bloqueio do sistema após 5 dias corridos de atraso
+- [x] Adicionar cancelamento com aviso prévio de 30 dias
+- [x] Adicionar penalidade de 1 mês se aviso não for respeitado
+- [x] Adicionar campo editável para data do contrato
+- [x] Adicionar campo editável para local do contrato
+- [x] Adicionar campos para responsável (nome, CPF, cargo)
