@@ -188,6 +188,12 @@ export default function OrdemServicoDetalhe() {
     { enabled: !!condominioAtivo?.id }
   );
 
+  // Query para anexos
+  const { data: anexos, refetch: refetchAnexos } = trpc.ordensServico.listarAnexos.useQuery(
+    { ordemServicoId: osId },
+    { enabled: !!osId }
+  );
+
   // Mutations
   const updateOS = trpc.ordensServico.update.useMutation({
     onSuccess: () => {
@@ -333,6 +339,27 @@ export default function OrdemServicoDetalhe() {
     onSuccess: () => {
       setChatMessage("");
       refetchChat();
+    },
+  });
+
+  // Anexos mutations
+  const uploadAnexo = trpc.ordensServico.uploadAnexo.useMutation({
+    onSuccess: () => {
+      toast.success("Anexo enviado com sucesso!");
+      refetchAnexos();
+    },
+    onError: (error) => {
+      toast.error("Erro ao enviar anexo: " + error.message);
+    },
+  });
+
+  const deleteAnexo = trpc.ordensServico.deletarAnexo.useMutation({
+    onSuccess: () => {
+      toast.success("Anexo removido!");
+      refetchAnexos();
+    },
+    onError: (error) => {
+      toast.error("Erro ao remover anexo: " + error.message);
     },
   });
 
@@ -1099,6 +1126,13 @@ export default function OrdemServicoDetalhe() {
                 Chat
               </TabsTrigger>
               <TabsTrigger 
+                value="anexos"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-yellow-400 data-[state=active]:text-white rounded-lg"
+              >
+                <Paperclip className="w-4 h-4 mr-2" />
+                Anexos
+              </TabsTrigger>
+              <TabsTrigger 
                 value="timeline"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-yellow-400 data-[state=active]:text-white rounded-lg"
               >
@@ -1859,6 +1893,119 @@ export default function OrdemServicoDetalhe() {
                 <p className="text-xs text-gray-400 mt-2">
                   Formatos aceites: Imagens, PDF, Word, Excel, TXT (máx. 10MB)
                 </p>
+              </div>
+            </TabsContent>
+
+            {/* Tab Anexos */}
+            <TabsContent value="anexos">
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold text-gray-800">Anexos</h2>
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,image/jpeg,image/png,image/gif,image/webp"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        for (const file of files) {
+                          if (file.size > 100 * 1024 * 1024) {
+                            toast.error(`Arquivo muito grande (máx 100MB): ${file.name}`);
+                            continue;
+                          }
+                          try {
+                            const reader = new FileReader();
+                            reader.onload = async () => {
+                              const base64 = (reader.result as string).split(",")[1];
+                              await uploadAnexo.mutateAsync({
+                                ordemServicoId: osId,
+                                fileName: file.name,
+                                fileType: file.type,
+                                fileData: base64,
+                              });
+                            };
+                            reader.readAsDataURL(file);
+                          } catch (error) {
+                            toast.error(`Erro ao enviar ${file.name}`);
+                          }
+                        }
+                      }}
+                    />
+                    <Button className="bg-gradient-to-r from-amber-400 to-yellow-400 text-white" asChild>
+                      <span>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Adicionar Anexo
+                      </span>
+                    </Button>
+                  </label>
+                </div>
+
+                {!anexos || anexos.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Paperclip className="w-16 h-16 mx-auto mb-4 text-amber-200" />
+                    <p className="text-lg font-medium">Nenhum anexo</p>
+                    <p className="text-sm mt-1">Clique em "Adicionar Anexo" para enviar documentos</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {anexos.map((anexo: any) => (
+                      <div
+                        key={anexo.id}
+                        className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100 hover:bg-gray-100 transition-colors group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-sm font-bold text-white ${
+                            anexo.tipo === "application/pdf" ? "bg-red-500" :
+                            anexo.tipo?.includes("word") ? "bg-blue-500" :
+                            anexo.tipo?.includes("excel") || anexo.tipo?.includes("spreadsheet") ? "bg-green-500" :
+                            anexo.tipo?.startsWith("image/") ? "bg-purple-500" : "bg-gray-500"
+                          }`}>
+                            {anexo.tipo === "application/pdf" ? "PDF" :
+                             anexo.tipo?.includes("word") ? "DOC" :
+                             anexo.tipo?.includes("excel") || anexo.tipo?.includes("spreadsheet") ? "XLS" :
+                             anexo.tipo?.startsWith("image/") ? "IMG" : "FILE"}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800 truncate max-w-[300px]">
+                              {anexo.nome}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {anexo.tamanho < 1024 ? anexo.tamanho + " B" :
+                               anexo.tamanho < 1024 * 1024 ? (anexo.tamanho / 1024).toFixed(1) + " KB" :
+                               (anexo.tamanho / (1024 * 1024)).toFixed(1) + " MB"}
+                              {" • "}
+                              {new Date(anexo.createdAt).toLocaleDateString("pt-BR")}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-amber-300 text-amber-600 hover:bg-amber-50"
+                            onClick={() => window.open(anexo.url, "_blank")}
+                          >
+                            <Download className="w-4 h-4 mr-1" />
+                            Baixar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={async () => {
+                              if (confirm("Tem certeza que deseja remover este anexo?")) {
+                                await deleteAnexo.mutateAsync({ anexoId: anexo.id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </TabsContent>
 

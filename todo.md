@@ -1549,3 +1549,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Atualizar modal de OS com seção de anexos (PDF e fotos)
 - [x] Implementar limite de 100MB por arquivo
 - [x] Testar funcionalidade completa
+
+
+## Fase 56: Visualização e Download de Anexos na OS
+- [x] Localizar página de detalhes da OS
+- [x] Adicionar query para buscar anexos da OS
+- [x] Criar seção de anexos com ícones e botões de download
+- [x] Testar funcionalidade de visualização e download
