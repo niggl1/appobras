@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://3000-i899bsbl0me04t0sf7pph-0100156f.us2.manus.computer/api/:path*"
+      "destination": "https://3000-ixm3fcr5wl9wf24z21xkn-197b1cb5.us2.manus.computer/api/:path*"
     }
   ],
   "headers": [
