@@ -1371,3 +1371,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Usar ordensServico.getPrioridades em vez de prioridades.list
 - [x] Usar ordensServico.getSetores em vez de setores.list
 - [x] Usar ordensServico.getConfiguracoes em vez de configuracoes.get
+
+
+## Adicionar Campo 'responsavelPrincipal' ao Schema (17/01/2026)
+- [x] Adicionar campo responsavelPrincipal à tabela ordensServico no schema
+- [x] Executar migração do banco de dados
+- [x] Atualizar tipos TypeScript

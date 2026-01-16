@@ -1807,6 +1807,10 @@ export const ordensServico = mysqlTable("ordens_servico", {
   chatToken: varchar("chatToken", { length: 64 }).unique(),
   chatAtivo: boolean("chatAtivo").default(true),
   
+  // Responsável Principal
+  responsavelPrincipalId: int("responsavelPrincipalId").references(() => osResponsaveis.id),
+  responsavelPrincipalNome: varchar("responsavelPrincipalNome", { length: 255 }),
+  
   // Solicitante
   solicitanteId: int("solicitanteId").references(() => users.id),
   solicitanteNome: varchar("solicitanteNome", { length: 255 }),
