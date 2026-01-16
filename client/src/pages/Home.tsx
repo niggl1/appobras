@@ -604,12 +604,12 @@ export default function Home() {
             </div>
 
             <div className="text-center">
-              <a href="/contrato.pdf" download className="inline-block">
+              <Link href="/contrato">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6">
                   <FileText className="w-5 h-5 mr-2" />
-                  Baixar o contrato
+                  Visualizar Contrato
                 </Button>
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>

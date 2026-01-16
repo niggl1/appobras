@@ -1265,3 +1265,15 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar botão de download na seção "Conheça nosso contrato"
 - [x] Configurar link para arquivo /contrato.pdf
 - [x] Aplicar estilo com gradiente laranja
+
+
+## Criar Página de Contrato com Campos Preenchíveis (17/01/2026)
+- [x] Criar página Contrato.tsx com formulário
+- [x] Adicionar campos para nome, CNPJ, plano e data
+- [x] Integrar dados da empresa (APP GROUP LTDA)
+- [x] Criar visualização do contrato com dados preenchidos
+- [x] Adicionar botão de impressão
+- [x] Adicionar botão de geração de PDF
+- [x] Adicionar botão de compartilhamento
+- [x] Alterar botão da página inicial para "Visualizar Contrato"
+- [x] Instalar pacote html2pdf.js
