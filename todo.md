@@ -1081,3 +1081,15 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Enviar email ao remetente quando destinatário visualizar
 - [x] Atualizar componente CompartilharComEquipe com opção de rastreamento
 - [x] Testar fluxo completo (102 testes passando)
+
+
+## Página de Histórico de Compartilhamentos (16/01/2026)
+- [x] Criar página CompartilhamentosPage.tsx
+- [x] Listar todos os compartilhamentos enviados pelo usuário
+- [x] Mostrar status de visualização (visualizado/não visualizado)
+- [x] Mostrar detalhes de cada visualização (data, hora, dispositivo, navegador)
+- [x] Adicionar filtros por tipo, status e busca
+- [x] Adicionar estatísticas gerais (total enviados, visualizados, pendentes, taxa)
+- [x] Adicionar rota no App.tsx (/dashboard/compartilhamentos)
+- [x] Adicionar entrada no menu lateral (Gestão da Organização > Compartilhamentos)
+- [x] Testar funcionalidade completa (102 testes passando)

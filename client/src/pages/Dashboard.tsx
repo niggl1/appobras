@@ -120,6 +120,7 @@ import NotificarMoradorPage from "./NotificarMoradorPage";
 import RelatoriosPage from "./RelatoriosPage";
 import HistoricoAcessosPage from "./HistoricoAcessosPage";
 import HistoricoInfracoesPage from "./HistoricoInfracoesPage";
+import CompartilhamentosPage from "./CompartilhamentosPage";
 import HistoricoTarefasSimples from "./HistoricoTarefasSimples";
 import NotificationAlert from "@/components/NotificationAlert";
 import FuncoesRapidas from "@/components/FuncoesRapidas";
@@ -160,6 +161,7 @@ const menuSections = [
     items: [
       { id: "condominio", label: "Cadastro da Organização", icon: Building2 },
       { id: "equipe", label: "Equipe de Gestão", icon: UsersRound, funcaoId: "equipe" },
+      { id: "compartilhamentos", label: "Compartilhamentos", icon: Share2 },
     ]
   },
   {
@@ -843,6 +845,7 @@ export default function Dashboard() {
           {currentSection === "gestao-notificacoes" && condominios?.[0] && <NotificacoesPage condominioId={condominios[0].id} />}
           {currentSection === "relatorios" && condominios?.[0] && <RelatoriosPage condominioId={condominios[0].id} />}
           {currentSection === "equipe" && condominios?.[0] && <MembrosEquipePage condominioId={condominios[0].id} />}
+          {currentSection === "compartilhamentos" && <CompartilhamentosPage />}
           {currentSection === "configuracoes" && <ConfiguracoesSection />}
           {currentSection === "ordens-servico" && <OrdensServico />}
           {currentSection === "agenda-vencimentos" && <AgendaVencimentos />}

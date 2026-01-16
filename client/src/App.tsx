@@ -47,6 +47,7 @@ import MembroEsqueciSenha from "./pages/MembroEsqueciSenha";
 import MembroRedefinirSenha from "./pages/MembroRedefinirSenha";
 import HistoricoAcessosPage from "./pages/HistoricoAcessosPage";
 import CompartilhadoPage from "./pages/CompartilhadoPage";
+import CompartilhamentosPage from "./pages/CompartilhamentosPage";
 import AppBuilder from "./pages/AppBuilder";
 import RelatorioBuilder from "./pages/RelatorioBuilder";
 import OrdensServico from "@/pages/OrdensServico";
@@ -136,6 +137,7 @@ function Router() {
       {/* Rota criar-projeto removida - sistema focado em manutenção */}
       <Route path="/dashboard/funcoes-simples" component={HistoricoTarefasSimples} />
       <Route path="/dashboard/relatorios-manutencao" component={RelatoriosManutencaoPage} />
+      <Route path="/dashboard/compartilhamentos" component={CompartilhamentosPage} />
       <Route path="/dashboard/revistas/nova">{() => { window.location.href = '/dashboard/revistas'; return null; }}</Route>
       <Route path="/dashboard/:section" component={Dashboard} />
       <Route path="/condominio/:id" component={CondominioManager} />
