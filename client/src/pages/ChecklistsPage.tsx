@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { LocationMiniMap } from "@/components/LocationMiniMap";
 import { ShareModal } from "@/components/ShareModal";
+import { CompartilharComEquipe } from "@/components/CompartilharComEquipe";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,6 +77,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareEquipeModal, setShowShareEquipeModal] = useState(false);
   const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
   const [searchProtocolo, setSearchProtocolo] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
@@ -550,6 +552,10 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
               onShare={() => {
                 setSelectedChecklist(checklist);
                 setShowShareModal(true);
+              }}
+              onShareEquipe={() => {
+                setSelectedChecklist(checklist);
+                setShowShareEquipeModal(true);
               }}
               onPdf={async () => {
                 const imagens = await utils.checklist.getImagens.fetch({ checklistId: checklist.id });
@@ -1144,6 +1150,17 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
         itemTitulo={selectedChecklist?.titulo || ""}
         itemProtocolo={selectedChecklist?.protocolo || ""}
         condominioId={condominioId}
+      />
+
+      {/* Modal de Compartilhar com Equipe */}
+      <CompartilharComEquipe
+        condominioId={condominioId}
+        tipo="checklist"
+        itemId={selectedChecklist?.id || 0}
+        itemTitulo={selectedChecklist?.titulo || ""}
+        itemDescricao={selectedChecklist?.descricao || ""}
+        open={showShareEquipeModal}
+        onOpenChange={setShowShareEquipeModal}
       />
 
       {/* Modal de Reportar Problema */}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { TarefasSimplesModal } from "@/components/TarefasSimplesModal";
 import { ShareModal } from "@/components/ShareModal";
+import { CompartilharComEquipe } from "@/components/CompartilharComEquipe";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,6 +75,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showManutencaoRapida, setShowManutencaoRapida] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareEquipeModal, setShowShareEquipeModal] = useState(false);
   const [selectedManutencao, setSelectedManutencao] = useState<any>(null);
   const [searchProtocolo, setSearchProtocolo] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
@@ -498,6 +500,10 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
               onShare={() => {
                 setSelectedManutencao(manutencao);
                 setShowShareModal(true);
+              }}
+              onShareEquipe={() => {
+                setSelectedManutencao(manutencao);
+                setShowShareEquipeModal(true);
               }}
               onPdf={async () => {
                 // Buscar imagens da manutenção
@@ -1057,6 +1063,17 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
         itemTitulo={selectedManutencao?.titulo || ""}
         itemProtocolo={selectedManutencao?.protocolo || ""}
         condominioId={condominioId}
+      />
+
+      {/* Modal de Compartilhar com Equipe */}
+      <CompartilharComEquipe
+        condominioId={condominioId}
+        tipo="manutencao"
+        itemId={selectedManutencao?.id || 0}
+        itemTitulo={selectedManutencao?.titulo || ""}
+        itemDescricao={selectedManutencao?.descricao || ""}
+        open={showShareEquipeModal}
+        onOpenChange={setShowShareEquipeModal}
       />
 
       {/* Modal de Manutenção Rápida */}

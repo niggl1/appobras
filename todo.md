@@ -1049,3 +1049,21 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar botões de exportação no modal de histórico
 - [x] Testar exportação PDF
 - [x] Testar exportação Excel (102 testes passando)
+
+
+## Bug: Erro API na página de Equipe (15/01/2026)
+- [ ] Corrigir erro "Unexpected token '<'" - API retorna HTML em vez de JSON
+
+
+## Compartilhar Funções com Equipe (16/01/2026)
+- [x] Criar componente CompartilharComEquipe reutilizável
+- [x] Criar modal com lista de membros da equipe
+- [x] Adicionar opção de compartilhar via WhatsApp
+- [x] Adicionar opção de compartilhar via email
+- [x] Criar rota tRPC para enviar email de compartilhamento
+- [x] Integrar botão nas páginas de Vistorias
+- [x] Integrar botão nas páginas de Manutenções
+- [x] Integrar botão nas páginas de Ocorrências
+- [x] Integrar botão nas páginas de Checklists
+- [ ] Integrar botão nas páginas de Antes e Depois
+- [x] Testar fluxo completo (102 testes passando)

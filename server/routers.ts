@@ -8179,6 +8179,120 @@ export const appRouter = router({
           mimeType: "application/pdf",
         };
       }),
+
+    // Enviar compartilhamento por email
+    enviarCompartilhamento: protectedProcedure
+      .input(z.object({
+        membroId: z.number(),
+        email: z.string().email(),
+        nome: z.string(),
+        tipo: z.enum(["vistoria", "manutencao", "ocorrencia", "checklist", "antes_depois"]),
+        itemId: z.number(),
+        itemTitulo: z.string(),
+        itemDescricao: z.string().optional(),
+        mensagemPersonalizada: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const { sendEmail } = await import("./_core/email");
+          
+          const getTipoLabel = (tipo: string) => {
+            switch (tipo) {
+              case "vistoria": return "Vistoria";
+              case "manutencao": return "Manutenção";
+              case "ocorrencia": return "Ocorrência";
+              case "checklist": return "Checklist";
+              case "antes_depois": return "Antes e Depois";
+              default: return "Item";
+            }
+          };
+          
+          const tipoLabel = getTipoLabel(input.tipo);
+          
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+              <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #EA580C 0%, #F97316 100%); border-radius: 16px 16px 0 0; padding: 32px; text-align: center;">
+                  <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">
+                    📋 ${tipoLabel} Compartilhada
+                  </h1>
+                </div>
+                
+                <!-- Content -->
+                <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                  <p style="color: #374151; font-size: 16px; margin: 0 0 24px 0;">
+                    Olá <strong>${input.nome}</strong>,
+                  </p>
+                  
+                  <p style="color: #6B7280; font-size: 14px; margin: 0 0 24px 0;">
+                    Uma ${tipoLabel.toLowerCase()} foi compartilhada com você:
+                  </p>
+                  
+                  <!-- Item Card -->
+                  <div style="background: #FFF7ED; border-left: 4px solid #EA580C; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                    <h2 style="color: #EA580C; margin: 0 0 8px 0; font-size: 18px;">
+                      ${input.itemTitulo}
+                    </h2>
+                    ${input.itemDescricao ? `
+                    <p style="color: #6B7280; margin: 0; font-size: 14px;">
+                      ${input.itemDescricao}
+                    </p>
+                    ` : ''}
+                  </div>
+                  
+                  ${input.mensagemPersonalizada ? `
+                  <!-- Mensagem Personalizada -->
+                  <div style="background: #F3F4F6; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                    <p style="color: #374151; margin: 0; font-size: 14px; font-style: italic;">
+                      "💬 ${input.mensagemPersonalizada}"
+                    </p>
+                  </div>
+                  ` : ''}
+                  
+                  <p style="color: #9CA3AF; font-size: 12px; margin: 24px 0 0 0; text-align: center;">
+                    Este email foi enviado automaticamente pelo App Manutenção.
+                  </p>
+                </div>
+                
+                <!-- Footer -->
+                <div style="text-align: center; padding: 20px;">
+                  <p style="color: #9CA3AF; font-size: 12px; margin: 0;">
+                    App Manutenção - Sistema de Gestão de Manutenção
+                  </p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+          
+          const result = await sendEmail({
+            to: input.email,
+            subject: `${tipoLabel} compartilhada: ${input.itemTitulo}`,
+            html: htmlContent,
+          });
+          
+          return {
+            sucesso: result.success,
+            membroId: input.membroId,
+            destinatario: input.email,
+            erro: result.error || null,
+          };
+        } catch (error) {
+          return {
+            sucesso: false,
+            membroId: input.membroId,
+            destinatario: input.email,
+            erro: error instanceof Error ? error.message : "Erro desconhecido",
+          };
+        }
+      }),
   }),
 
   // ==================== LINKS COMPARTILHÁVEIS ====================

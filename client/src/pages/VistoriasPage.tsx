@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { TarefasSimplesModal } from "@/components/TarefasSimplesModal";
 import { LocationMiniMap } from "@/components/LocationMiniMap";
 import { ShareModal } from "@/components/ShareModal";
+import { CompartilharComEquipe } from "@/components/CompartilharComEquipe";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,6 +74,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showVistoriaRapida, setShowVistoriaRapida] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareEquipeModal, setShowShareEquipeModal] = useState(false);
   const [selectedVistoria, setSelectedVistoria] = useState<any>(null);
   const [searchProtocolo, setSearchProtocolo] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
@@ -482,6 +484,10 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
               onShare={() => {
                 setSelectedVistoria(vistoria);
                 setShowShareModal(true);
+              }}
+              onShareEquipe={() => {
+                setSelectedVistoria(vistoria);
+                setShowShareEquipeModal(true);
               }}
               onPdf={async () => {
                 const imagens = await utils.vistoria.getImagens.fetch({ vistoriaId: vistoria.id });
@@ -986,6 +992,17 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
         itemTitulo={selectedVistoria?.titulo || ""}
         itemProtocolo={selectedVistoria?.protocolo || ""}
         condominioId={condominioId}
+      />
+
+      {/* Modal de Compartilhar com Equipe */}
+      <CompartilharComEquipe
+        condominioId={condominioId}
+        tipo="vistoria"
+        itemId={selectedVistoria?.id || 0}
+        itemTitulo={selectedVistoria?.titulo || ""}
+        itemDescricao={selectedVistoria?.descricao || ""}
+        open={showShareEquipeModal}
+        onOpenChange={setShowShareEquipeModal}
       />
 
       {/* Modal de Vistoria Rápida */}

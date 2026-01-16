@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { TarefasSimplesModal } from "@/components/TarefasSimplesModal";
 import { LocationMiniMap } from "@/components/LocationMiniMap";
 import { ShareModal } from "@/components/ShareModal";
+import { CompartilharComEquipe } from "@/components/CompartilharComEquipe";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,6 +81,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showOcorrenciaRapida, setShowOcorrenciaRapida] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareEquipeModal, setShowShareEquipeModal] = useState(false);
   const [selectedOcorrencia, setSelectedOcorrencia] = useState<any>(null);
   const [searchProtocolo, setSearchProtocolo] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("todos");
@@ -447,6 +449,10 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
               onShare={() => {
                 setSelectedOcorrencia(ocorrencia);
                 setShowShareModal(true);
+              }}
+              onShareEquipe={() => {
+                setSelectedOcorrencia(ocorrencia);
+                setShowShareEquipeModal(true);
               }}
               onPdf={async () => {
                 const imagens = await utils.ocorrencia.getImagens.fetch({ ocorrenciaId: ocorrencia.id });
@@ -921,6 +927,17 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
         itemTitulo={selectedOcorrencia?.titulo || ""}
         itemProtocolo={selectedOcorrencia?.protocolo || ""}
         condominioId={condominioId}
+      />
+
+      {/* Modal de Compartilhar com Equipe */}
+      <CompartilharComEquipe
+        condominioId={condominioId}
+        tipo="ocorrencia"
+        itemId={selectedOcorrencia?.id || 0}
+        itemTitulo={selectedOcorrencia?.titulo || ""}
+        itemDescricao={selectedOcorrencia?.descricao || ""}
+        open={showShareEquipeModal}
+        onOpenChange={setShowShareEquipeModal}
       />
 
       {/* Modal de Ocorrência Rápida */}
