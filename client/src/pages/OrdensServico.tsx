@@ -94,22 +94,22 @@ export function OrdensServico() {
     { enabled: !!condominioAtivo?.id }
   );
 
-  const { data: categorias } = trpc.categorias.list.useQuery(
+  const { data: categorias } = trpc.ordensServico.getCategorias.useQuery(
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
 
-  const { data: prioridades } = trpc.prioridades.list.useQuery(
+  const { data: prioridades } = trpc.ordensServico.getPrioridades.useQuery(
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
 
-  const { data: setores } = trpc.setores.list.useQuery(
+  const { data: setores } = trpc.ordensServico.getSetores.useQuery(
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
 
-  const { data: configuracoes } = trpc.configuracoes.get.useQuery(
+  const { data: configuracoes } = trpc.ordensServico.getConfiguracoes.useQuery(
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
@@ -166,7 +166,7 @@ export function OrdensServico() {
   const [novoSetor, setNovoSetor] = useState("");
 
   // Mutations para criar novos itens
-  const createCategoriaM = trpc.categorias.createCategoria.useMutation({
+  const createCategoriaM = trpc.ordensServico.createCategoria.useMutation({
     onSuccess: (data) => {
       toast.success("Categoria criada com sucesso!");
       setShowAddCategoria(false);
@@ -176,7 +176,7 @@ export function OrdensServico() {
     onError: () => toast.error("Erro ao criar categoria"),
   });
 
-  const createPrioridadeM = trpc.prioridades.createPrioridade.useMutation({
+  const createPrioridadeM = trpc.ordensServico.createPrioridade.useMutation({
     onSuccess: (data) => {
       toast.success("Prioridade criada com sucesso!");
       setShowAddPrioridade(false);
@@ -186,7 +186,7 @@ export function OrdensServico() {
     onError: () => toast.error("Erro ao criar prioridade"),
   });
 
-  const createSetorM = trpc.setores.createSetor.useMutation({
+  const createSetorM = trpc.ordensServico.createSetor.useMutation({
     onSuccess: (data) => {
       toast.success("Setor criado com sucesso!");
       setShowAddSetor(false);
@@ -540,19 +540,17 @@ export function OrdensServico() {
               </div>
 
               {/* Valor Estimado */}
-              {configuracoes?.habilitarGestaoFinanceira && (
-                <div>
-                  <Label className="text-gray-700">Valor Estimado (R$)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={novaOS.valorEstimado}
-                    onChange={(e) => setNovaOS({ ...novaOS, valorEstimado: e.target.value })}
-                    className="mt-1 border-amber-200"
-                  />
-                </div>
-              )}
+              <div>
+                <Label className="text-gray-700">Valor Estimado (R$)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={novaOS.valorEstimado}
+                  onChange={(e) => setNovaOS({ ...novaOS, valorEstimado: e.target.value })}
+                  className="mt-1 border-amber-200"
+                />
+              </div>
 
               {/* Material Necessário */}
               <div>

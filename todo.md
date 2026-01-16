@@ -1363,3 +1363,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar modal para adicionar novo setor
 - [x] Integrar mutations de criação com os modais
 - [x] Atualizar lista após criar novo item
+
+
+## Bug: Procedures Faltando no Backend (17/01/2026)
+- [x] Corrigir nomes das queries no frontend para usar nomes corretos das procedures
+- [x] Usar ordensServico.getCategorias em vez de categorias.list
+- [x] Usar ordensServico.getPrioridades em vez de prioridades.list
+- [x] Usar ordensServico.getSetores em vez de setores.list
+- [x] Usar ordensServico.getConfiguracoes em vez de configuracoes.get
