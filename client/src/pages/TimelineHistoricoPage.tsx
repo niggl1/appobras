@@ -41,7 +41,9 @@ import {
   Image as ImageIcon,
   Copy,
   Send,
+  Bell,
 } from "lucide-react";
+import { TimelineNotificacoesConfig } from "@/components/TimelineNotificacoesConfig";
 import { Link } from "wouter";
 
 interface TimelineHistoricoPageProps {
@@ -56,6 +58,7 @@ export default function TimelineHistoricoPage({ condominioId }: TimelineHistoric
   const [timelineSelecionada, setTimelineSelecionada] = useState<any>(null);
   const [modalDetalhes, setModalDetalhes] = useState(false);
   const [modalExcluir, setModalExcluir] = useState(false);
+  const [modalNotificacoes, setModalNotificacoes] = useState(false);
 
   // Queries
   const { data: timelinesData, isLoading, refetch } = trpc.timeline.listar.useQuery({
@@ -455,6 +458,18 @@ export default function TimelineHistoricoPage({ condominioId }: TimelineHistoric
                       )}
                       PDF
                     </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                      onClick={() => {
+                        setTimelineSelecionada(timeline);
+                        setModalNotificacoes(true);
+                      }}
+                    >
+                      <Bell className="w-4 h-4 mr-1" />
+                      Notificações
+                    </Button>
                     {timeline.estado === "rascunho" && (
                       <Button
                         variant="outline"
@@ -651,6 +666,15 @@ export default function TimelineHistoricoPage({ condominioId }: TimelineHistoric
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Configurações de Notificações */}
+      {timelineSelecionada && (
+        <TimelineNotificacoesConfig
+          timelineId={timelineSelecionada.id}
+          open={modalNotificacoes}
+          onOpenChange={setModalNotificacoes}
+        />
+      )}
     </div>
   );
 }

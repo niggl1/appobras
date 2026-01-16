@@ -392,6 +392,99 @@ export const emailTemplates = {
       text: `${condominioNome}\n\n${titulo}\n\n${mensagem}`,
     };
   },
+
+  notificacaoTimeline: (params: {
+    nomeDestinatario: string;
+    tipoEvento: string;
+    titulo: string;
+    protocolo: string;
+    statusAnterior?: string;
+    statusNovo?: string;
+    descricaoEvento?: string;
+    linkVisualizacao: string;
+    nomeAlterador?: string;
+  }) => {
+    const { nomeDestinatario, tipoEvento, titulo, protocolo, statusAnterior, statusNovo, descricaoEvento, linkVisualizacao, nomeAlterador } = params;
+    
+    const tipoEventoLabel: Record<string, string> = {
+      mudanca_status: 'Mudança de Status',
+      atualizacao: 'Atualização',
+      nova_imagem: 'Nova Imagem Adicionada',
+      comentario: 'Novo Comentário',
+      compartilhamento: 'Compartilhamento',
+      criacao: 'Timeline Criada',
+      finalizacao: 'Timeline Finalizada',
+    };
+    
+    const tipoLabel = tipoEventoLabel[tipoEvento] || tipoEvento;
+    
+    const corEvento: Record<string, string> = {
+      mudanca_status: '#3b82f6',
+      atualizacao: '#f97316',
+      nova_imagem: '#10b981',
+      comentario: '#8b5cf6',
+      compartilhamento: '#06b6d4',
+      criacao: '#22c55e',
+      finalizacao: '#6366f1',
+    };
+    
+    const cor = corEvento[tipoEvento] || '#f97316';
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background: #f3f4f6;">
+        <div style="background: linear-gradient(135deg, ${cor} 0%, ${cor}dd 100%); padding: 25px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 22px;">🔔 ${tipoLabel}</h1>
+          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Protocolo: ${protocolo}</p>
+        </div>
+        <div style="background: white; padding: 25px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <p style="color: #4b5563; margin: 0 0 15px 0;">Olá <strong>${nomeDestinatario}</strong>,</p>
+          <p style="color: #4b5563; margin: 0 0 20px 0;">Houve uma atualização na timeline que você está acompanhando:</p>
+          
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; margin: 0 0 20px 0; border-radius: 10px;">
+            <h3 style="color: #1e293b; margin: 0 0 10px 0; font-size: 18px;">${titulo}</h3>
+            <p style="color: #64748b; margin: 0 0 5px 0; font-size: 13px;">Protocolo: <strong>${protocolo}</strong></p>
+            ${nomeAlterador ? `<p style="color: #64748b; margin: 0; font-size: 13px;">Alterado por: <strong>${nomeAlterador}</strong></p>` : ''}
+          </div>
+          
+          ${statusAnterior && statusNovo ? `
+          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin: 0 0 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="color: #1e40af; margin: 0; font-size: 14px;">
+              <strong>Status alterado:</strong><br>
+              <span style="color: #dc2626; text-decoration: line-through;">${statusAnterior}</span>
+              →
+              <span style="color: #16a34a; font-weight: bold;">${statusNovo}</span>
+            </p>
+          </div>
+          ` : ''}
+          
+          ${descricaoEvento ? `
+          <div style="background: #fefce8; border-left: 4px solid #eab308; padding: 15px; margin: 0 0 20px 0; border-radius: 0 8px 8px 0;">
+            <p style="color: #854d0e; margin: 0; font-size: 14px;">
+              <strong>Detalhes:</strong><br>
+              ${descricaoEvento}
+            </p>
+          </div>
+          ` : ''}
+          
+          <div style="text-align: center; margin: 25px 0;">
+            <a href="${linkVisualizacao}" style="display: inline-block; background: linear-gradient(135deg, ${cor} 0%, ${cor}dd 100%); color: white; text-decoration: none; padding: 14px 35px; border-radius: 8px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);">Ver Timeline Completa</a>
+          </div>
+          
+          <p style="text-align: center; color: #9ca3af; font-size: 12px; margin: 25px 0 0 0; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+            Este email foi enviado automaticamente pelo sistema App Manutenção.<br>
+            Para alterar suas preferências de notificação, acesse as configurações da timeline.
+          </p>
+        </div>
+      </body>
+      </html>
+    `;
+  },
 };
 
 /**

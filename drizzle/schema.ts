@@ -2537,3 +2537,60 @@ export const timelineCompartilhamentos = mysqlTable("timeline_compartilhamentos"
 
 export type TimelineCompartilhamento = typeof timelineCompartilhamentos.$inferSelect;
 export type InsertTimelineCompartilhamento = typeof timelineCompartilhamentos.$inferInsert;
+
+
+// ==================== TIMELINE - CONFIGURAÇÕES DE NOTIFICAÇÕES ====================
+
+export const timelineNotificacoesConfig = mysqlTable("timeline_notificacoes_config", {
+  id: int("id").autoincrement().primaryKey(),
+  timelineId: int("timelineId").notNull(),
+  // Destinatários
+  notificarResponsavel: boolean("notificarResponsavel").default(true),
+  notificarCriador: boolean("notificarCriador").default(true),
+  emailsAdicionais: text("emailsAdicionais"), // JSON array de emails
+  // Eventos que disparam notificação
+  notificarMudancaStatus: boolean("notificarMudancaStatus").default(true),
+  notificarAtualizacao: boolean("notificarAtualizacao").default(true),
+  notificarNovaImagem: boolean("notificarNovaImagem").default(false),
+  notificarComentario: boolean("notificarComentario").default(true),
+  notificarCompartilhamento: boolean("notificarCompartilhamento").default(false),
+  // Configurações
+  ativo: boolean("ativo").default(true),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TimelineNotificacoesConfig = typeof timelineNotificacoesConfig.$inferSelect;
+export type InsertTimelineNotificacoesConfig = typeof timelineNotificacoesConfig.$inferInsert;
+
+// ==================== TIMELINE - HISTÓRICO DE NOTIFICAÇÕES ====================
+
+export const timelineNotificacoesHistorico = mysqlTable("timeline_notificacoes_historico", {
+  id: int("id").autoincrement().primaryKey(),
+  timelineId: int("timelineId").notNull(),
+  tipoEvento: mysqlEnum("tipoEvento", [
+    "mudanca_status",
+    "atualizacao",
+    "nova_imagem",
+    "comentario",
+    "compartilhamento",
+    "criacao",
+    "finalizacao"
+  ]).notNull(),
+  statusAnterior: varchar("statusAnterior", { length: 100 }),
+  statusNovo: varchar("statusNovo", { length: 100 }),
+  descricaoEvento: text("descricaoEvento"),
+  // Destinatários
+  emailsEnviados: text("emailsEnviados"), // JSON array de emails
+  totalEnviados: int("totalEnviados").default(0),
+  // Status do envio
+  enviado: boolean("enviado").default(false),
+  erroEnvio: text("erroEnvio"),
+  // Quem disparou
+  usuarioId: int("usuarioId"),
+  usuarioNome: varchar("usuarioNome", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferSelect;
+export type InsertTimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferInsert;

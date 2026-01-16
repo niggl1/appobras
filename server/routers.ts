@@ -127,7 +127,9 @@ import {
   timelines,
   timelineImagens,
   timelineEventos,
-  timelineCompartilhamentos
+  timelineCompartilhamentos,
+  timelineNotificacoesConfig,
+  timelineNotificacoesHistorico
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -17022,6 +17024,106 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           dadosNovos: JSON.stringify(data),
         });
         
+        // Verificar se houve mudança de status para enviar notificação
+        if (input.statusId && anterior && input.statusId !== anterior.statusId) {
+          // Buscar nomes dos status
+          let statusAnteriorNome = "";
+          let statusNovoNome = "";
+          
+          if (anterior.statusId) {
+            const [statusAnt] = await db.select().from(timelineStatus)
+              .where(eq(timelineStatus.id, anterior.statusId)).limit(1);
+            statusAnteriorNome = statusAnt?.nome || "Sem status";
+          }
+          
+          const [statusNov] = await db.select().from(timelineStatus)
+            .where(eq(timelineStatus.id, input.statusId)).limit(1);
+          statusNovoNome = statusNov?.nome || "Novo status";
+          
+          // Verificar configurações de notificação
+          const [config] = await db.select().from(timelineNotificacoesConfig)
+            .where(eq(timelineNotificacoesConfig.timelineId, id)).limit(1);
+          
+          if (config?.ativo && config?.notificarMudancaStatus) {
+            // Coletar emails
+            const emailsParaEnviar: string[] = [];
+            const nomesDestinatarios: Record<string, string> = {};
+            
+            // Buscar timeline atualizada
+            const [timelineAtual] = await db.select().from(timelines).where(eq(timelines.id, id)).limit(1);
+            
+            if (config.notificarResponsavel && timelineAtual?.responsavelId) {
+              const [resp] = await db.select().from(timelineResponsaveis)
+                .where(eq(timelineResponsaveis.id, timelineAtual.responsavelId)).limit(1);
+              if (resp?.email) {
+                emailsParaEnviar.push(resp.email);
+                nomesDestinatarios[resp.email] = resp.nome;
+              }
+            }
+            
+            if (config.notificarCriador && timelineAtual?.criadoPor) {
+              const [criador] = await db.select().from(users)
+                .where(eq(users.id, timelineAtual.criadoPor)).limit(1);
+              if (criador?.email && !emailsParaEnviar.includes(criador.email)) {
+                emailsParaEnviar.push(criador.email);
+                nomesDestinatarios[criador.email] = criador.name || "Usuário";
+              }
+            }
+            
+            if (config.emailsAdicionais) {
+              try {
+                const adicionais = JSON.parse(config.emailsAdicionais) as string[];
+                for (const email of adicionais) {
+                  if (email && !emailsParaEnviar.includes(email)) {
+                    emailsParaEnviar.push(email);
+                    nomesDestinatarios[email] = email.split("@")[0];
+                  }
+                }
+              } catch (e) {}
+            }
+            
+            // Enviar emails
+            if (emailsParaEnviar.length > 0 && timelineAtual) {
+              const baseUrl = process.env.VITE_APP_URL || "https://appmanutencao.com.br";
+              const linkVisualizacao = `${baseUrl}/timeline/${timelineAtual.tokenPublico}`;
+              
+              for (const email of emailsParaEnviar) {
+                try {
+                  const html = emailTemplates.notificacaoTimeline({
+                    nomeDestinatario: nomesDestinatarios[email] || "Usuário",
+                    tipoEvento: "mudanca_status",
+                    titulo: timelineAtual.titulo,
+                    protocolo: timelineAtual.protocolo,
+                    statusAnterior: statusAnteriorNome,
+                    statusNovo: statusNovoNome,
+                    linkVisualizacao,
+                    nomeAlterador: ctx.user?.name || undefined,
+                  });
+                  
+                  await sendEmail({
+                    to: email,
+                    subject: `🔔 Mudança de Status - ${timelineAtual.titulo} (${timelineAtual.protocolo})`,
+                    html,
+                  });
+                } catch (e) {}
+              }
+              
+              // Registrar no histórico
+              await db.insert(timelineNotificacoesHistorico).values({
+                timelineId: id,
+                tipoEvento: "mudanca_status",
+                statusAnterior: statusAnteriorNome,
+                statusNovo: statusNovoNome,
+                emailsEnviados: JSON.stringify(emailsParaEnviar),
+                totalEnviados: emailsParaEnviar.length,
+                enviado: true,
+                usuarioId: ctx.user?.id,
+                usuarioNome: ctx.user?.name,
+              });
+            }
+          }
+        }
+        
         return { success: true };
       }),
 
@@ -17365,6 +17467,251 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           enviados: all.filter(t => t.estado === "enviado").length,
           registados: all.filter(t => t.estado === "registado").length,
         };
+      }),
+
+    // ==================== TIMELINE - CONFIGURAÇÕES DE NOTIFICAÇÕES ====================
+    obterConfigNotificacoes: protectedProcedure
+      .input(z.object({ timelineId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return null;
+        
+        const [config] = await db.select().from(timelineNotificacoesConfig)
+          .where(eq(timelineNotificacoesConfig.timelineId, input.timelineId))
+          .limit(1);
+        
+        return config || null;
+      }),
+
+    salvarConfigNotificacoes: protectedProcedure
+      .input(z.object({
+        timelineId: z.number(),
+        notificarResponsavel: z.boolean().default(true),
+        notificarCriador: z.boolean().default(true),
+        emailsAdicionais: z.string().optional(),
+        notificarMudancaStatus: z.boolean().default(true),
+        notificarAtualizacao: z.boolean().default(true),
+        notificarNovaImagem: z.boolean().default(false),
+        notificarComentario: z.boolean().default(true),
+        notificarCompartilhamento: z.boolean().default(false),
+        ativo: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [existente] = await db.select().from(timelineNotificacoesConfig)
+          .where(eq(timelineNotificacoesConfig.timelineId, input.timelineId))
+          .limit(1);
+        
+        if (existente) {
+          await db.update(timelineNotificacoesConfig)
+            .set({
+              notificarResponsavel: input.notificarResponsavel,
+              notificarCriador: input.notificarCriador,
+              emailsAdicionais: input.emailsAdicionais,
+              notificarMudancaStatus: input.notificarMudancaStatus,
+              notificarAtualizacao: input.notificarAtualizacao,
+              notificarNovaImagem: input.notificarNovaImagem,
+              notificarComentario: input.notificarComentario,
+              notificarCompartilhamento: input.notificarCompartilhamento,
+              ativo: input.ativo,
+            })
+            .where(eq(timelineNotificacoesConfig.id, existente.id));
+          return { id: existente.id };
+        } else {
+          const [result] = await db.insert(timelineNotificacoesConfig).values({
+            timelineId: input.timelineId,
+            notificarResponsavel: input.notificarResponsavel,
+            notificarCriador: input.notificarCriador,
+            emailsAdicionais: input.emailsAdicionais,
+            notificarMudancaStatus: input.notificarMudancaStatus,
+            notificarAtualizacao: input.notificarAtualizacao,
+            notificarNovaImagem: input.notificarNovaImagem,
+            notificarComentario: input.notificarComentario,
+            notificarCompartilhamento: input.notificarCompartilhamento,
+            ativo: input.ativo,
+          });
+          return { id: result.insertId };
+        }
+      }),
+
+    // ==================== TIMELINE - ENVIO DE NOTIFICAÇÕES ====================
+    enviarNotificacao: protectedProcedure
+      .input(z.object({
+        timelineId: z.number(),
+        tipoEvento: z.enum(["mudanca_status", "atualizacao", "nova_imagem", "comentario", "compartilhamento", "criacao", "finalizacao"]),
+        statusAnterior: z.string().optional(),
+        statusNovo: z.string().optional(),
+        descricaoEvento: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar timeline
+        const [timeline] = await db.select().from(timelines)
+          .where(eq(timelines.id, input.timelineId))
+          .limit(1);
+        
+        if (!timeline) throw new Error("Timeline não encontrada");
+        
+        // Buscar configurações de notificação
+        const [config] = await db.select().from(timelineNotificacoesConfig)
+          .where(eq(timelineNotificacoesConfig.timelineId, input.timelineId))
+          .limit(1);
+        
+        // Se não houver config ou estiver desativado, não enviar
+        if (!config || !config.ativo) {
+          return { enviado: false, motivo: "Notificações desativadas" };
+        }
+        
+        // Verificar se o tipo de evento está habilitado
+        const eventoHabilitado = 
+          (input.tipoEvento === "mudanca_status" && config.notificarMudancaStatus) ||
+          (input.tipoEvento === "atualizacao" && config.notificarAtualizacao) ||
+          (input.tipoEvento === "nova_imagem" && config.notificarNovaImagem) ||
+          (input.tipoEvento === "comentario" && config.notificarComentario) ||
+          (input.tipoEvento === "compartilhamento" && config.notificarCompartilhamento) ||
+          input.tipoEvento === "criacao" ||
+          input.tipoEvento === "finalizacao";
+        
+        if (!eventoHabilitado) {
+          return { enviado: false, motivo: "Tipo de evento desabilitado" };
+        }
+        
+        // Coletar emails dos destinatários
+        const emailsParaEnviar: string[] = [];
+        const nomesDestinatarios: Record<string, string> = {};
+        
+        // Email do responsável
+        if (config.notificarResponsavel && timeline.responsavelId) {
+          const [responsavel] = await db.select().from(timelineResponsaveis)
+            .where(eq(timelineResponsaveis.id, timeline.responsavelId))
+            .limit(1);
+          if (responsavel?.email) {
+            emailsParaEnviar.push(responsavel.email);
+            nomesDestinatarios[responsavel.email] = responsavel.nome;
+          }
+        }
+        
+        // Email do criador
+        if (config.notificarCriador && timeline.criadoPor) {
+          const [criador] = await db.select().from(users)
+            .where(eq(users.id, timeline.criadoPor))
+            .limit(1);
+          if (criador?.email && !emailsParaEnviar.includes(criador.email)) {
+            emailsParaEnviar.push(criador.email);
+            nomesDestinatarios[criador.email] = criador.name || "Usuário";
+          }
+        }
+        
+        // Emails adicionais
+        if (config.emailsAdicionais) {
+          try {
+            const adicionais = JSON.parse(config.emailsAdicionais) as string[];
+            for (const email of adicionais) {
+              if (email && !emailsParaEnviar.includes(email)) {
+                emailsParaEnviar.push(email);
+                nomesDestinatarios[email] = email.split("@")[0];
+              }
+            }
+          } catch (e) {
+            // Ignorar erro de parse
+          }
+        }
+        
+        if (emailsParaEnviar.length === 0) {
+          return { enviado: false, motivo: "Nenhum destinatário configurado" };
+        }
+        
+        // Gerar link de visualização
+        const baseUrl = process.env.VITE_APP_URL || "https://appmanutencao.com.br";
+        const linkVisualizacao = `${baseUrl}/timeline/${timeline.tokenPublico}`;
+        
+        // Enviar emails
+        const tipoEventoLabels: Record<string, string> = {
+          mudanca_status: "Mudança de Status",
+          atualizacao: "Atualização",
+          nova_imagem: "Nova Imagem",
+          comentario: "Novo Comentário",
+          compartilhamento: "Compartilhamento",
+          criacao: "Timeline Criada",
+          finalizacao: "Timeline Finalizada",
+        };
+        
+        let enviados = 0;
+        let erros: string[] = [];
+        
+        for (const email of emailsParaEnviar) {
+          try {
+            const html = emailTemplates.notificacaoTimeline({
+              nomeDestinatario: nomesDestinatarios[email] || "Usuário",
+              tipoEvento: input.tipoEvento,
+              titulo: timeline.titulo,
+              protocolo: timeline.protocolo,
+              statusAnterior: input.statusAnterior,
+              statusNovo: input.statusNovo,
+              descricaoEvento: input.descricaoEvento,
+              linkVisualizacao,
+              nomeAlterador: ctx.user?.name || undefined,
+            });
+            
+            const result = await sendEmail({
+              to: email,
+              subject: `🔔 ${tipoEventoLabels[input.tipoEvento]} - ${timeline.titulo} (${timeline.protocolo})`,
+              html,
+            });
+            
+            if (result.success) {
+              enviados++;
+            } else {
+              erros.push(`${email}: ${result.error}`);
+            }
+          } catch (e) {
+            erros.push(`${email}: ${e instanceof Error ? e.message : "Erro desconhecido"}`);
+          }
+        }
+        
+        // Registrar no histórico
+        await db.insert(timelineNotificacoesHistorico).values({
+          timelineId: input.timelineId,
+          tipoEvento: input.tipoEvento,
+          statusAnterior: input.statusAnterior,
+          statusNovo: input.statusNovo,
+          descricaoEvento: input.descricaoEvento,
+          emailsEnviados: JSON.stringify(emailsParaEnviar),
+          totalEnviados: enviados,
+          enviado: enviados > 0,
+          erroEnvio: erros.length > 0 ? erros.join("; ") : null,
+          usuarioId: ctx.user?.id,
+          usuarioNome: ctx.user?.name,
+        });
+        
+        return {
+          enviado: enviados > 0,
+          totalEnviados: enviados,
+          totalDestinatarios: emailsParaEnviar.length,
+          erros: erros.length > 0 ? erros : undefined,
+        };
+      }),
+
+    // ==================== TIMELINE - HISTÓRICO DE NOTIFICAÇÕES ====================
+    listarHistoricoNotificacoes: protectedProcedure
+      .input(z.object({
+        timelineId: z.number(),
+        limite: z.number().default(50),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        const historico = await db.select().from(timelineNotificacoesHistorico)
+          .where(eq(timelineNotificacoesHistorico.timelineId, input.timelineId))
+          .orderBy(desc(timelineNotificacoesHistorico.createdAt))
+          .limit(input.limite);
+        
+        return historico;
       }),
   }),
 });

@@ -1144,3 +1144,28 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar página de histórico com filtros e estatísticas
 - [x] Adicionar entrada no menu lateral (Operacional/Manutenção > Timeline e Histórico Timeline)
 - [x] Testar fluxo completo (102 testes passando)
+
+
+## Sistema de Notificações por Email para Timelines (16/01/2026)
+- [ ] Criar tabela timeline_notificacoes_config (configurações por timeline)
+- [ ] Criar tabela timeline_notificacoes_historico (histórico de envios)
+- [ ] Criar rotas tRPC para configurar notificações
+- [ ] Criar rota tRPC para enviar notificação
+- [ ] Integrar envio automático na mudança de status
+- [ ] Integrar envio automático em atualizações
+- [ ] Criar template de email para notificações
+- [ ] Criar interface de configuração de notificações na timeline
+- [ ] Testar fluxo completo
+
+
+## Sistema de Notificações por Email para Timelines (16/01/2026) - CONCLUÍDO
+- [x] Criar tabela timeline_notificacoes_config no banco de dados
+- [x] Criar tabela timeline_notificacoes_historico para registar envios
+- [x] Criar rotas tRPC para configurar notificações (salvar, obter, enviar)
+- [x] Criar rota tRPC para enviar notificações manualmente
+- [x] Integrar envio automático de notificações nas ações de timeline (atualizar)
+- [x] Criar template de email para notificações de timeline (notificacaoTimeline)
+- [x] Criar componente de configuração de notificações (TimelineNotificacoesConfig.tsx)
+- [x] Adicionar botão de configuração de notificações na página de histórico
+- [x] Opções configuráveis: mudança de status, atualizações, novas imagens, comentários
+- [x] Destinatários configuráveis: responsável, criador, emails adicionais
