@@ -263,7 +263,7 @@ export default function OrdensServico() {
     try {
       // Gerar protocolo automático se não foi preenchido
       const protocoloFinal = novaOS.protocolo.trim() || String(Math.floor(100000 + Math.random() * 900000));
-      await createOS.mutateAsync({
+      const result = await createOS.mutateAsync({
         condominioId: condominioAtivo?.id || 0,
         solicitanteNome: novaOS.responsavelPrincipal,
         titulo: novaOS.titulo,

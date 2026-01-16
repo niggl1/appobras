@@ -1476,3 +1476,23 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar modal de selecao de titulos de templates (10 titulos pre-configurados)
 - [x] Integrar modais com botoes +
 - [x] Testar funcionalidade completa (121 testes passando)
+
+## Fase 58: Corrigir Modal de Seleção de Responsável
+- [ ] Diagnosticar problema de listagem de funcionários
+- [ ] Verificar query trpc.funcionario.list
+- [ ] Corrigir modal para mostrar funcionários cadastrados
+- [ ] Testar funcionalidade completa
+
+## Fase 59: Checkup Completo da Função Ordem de Serviço
+- [x] Verificar erros TypeScript e sintaxe JSX
+- [x] Verificar schema do banco de dados (tabelas OS)
+- [x] Verificar routers/procedures do backend
+- [x] Verificar componentes do frontend
+- [x] Executar testes e identificar falhas
+- [x] Rollback para versão estável (d7e3e077)
+- [x] Corrigir referência circular no schema (ordensServico/osResponsaveis)
+- [x] Corrigir erro de tipo Buffer no routers.ts
+- [x] Corrigir erro de createContext no index.ts
+- [x] Corrigir erro de quantidade null no PDF
+- [x] Todos os 121 testes passando
+- [x] Zero erros TypeScript

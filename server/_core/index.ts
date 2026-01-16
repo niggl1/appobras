@@ -47,7 +47,7 @@ async function startServer() {
       }
 
       // Usar a mutation de PDF via tRPC
-      const context = await createContext({ req, res });
+      const context = await createContext({ req, res, info: { remoteAddress: req.ip || "" } } as any);
       const caller = appRouter.createCaller(context);
       
       const result = await caller.ordensServico.generatePDF({ osId });

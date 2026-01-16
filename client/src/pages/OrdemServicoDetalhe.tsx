@@ -636,8 +636,8 @@ export default function OrdemServicoDetalhe() {
                 <div>
                   <Label className="text-gray-700 font-semibold">Responsável *</Label>
                   <Input
-                    value={editForm.responsavelPrincipal || ''}
-                    onChange={(e) => setEditForm({ ...editForm, responsavelPrincipal: e.target.value })}
+                    value={editForm.responsavelPrincipalNome || ''}
+                    onChange={(e) => setEditForm({ ...editForm, responsavelPrincipalNome: e.target.value })}
                     className="mt-2 border-amber-200"
                     placeholder="Nome do responsável"
                   />
@@ -1143,13 +1143,13 @@ export default function OrdemServicoDetalhe() {
                     <Label className="text-gray-700">Responsável</Label>
                     {isEditing ? (
                       <Input
-                        value={editForm.responsavelPrincipal || ''}
-                        onChange={(e) => setEditForm({ ...editForm, responsavelPrincipal: e.target.value })}
+                        value={editForm.responsavelPrincipalNome || ''}
+                        onChange={(e) => setEditForm({ ...editForm, responsavelPrincipalNome: e.target.value })}
                         className="mt-1 border-amber-200"
                         placeholder="Nome do responsável"
                       />
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordemAtual.responsavelPrincipal || "-"}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.responsavelPrincipalNome || "-"}</p>
                     )}
                   </div>
 
@@ -2587,9 +2587,11 @@ export default function OrdemServicoDetalhe() {
           <ShareModal
             isOpen={showShareModal}
             onClose={() => setShowShareModal(false)}
-            itemType="ordem_servico"
+            tipo="manutencao"
             itemId={ordem.id}
-            itemTitle={`Ordem de Serviço #${ordem.protocolo}`}
+            itemTitulo={ordem.titulo || "Ordem de Serviço"}
+            itemProtocolo={ordem.protocolo || ""}
+            condominioId={ordem.condominioId || 0}
           />
         )}
     </div>

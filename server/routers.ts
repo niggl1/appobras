@@ -3916,17 +3916,17 @@ export const appRouter = router({
         
         // Decode base64
         const base64Data = fileData.replace(/^data:image\/\w+;base64,/, "");
+        let buffer: Buffer = Buffer.from(base64Data, "base64");
         
         // Comprimir imagem
         try {
-          const { compressImage } = await import("../image-compression");
-          buffer = await compressImage(buffer, input.fileType);
+          const { compressImage } = await import("./image-compression");
+          const compressedBuffer = await compressImage(buffer, input.fileType);
+          buffer = Buffer.from(compressedBuffer);
         } catch (error) {
           console.error("Erro ao comprimir imagem:", error);
           // Continuar com imagem original se compressão falhar
         }
-        
-        let buffer = Buffer.from(base64Data, "base64");
         
         // Validate file size (max 5MB)
         const maxSize = 5 * 1024 * 1024;
@@ -15092,6 +15092,63 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         await db.delete(osImagens).where(eq(osImagens.id, input.imagemId));
         
         return { success: true };
+      }),
+
+    // Gerar PDF da ordem de serviço
+    generatePDF: protectedProcedure
+      .input(z.object({ osId: z.number() }))
+      .mutation(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Buscar ordem de serviço
+        const [os] = await db.select().from(ordensServico)
+          .where(eq(ordensServico.id, input.osId));
+        
+        if (!os) {
+          throw new Error("Ordem de serviço não encontrada");
+        }
+        
+        // Buscar imagens
+        const imagens = await db.select().from(osImagens)
+          .where(eq(osImagens.ordemServicoId, input.osId));
+        
+        // Buscar materiais
+        const materiais = await db.select().from(osMateriais)
+          .where(eq(osMateriais.ordemServicoId, input.osId));
+        
+        // Importar gerador de PDF
+        const { generateOSPDF } = await import("./pdf-generator");
+        
+        // Preparar dados para PDF
+        const pdfData = {
+          protocolo: os.protocolo || "",
+          titulo: os.titulo || "",
+          descricao: os.descricao || "",
+          responsavelPrincipalNome: os.responsavelPrincipalNome || "",
+          tempoEstimadoDias: os.tempoEstimadoDias || 0,
+          tempoEstimadoHoras: os.tempoEstimadoHoras || 0,
+          tempoEstimadoMinutos: os.tempoEstimadoMinutos || 0,
+          latitude: os.latitude || undefined,
+          longitude: os.longitude || undefined,
+          localizacaoDescricao: os.localizacaoDescricao || "",
+          materiais: materiais.map(m => ({ nome: m.nome, quantidade: m.quantidade || 0 })),
+          imagens: imagens.map(img => ({ url: img.url })),
+          dataCriacao: os.createdAt,
+          prioridadeNome: "",
+          categoriaNome: "",
+          setorNome: "",
+        };
+        
+        // Gerar PDF
+        const pdfBuffer = await generateOSPDF(pdfData);
+        
+        // Retornar base64 para download
+        return {
+          success: true,
+          pdfBase64: pdfBuffer.toString("base64"),
+          filename: `OS-${os.protocolo || os.id}-${new Date().toISOString().split("T")[0]}.pdf`,
+        };
       }),
 
   }),
