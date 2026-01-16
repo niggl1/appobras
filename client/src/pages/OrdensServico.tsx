@@ -901,119 +901,59 @@ export default function OrdensServico() {
         </div>
       </div>
 
-      {/* Modal de Seleção de Responsável */}
+      {/* Modal de Cadastro de Responsável */}
       <Dialog open={showSelectResponsavel} onOpenChange={setShowSelectResponsavel}>
-        <DialogContent className="w-[95vw] max-w-md max-h-[80vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-md">
           <DialogHeader>
-            <DialogTitle>Selecionar Responsável</DialogTitle>
+            <DialogTitle>Novo Responsável</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Funcionários */}
-            {funcionarios && funcionarios.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">Funcionários</h4>
-                {funcionarios.map((funcionario) => (
-                  <Button
-                    key={`func-${funcionario.id}`}
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      setNovaOS({ ...novaOS, responsavelPrincipal: funcionario.nome });
-                      setShowSelectResponsavel(false);
-                    }}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    {funcionario.nome}
-                    {funcionario.cargo && <span className="ml-2 text-xs text-muted-foreground">({funcionario.cargo})</span>}
-                  </Button>
-                ))}
-              </div>
-            )}
-            
-            {/* Moradores */}
-            {moradores && moradores.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">Moradores</h4>
-                {moradores.slice(0, 10).map((morador) => (
-                  <Button
-                    key={`mor-${morador.id}`}
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      setNovaOS({ ...novaOS, responsavelPrincipal: morador.nome });
-                      setShowSelectResponsavel(false);
-                    }}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    {morador.nome}
-                    {morador.apartamento && <span className="ml-2 text-xs text-muted-foreground">(Apt {morador.apartamento})</span>}
-                  </Button>
-                ))}
-                {moradores.length > 10 && (
-                  <p className="text-xs text-muted-foreground text-center">E mais {moradores.length - 10} moradores...</p>
-                )}
-              </div>
-            )}
-            
-            {/* Mensagem quando não há ninguém cadastrado */}
-            {(!funcionarios || funcionarios.length === 0) && (!moradores || moradores.length === 0) && (
-              <div className="text-center py-4 space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Nenhum funcionário ou morador cadastrado neste condomínio.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Digite o nome do responsável manualmente no campo acima.
-                </p>
-              </div>
-            )}
-            
-            {/* Botão para fechar e digitar manualmente */}
-            <div className="pt-2 border-t">
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={() => setShowSelectResponsavel(false)}
+            <Input
+              placeholder="Nome do responsável"
+              value={novaOS.responsavelPrincipal}
+              onChange={(e) => setNovaOS({ ...novaOS, responsavelPrincipal: e.target.value })}
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowSelectResponsavel(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button 
+                onClick={() => setShowSelectResponsavel(false)} 
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                disabled={!novaOS.responsavelPrincipal.trim()}
               >
-                Digitar nome manualmente
+                Criar
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Seleção de Título */}
+      {/* Modal de Cadastro de Título */}
       <Dialog open={showSelectTitulo} onOpenChange={setShowSelectTitulo}>
         <DialogContent className="w-[95vw] max-w-md">
           <DialogHeader>
-            <DialogTitle>Selecionar Título</DialogTitle>
+            <DialogTitle>Novo Título</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              {[
-                "Reparo na bomba d'água",
-                "Manutenção elétrica",
-                "Limpeza de caixa d'água",
-                "Reparo no elevador",
-                "Manutenção do portão",
-                "Pintura de área comum",
-                "Reparo hidráulico",
-                "Manutenção de ar condicionado",
-                "Desentupimento",
-                "Troca de lâmpadas",
-              ].map((titulo) => (
-                <Button
-                  key={titulo}
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    setNovaOS({ ...novaOS, titulo });
-                    setShowSelectTitulo(false);
-                  }}
-                >
-                  <ClipboardList className="w-4 h-4 mr-2" />
-                  {titulo}
-                </Button>
-              ))}
+            <Input
+              placeholder="Título da ordem de serviço"
+              value={novaOS.titulo}
+              onChange={(e) => setNovaOS({ ...novaOS, titulo: e.target.value })}
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowSelectTitulo(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button 
+                onClick={() => setShowSelectTitulo(false)} 
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                disabled={!novaOS.titulo.trim()}
+              >
+                Criar
+              </Button>
             </div>
           </div>
         </DialogContent>

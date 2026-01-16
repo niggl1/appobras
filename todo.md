@@ -1505,3 +1505,17 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar mensagem informativa quando não há cadastros
 - [x] Adicionar botão "Digitar nome manualmente"
 - [x] Todos os 121 testes passando
+
+## Fase 61: Substituir Modais de Seleção por Cadastro Simples
+- [ ] Remover modal de seleção de Responsável atual
+- [ ] Remover modal de seleção de Título atual
+- [ ] Criar modal de cadastro simples para Responsável (igual Nova Categoria)
+- [ ] Criar modal de cadastro simples para Título (igual Nova Categoria)
+- [ ] Testar funcionalidade de cadastro
+
+
+## Fase 50: Botões "+" com Modais de Cadastro Simples
+- [x] Substituir modal de seleção de Responsável por modal de cadastro simples
+- [x] Substituir modal de seleção de Título por modal de cadastro simples
+- [x] Design similar ao modal "Nova Categoria" (campo de texto + botões Cancelar/Criar)
+- [x] Todos os 121 testes passando
