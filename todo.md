@@ -1562,4 +1562,12 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar README.md completo com documentação
 - [x] Configurar CI/CD com GitHub Actions
 - [x] Preparar projeto para geração de APK Android
-- [ ] Sincronizar alterações com GitHub
+- [x] Sincronizar alterações com GitHub
+
+
+## Fase 58: Deploy Híbrido (Vercel + Manus)
+- [ ] Preparar projeto para deploy híbrido (ajustar CORS)
+- [ ] Conectar repositório GitHub à Vercel
+- [ ] Configurar variáveis de ambiente na Vercel
+- [ ] Fazer deploy e configurar domínio www.appmanutencao.com.br
+- [ ] Testar funcionamento completo
