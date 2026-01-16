@@ -524,6 +524,29 @@ export default function Home() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Seção de Contato para Equipes Maiores */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-16 max-w-2xl mx-auto"
+          >
+            <div className="bg-gradient-to-r from-orange-50 to-orange-100/50 border-2 border-orange-200 rounded-2xl p-8 text-center">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Para equipes maiores
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Precisa de uma solução customizada com mais usuários e funcionalidades avançadas? Entre em contato com o nosso suporte.
+              </p>
+              <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Falar com Suporte
+                </Button>
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
 

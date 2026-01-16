@@ -1232,3 +1232,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Renomear "1 Usuário" para "Individual"
 - [x] Renomear "3 Usuários" para "Pequenas Equipes"
 - [x] Renomear "5 Usuários" para "Equipes Médias"
+
+
+## Adicionar Retângulo de Contato para Equipes Maiores (17/01/2026)
+- [x] Adicionar retângulo com cantos arredondados embaixo dos planos
+- [x] Adicionar mensagem "Para equipes maiores entre em contato com o nosso suporte"
+- [x] Adicionar botão de contato/suporte
