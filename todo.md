@@ -1310,3 +1310,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Gerar imagens de relatórios
 - [x] Gerar imagens do app mobile
 - [x] Integrar imagens aos slides
+
+
+## Otimizar Apresentação para Impressão em PDF (17/01/2026)
+- [x] Adicionar estilos CSS para impressão
+- [x] Implementar funcionalidade de impressão/PDF
+- [x] Testar e validar saída em PDF

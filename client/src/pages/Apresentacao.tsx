@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Download, Share2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Download, Share2, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,8 @@ interface Slide {
 export default function Apresentacao() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(false);
+  const presentationRef = useRef<HTMLDivElement>(null);
+  const [isPrintMode, setIsPrintMode] = useState(false);
 
   const slides: Slide[] = [
     {
@@ -178,42 +180,6 @@ export default function Apresentacao() {
     },
     {
       id: 10,
-      title: 'Plano Individual',
-      subtitle: 'R$ 99/mês',
-      content: (
-        <div className="space-y-6">
-          <p className="text-xl text-gray-700 font-semibold">Perfeito para profissionais autônomos</p>
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl">
-            <ul className="space-y-3 text-lg">
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>1 usuário ativo</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Ordens de serviço ilimitadas</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Suporte técnico</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>App mobile</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Relatórios básicos</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      ),
-      bgColor: 'bg-white',
-      textColor: 'text-gray-900'
-    },
-    {
-      id: 11,
       title: 'Plano Pequenas Equipes',
       subtitle: 'R$ 199/mês',
       content: (
@@ -254,7 +220,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 12,
+      id: 11,
       title: 'Plano Equipes Médias',
       subtitle: 'R$ 299/mês',
       content: (
@@ -298,7 +264,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 13,
+      id: 12,
       title: 'Termos do Contrato',
       subtitle: 'Transparência e Segurança',
       content: (
@@ -330,7 +296,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 14,
+      id: 13,
       title: 'Por Que Escolher APP MANUTENÇÃO?',
       subtitle: 'Diferenciais que fazem a diferença',
       content: (
@@ -361,7 +327,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 15,
+      id: 14,
       title: 'Próximos Passos',
       subtitle: 'Comece sua transformação agora',
       content: (
@@ -438,113 +404,209 @@ export default function Apresentacao() {
     }
   };
 
+  const handlePrint = () => {
+    setIsPrintMode(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrintMode(false);
+    }, 500);
+  };
+
   const slide = slides[currentSlide];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Header */}
-      <div className="bg-white shadow-md p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img src="/LogoManutenção2.png" alt="APP MANUTENÇÃO" className="h-12" />
-          <span className="text-xl font-bold text-gray-900">Apresentação</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={downloadPDF}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={sharePresentation}
-            className="flex items-center gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            Compartilhar
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        <div className={`w-full max-w-5xl ${slide.bgColor} rounded-2xl shadow-2xl p-12 min-h-96 flex flex-col justify-center ${slide.textColor}`}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <div>
-                <h1 className="text-5xl font-bold mb-2">{slide.title}</h1>
-                {slide.subtitle && (
-                  <p className="text-xl text-gray-600">{slide.subtitle}</p>
-                )}
+    <>
+      <style>{`
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-slide {
+            page-break-after: always;
+            page-break-inside: avoid;
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white !important;
+            color: #1f2937 !important;
+            border: none !important;
+          }
+          .print-slide img {
+            max-width: 100%;
+            height: auto;
+            page-break-inside: avoid;
+          }
+          .print-slide h1 {
+            font-size: 48px;
+            margin: 0 0 20px 0;
+            color: #1f2937;
+            page-break-after: avoid;
+          }
+          .print-slide h2 {
+            font-size: 28px;
+            margin: 0 0 30px 0;
+            color: #666;
+            page-break-after: avoid;
+          }
+          .print-slide .print-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1f2937;
+            page-break-inside: avoid;
+          }
+          .print-slide ul {
+            margin: 20px 0;
+            padding-left: 30px;
+          }
+          .print-slide li {
+            margin: 10px 0;
+            page-break-inside: avoid;
+          }
+        }
+      `}</style>
+      <div className="min-h-screen bg-gray-100 flex flex-col" ref={presentationRef}>
+        {!isPrintMode && (
+          <>
+            {/* Header */}
+            <div className="bg-white shadow-md p-4 flex items-center justify-between no-print">
+              <div className="flex items-center gap-3">
+                <img src="/LogoManutenção2.png" alt="APP MANUTENÇÃO" className="h-12" />
+                <span className="text-xl font-bold text-gray-900">Apresentação</span>
               </div>
-              <div className="text-lg">{slide.content}</div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadPDF}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={sharePresentation}
+                  className="flex items-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Compartilhar
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrint}
+                  className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
+                >
+                  <Printer className="w-4 h-4" />
+                  Imprimir
+                </Button>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col items-center justify-center p-8">
+              <div className={`w-full max-w-5xl ${slide.bgColor} rounded-2xl shadow-2xl p-12 min-h-96 flex flex-col justify-center ${slide.textColor}`}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentSlide}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.5 }}
+                    className="space-y-6"
+                  >
+                    <div>
+                      <h1 className="text-5xl font-bold mb-2">{slide.title}</h1>
+                      {slide.subtitle && (
+                        <p className="text-xl text-gray-600">{slide.subtitle}</p>
+                      )}
+                    </div>
+                    <div className="text-lg">{slide.content}</div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="bg-white shadow-md p-6 flex items-center justify-between no-print">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={prevSlide}
+                  className="rounded-full"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </Button>
+                <span className="text-sm font-semibold text-gray-700">
+                  {currentSlide + 1} / {slides.length}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={nextSlide}
+                  className="rounded-full"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {/* Slide Indicators */}
+              <div className="flex gap-2 flex-wrap justify-center max-w-2xl">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => goToSlide(idx)}
+                    className={`h-2 rounded-full transition-all ${
+                      idx === currentSlide
+                        ? 'bg-orange-500 w-8'
+                        : 'bg-gray-300 w-2 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={isAutoPlay ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setIsAutoPlay(!isAutoPlay)}
+                  className={isAutoPlay ? 'bg-orange-500 hover:bg-orange-600' : ''}
+                >
+                  {isAutoPlay ? '⏸ Pausar' : '▶ Auto'}
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+        {isPrintMode && (
+          <div className="print-view">
+            {slides.map((slide, idx) => (
+              <div key={idx} className="print-slide">
+                <div>
+                  <h1>{slide.title}</h1>
+                  {slide.subtitle && <h2>{slide.subtitle}</h2>}
+                  <div className="print-content">
+                    {slide.content}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Controls */}
-      <div className="bg-white shadow-md p-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={prevSlide}
-            className="rounded-full"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <span className="text-sm font-semibold text-gray-700">
-            {currentSlide + 1} / {slides.length}
-          </span>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={nextSlide}
-            className="rounded-full"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Slide Indicators */}
-        <div className="flex gap-2 flex-wrap justify-center max-w-2xl">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goToSlide(idx)}
-              className={`h-2 rounded-full transition-all ${
-                idx === currentSlide
-                  ? 'bg-orange-500 w-8'
-                  : 'bg-gray-300 w-2 hover:bg-gray-400'
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant={isAutoPlay ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setIsAutoPlay(!isAutoPlay)}
-            className={isAutoPlay ? 'bg-orange-500 hover:bg-orange-600' : ''}
-          >
-            {isAutoPlay ? '⏸ Pausar' : '▶ Auto'}
-          </Button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
