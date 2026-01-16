@@ -948,8 +948,8 @@ export default function OrdemServicoDetalhe() {
                 className="bg-white/20 border-white/30 text-white hover:bg-white/30"
                 onClick={() => setShowShareModal(true)}
               >
-                <Share2 className="w-4 h-4 mr-2" />
-                Compartilhar
+                <Users className="w-4 h-4 mr-2" />
+                Compartilhar com Equipe
               </Button>
               {!ordemAtual.dataInicio && (
                 <Button

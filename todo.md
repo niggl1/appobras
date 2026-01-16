@@ -1455,3 +1455,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar import do ShareModal
 - [x] Adicionar estado showShareModal
 - [x] Todos os 121 testes passando
+
+## Fase 55: Corrigir Visibilidade do Botão de Compartilhamento
+- [x] Diagnosticar por que o botão não aparecia na página de detalhe
+- [x] Identificar duplicação de botões "Compartilhar"
+- [x] Renomear novo botão para "Compartilhar com Equipe"
+- [x] Adicionar ícone Users para diferenciar
+- [x] Testar visibilidade em diferentes resoluções
+- [x] Todos os 121 testes passando
