@@ -1226,3 +1226,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Deixar os 3 planos com design laranja uniforme
 - [x] Remover selo "Recomendado" do plano de 3 usuários
 - [x] Remover scale-105 do plano de 3 usuários
+
+
+## Renomear Planos com Novos Nomes (17/01/2026)
+- [x] Renomear "1 Usuário" para "Individual"
+- [x] Renomear "3 Usuários" para "Pequenas Equipes"
+- [x] Renomear "5 Usuários" para "Equipes Médias"

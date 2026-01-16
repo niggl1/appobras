@@ -395,10 +395,10 @@ export default function Home() {
             viewport={{ once: true }}
             className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
           >
-            {/* Plano 1 Usuário - R$99 */}
+            {/* Plano Individual - R$99 */}
             <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">1 Usuário</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Individual</h3>
                 <p className="text-orange-100">Para começar</p>
               </div>
               <CardContent className="p-8">
@@ -438,10 +438,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Plano 3 Usuários - R$199 */}
+            {/* Plano Pequenas Equipes - R$199 */}
             <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">3 Usuários</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Pequenas Equipes</h3>
                 <p className="text-orange-100">Mais recursos e prioridade</p>
               </div>
               <CardContent className="p-8">
@@ -481,10 +481,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Plano 5 Usuários - R$299 */}
+            {/* Plano Equipes Médias - R$299 */}
             <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">5 Usuários</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Equipes Médias</h3>
                 <p className="text-orange-100">Solução completa</p>
               </div>
               <CardContent className="p-8">
