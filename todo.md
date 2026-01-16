@@ -1470,3 +1470,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Nao fechar modal para deixar botao visivel
 - [x] Testar funcionalidade (121 testes passando)
 - [x] Botao Compartilhar com Equipe agora visivel no modal apos criar
+
+## Fase 57: Funcionalidade dos Botoes + para Responsaveis e Titulos
+- [x] Criar modal de selecao de responsaveis (lista de funcionarios)
+- [x] Criar modal de selecao de titulos de templates (10 titulos pre-configurados)
+- [x] Integrar modais com botoes +
+- [x] Testar funcionalidade completa (121 testes passando)

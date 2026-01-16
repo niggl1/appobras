@@ -109,6 +109,10 @@ export default function OrdensServico() {
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
+  const { data: funcionarios } = trpc.funcionario.list.useQuery(
+    { condominioId: condominioAtivo?.id || 0 },
+    { enabled: !!condominioAtivo?.id }
+  );
 
   // Mutations
   const createOS = trpc.ordensServico.create.useMutation();
@@ -147,6 +151,8 @@ export default function OrdensServico() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [osIdCriada, setOsIdCriada] = useState<number | null>(null);
   const [osProtocoloCriada, setOsProtocoloCriada] = useState<string>("");
+  const [showSelectResponsavel, setShowSelectResponsavel] = useState(false);
+  const [showSelectTitulo, setShowSelectTitulo] = useState(false);
 
   const handleCreateCategoria = async () => {
     if (!novaCategoria.trim()) return;
@@ -350,11 +356,8 @@ export default function OrdensServico() {
                             <Button
                               type="button"
                               size="sm"
-                              className="bg-orange-500 hover:bg-orange-600 text-white px-3"
-                              onClick={() => {
-                                // Abrir modal para adicionar responsável
-                                toast.info("Funcionalidade de adicionar responsável em desenvolvimento");
-                              }}
+                              className="bg-orange-500 text-white px-3"
+                              onClick={() => setShowSelectResponsavel(true)}
                             >
                               <Plus className="w-4 h-4" />
                             </Button>
@@ -413,11 +416,8 @@ export default function OrdensServico() {
                           <Button
                             type="button"
                             size="sm"
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-3"
-                            onClick={() => {
-                              // Abrir modal para adicionar título de template
-                              toast.info("Funcionalidade de templates de título em desenvolvimento");
-                            }}
+                            className="bg-orange-500 text-white px-3"
+                            onClick={() => setShowSelectTitulo(true)}
                           >
                             <Plus className="w-4 h-4" />
                           </Button>
@@ -896,6 +896,77 @@ export default function OrdensServico() {
           )}
         </div>
       </div>
+
+      {/* Modal de Seleção de Responsável */}
+      <Dialog open={showSelectResponsavel} onOpenChange={setShowSelectResponsavel}>
+        <DialogContent className="w-[95vw] max-w-md">
+          <DialogHeader>
+            <DialogTitle>Selecionar Responsável</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              {funcionarios && funcionarios.length > 0 ? (
+                funcionarios.map((funcionario) => (
+                  <Button
+                    key={funcionario.id}
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setNovaOS({ ...novaOS, responsavelPrincipal: funcionario.nome });
+                      setShowSelectResponsavel(false);
+                    }}
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    {funcionario.nome}
+                  </Button>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Nenhum funcionário cadastrado
+                </p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Seleção de Título */}
+      <Dialog open={showSelectTitulo} onOpenChange={setShowSelectTitulo}>
+        <DialogContent className="w-[95vw] max-w-md">
+          <DialogHeader>
+            <DialogTitle>Selecionar Título</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              {[
+                "Reparo na bomba d'água",
+                "Manutenção elétrica",
+                "Limpeza de caixa d'água",
+                "Reparo no elevador",
+                "Manutenção do portão",
+                "Pintura de área comum",
+                "Reparo hidráulico",
+                "Manutenção de ar condicionado",
+                "Desentupimento",
+                "Troca de lâmpadas",
+              ].map((titulo) => (
+                <Button
+                  key={titulo}
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setNovaOS({ ...novaOS, titulo });
+                    setShowSelectTitulo(false);
+                  }}
+                >
+                  <ClipboardList className="w-4 h-4 mr-2" />
+                  {titulo}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
