@@ -131,6 +131,7 @@ export default function OrdensServico() {
     tempoEstimadoHoras: 0,
     tempoEstimadoMinutos: 0,
     materiais: [] as { nome: string; quantidade: number }[],
+    imagens: [] as { file: File; preview: string }[],
   });
 
   const [novaCategoria, setNovaCategoria] = useState("");
@@ -200,6 +201,44 @@ export default function OrdensServico() {
     });
   };
 
+  const handleFilesSelected = (files: File[]) => {
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const maxSize = 100 * 1024 * 1024; // 100MB
+
+    const newImagens = files
+      .filter((file) => {
+        if (!validTypes.includes(file.type)) {
+          toast.error(`Tipo de arquivo inválido: ${file.name}`);
+          return false;
+        }
+        if (file.size > maxSize) {
+          toast.error(`Arquivo muito grande: ${file.name}`);
+          return false;
+        }
+        return true;
+      })
+      .map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+
+    setNovaOS({
+      ...novaOS,
+      imagens: [...(novaOS.imagens || []), ...newImagens],
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const imagemRemovida = novaOS.imagens?.[index];
+    if (imagemRemovida?.preview) {
+      URL.revokeObjectURL(imagemRemovida.preview);
+    }
+    setNovaOS({
+      ...novaOS,
+      imagens: novaOS.imagens?.filter((_, i) => i !== index) || [],
+    });
+  };
+
   const handleCreateOS = async () => {
     if (!novaOS.titulo.trim()) {
       toast.error("Título é obrigatório");
@@ -209,8 +248,7 @@ export default function OrdensServico() {
     try {
       await createOS.mutateAsync({
         condominioId: condominioAtivo?.id || 0,
-        responsavelPrincipalNome: novaOS.responsavelPrincipal,
-        protocolo: novaOS.protocolo,
+        solicitanteNome: novaOS.responsavelPrincipal,
         titulo: novaOS.titulo,
         descricao: novaOS.descricao,
         categoriaId: novaOS.categoriaId ? parseInt(novaOS.categoriaId) : undefined,
@@ -235,6 +273,7 @@ export default function OrdensServico() {
         tempoEstimadoHoras: 0,
         tempoEstimadoMinutos: 0,
         materiais: [],
+        imagens: [],
       });
     } catch (error) {
       toast.error("Erro ao criar ordem de serviço");
@@ -530,6 +569,58 @@ export default function OrdensServico() {
                               >
                                 <X className="w-4 h-4 text-red-500" />
                               </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Seção 6: Upload de Imagens */}
+                  <div className="border border-border rounded-lg p-4 bg-muted/30">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Image className="w-5 h-5 text-orange-500" />
+                      Imagens da Ordem
+                    </h3>
+                    <div className="space-y-4">
+                      {/* Drag and Drop Area */}
+                      <div
+                        className="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center cursor-pointer hover:bg-orange-50 transition-colors"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const files = Array.from(e.dataTransfer.files);
+                          handleFilesSelected(files);
+                        }}
+                        onClick={() => document.getElementById("file-input")?.click()}
+                      >
+                        <Image className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-foreground">Arraste imagens aqui ou clique para selecionar</p>
+                        <p className="text-xs text-muted-foreground mt-1">Máximo 100MB por arquivo (JPEG, PNG, GIF, WebP)</p>
+                        <input
+                          id="file-input"
+                          type="file"
+                          multiple
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          className="hidden"
+                          onChange={(e) => handleFilesSelected(Array.from(e.target.files || []))}
+                        />
+                      </div>
+                      {novaOS.imagens && novaOS.imagens.length > 0 && (
+                        <div className="grid grid-cols-3 gap-2">
+                          {novaOS.imagens.map((imagem, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={imagem.preview}
+                                alt={`Preview ${index}`}
+                                className="w-full h-24 object-cover rounded border border-border"
+                              />
+                              <button
+                                onClick={() => handleRemoveImage(index)}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
                             </div>
                           ))}
                         </div>

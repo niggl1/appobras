@@ -1946,8 +1946,10 @@ export const osImagens = mysqlTable("os_imagens", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// Tipos para osImagens
 export type OsImagem = typeof osImagens.$inferSelect;
 export type InsertOsImagem = typeof osImagens.$inferInsert;
+
 
 
 // ==================== FUNÇÕES RÁPIDAS ====================

@@ -403,8 +403,6 @@ export default function OrdemServicoDetalhe() {
       prioridadeId: editForm.prioridadeId ? parseInt(editForm.prioridadeId) : undefined,
       statusId: editForm.statusId ? parseInt(editForm.statusId) : undefined,
       setorId: editForm.setorId ? parseInt(editForm.setorId) : undefined,
-      responsavelPrincipalNome: editForm.responsavelPrincipalNome || undefined,
-      protocolo: editForm.protocolo || undefined,
       tempoEstimadoDias: editForm.tempoEstimadoDias,
       tempoEstimadoHoras: editForm.tempoEstimadoHoras,
       tempoEstimadoMinutos: editForm.tempoEstimadoMinutos,

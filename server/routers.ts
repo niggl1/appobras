@@ -15041,16 +15041,12 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         const [result] = await db.insert(osImagens).values({
           ordemServicoId: input.ordemServicoId,
           url,
-          fileKey,
-          tamanhoOriginal: buffer.length,
-          mimeType: input.fileType,
           descricao: input.descricao,
-          uploadedBy: ctx.user.id,
         });
         
         await db.insert(osTimeline).values({
           ordemServicoId: input.ordemServicoId,
-          tipo: "nova_imagem",
+          tipo: "foto_adicionada",
           descricao: `Imagem adicionada: ${input.fileName}`,
           usuarioId: ctx.user.id,
           usuarioNome: ctx.user.name || "Usuario",

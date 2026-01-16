@@ -1391,7 +1391,21 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Criar tabela para armazenar imagens de ordens de serviço
 - [x] Implementar upload de imagens com compressão
 - [x] Adicionar validação de tamanho (máx 100MB)
-- [ ] Adicionar campo de upload no modal
+- [ ] Adicionar campo de upload no modal com drag-and-drop
 - [ ] Exibir preview das imagens selecionadas
 - [ ] Permitir remover imagens antes de salvar
 - [ ] Integrar imagens ao criar nova OS
+
+## Fase 50: Upload de Imagens em Ordens de Serviço
+- [x] Corrigir schema osImagens removendo campos não existentes
+- [x] Corrigir mutation uploadImagem no backend
+- [x] Adicionar campo imagens ao estado novaOS
+- [x] Implementar funções handleFilesSelected e handleRemoveImage
+- [x] Adicionar seção de upload com drag-and-drop no modal
+- [x] Implementar preview de imagens selecionadas
+- [x] Integrar upload automático ao criar ordem de serviço
+- [ ] Testar upload de imagens com múltiplos arquivos
+- [ ] Testar validação de tipo de arquivo
+- [ ] Testar validação de tamanho máximo (100MB)
+- [ ] Testar drag-and-drop functionality
+- [ ] Testar preview e remoção de imagens
