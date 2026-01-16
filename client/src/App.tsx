@@ -17,6 +17,7 @@ import Votar from "./pages/Votar";
 import { ItemCompartilhadoPage } from "./pages/ItemCompartilhadoPage";
 import AgendaVencimentos from "./pages/AgendaVencimentos";
 import Contrato from "./pages/Contrato";
+import Apresentacao from "./pages/Apresentacao";
 import CadastroMorador from "./pages/CadastroMorador";
 import AssembleiaPublica from "./pages/AssembleiaPublica";
 import NotificarMoradorPage from "./pages/NotificarMoradorPage";
@@ -81,6 +82,7 @@ function Router() {
       <Route path="/relatorio" component={LandingRelatorio} />
       <Route path="/templates" component={Templates} />
       <Route path="/contrato" component={Contrato} />
+      <Route path="/apresentacao" component={Apresentacao} />
       <Route path="/transicoes" component={TransitionEffects} />
       <Route path="/revista/:shareLink" component={MagazineViewer} />
       <Route path="/app/:shareLink" component={AppViewer} />

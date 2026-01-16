@@ -1295,3 +1295,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Remover seção premium do site
 - [x] Criar arquivo Markdown com apresentação
 - [x] Converter para PDF
+
+
+## Criar Apresentação em Slides HTML (17/01/2026)
+- [x] Criar página de slides HTML interativos
+- [x] Adicionar navegação entre slides
+- [x] Adicionar animações e transições
+- [x] Integrar à navegação do site
