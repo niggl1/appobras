@@ -773,6 +773,23 @@ export default function OrdensServico() {
                 />
               </div>
 
+              {/* Botão de Teste */}
+              <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                <Button
+                  variant="outline"
+                  className="w-full text-red-600 border-red-300"
+                  onClick={() => {
+                    console.log('Estado novaOS:', novaOS);
+                    console.log('Categorias:', categorias);
+                    console.log('Prioridades:', prioridades);
+                    console.log('Setores:', setores);
+                    alert('Verifique o console para debugar. Estado: ' + JSON.stringify(novaOS));
+                  }}
+                >
+                  🧪 Teste - Ver Estado no Console
+                </Button>
+              </div>
+
               {/* Botões */}
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <Button variant="outline" onClick={() => setShowNovaOS(false)}>

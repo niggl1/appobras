@@ -1347,3 +1347,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Verificar por que os botões de + não aparecem
 - [x] Verificar por que o campo de material não aparece
 - [x] Corrigir formulário de nova ordem de serviço
+
+
+## Bug: Formulário de Nova Ordem Não Renderiza (17/01/2026)
+- [x] Adicionar botão de teste no modal para debugar
+- [ ] Investigar por que o formulário não aparece na interface
+- [ ] Corrigir renderização do formulário
