@@ -70,30 +70,11 @@ export default function Apresentacao() {
     },
     {
       id: 3,
-      title: 'Principais Funcionalidades',
-      subtitle: 'Tudo que você precisa para gerenciar manutenções',
+      title: 'Dashboard Profissional',
+      subtitle: '📊 Visão Completa do Seu Sistema',
       content: (
-        <div className="grid grid-cols-2 gap-6">
-          {[
-            { icon: '📋', title: 'Ordens de Serviço', desc: 'Crie e acompanhe em tempo real' },
-            { icon: '🔍', title: 'Vistorias Detalhadas', desc: 'Com checklists personalizáveis' },
-            { icon: '📊', title: 'Relatórios Profissionais', desc: 'Gráficos e análises avançadas' },
-            { icon: '📱', title: 'App Mobile', desc: 'iOS e Android nativos' },
-            { icon: '🔐', title: 'Segurança de Dados', desc: 'Criptografia e LGPD' },
-            { icon: '🚀', title: 'Integração Fácil', desc: 'APIs robustas e documentadas' }
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200"
-            >
-              <div className="text-4xl mb-3">{item.icon}</div>
-              <h4 className="font-bold text-lg text-gray-900 mb-1">{item.title}</h4>
-              <p className="text-sm text-gray-700">{item.desc}</p>
-            </motion.div>
-          ))}
+        <div className="flex justify-center">
+          <img src="/sistema-dashboard.png" alt="Dashboard" className="w-full max-w-4xl rounded-lg shadow-lg" />
         </div>
       ),
       bgColor: 'bg-white',
@@ -102,32 +83,10 @@ export default function Apresentacao() {
     {
       id: 4,
       title: 'Ordens de Serviço',
-      subtitle: '📋 Funcionalidade Principal',
+      subtitle: '📋 Gestão Completa de Tarefas',
       content: (
-        <div className="space-y-6">
-          <p className="text-xl text-gray-700">
-            Crie, atribua e acompanhe ordens de serviço em tempo real com histórico completo.
-          </p>
-          <div className="bg-gradient-to-r from-orange-100 to-orange-50 p-8 rounded-xl">
-            <ul className="space-y-4 text-lg">
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Criação rápida e intuitiva</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Atribuição automática de tarefas</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Acompanhamento em tempo real</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span>Histórico completo e rastreável</span>
-              </li>
-            </ul>
-          </div>
+        <div className="flex justify-center">
+          <img src="/sistema-ordens.png" alt="Ordens de Serviço" className="w-full max-w-4xl rounded-lg shadow-lg" />
         </div>
       ),
       bgColor: 'bg-white',
@@ -135,32 +94,11 @@ export default function Apresentacao() {
     },
     {
       id: 5,
-      title: 'Vistorias Detalhadas',
-      subtitle: '🔍 Documentação Profissional',
+      title: 'Relatórios Executivos',
+      subtitle: '📊 Análises e Métricas Avançadas',
       content: (
-        <div className="space-y-6">
-          <p className="text-xl text-gray-700">
-            Realize vistorias completas com checklists personalizáveis e fotos de evidência.
-          </p>
-          <div className="grid grid-cols-2 gap-6">
-            {[
-              { title: 'Checklists', desc: 'Personalizáveis conforme necessidade' },
-              { title: 'Fotos', desc: 'Integração de câmera e galeria' },
-              { title: 'Assinaturas', desc: 'Validação digital de conclusão' },
-              { title: 'Relatórios', desc: 'Geração automática de documentos' }
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="p-4 bg-orange-100 rounded-lg border-l-4 border-orange-500"
-              >
-                <h4 className="font-bold text-gray-900">{item.title}</h4>
-                <p className="text-sm text-gray-700">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+        <div className="flex justify-center">
+          <img src="/sistema-relatorios.png" alt="Relatórios" className="w-full max-w-4xl rounded-lg shadow-lg" />
         </div>
       ),
       bgColor: 'bg-white',
@@ -168,33 +106,11 @@ export default function Apresentacao() {
     },
     {
       id: 6,
-      title: 'Relatórios Profissionais',
-      subtitle: '📊 Análises e Métricas',
+      title: 'App Mobile',
+      subtitle: '📱 Manutenção na Palma da Sua Mão',
       content: (
-        <div className="space-y-6">
-          <p className="text-xl text-gray-700">
-            Gere relatórios customizados com gráficos, análises e métricas de desempenho.
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              '📈 Gráficos interativos',
-              '📊 Análise de tendências',
-              '⏱️ Métricas de desempenho',
-              '💰 Análise de custos',
-              '👥 Produtividade da equipe',
-              '🎯 KPIs customizados'
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg"
-              >
-                <p className="text-lg font-semibold text-gray-900">{item}</p>
-              </motion.div>
-            ))}
-          </div>
+        <div className="flex justify-center">
+          <img src="/sistema-mobile.png" alt="App Mobile" className="max-h-96 rounded-lg shadow-lg" />
         </div>
       ),
       bgColor: 'bg-white',
@@ -202,6 +118,30 @@ export default function Apresentacao() {
     },
     {
       id: 7,
+      title: 'Vistorias Detalhadas',
+      subtitle: '🔍 Inspeções Profissionais',
+      content: (
+        <div className="flex justify-center">
+          <img src="/sistema-vistorias.png" alt="Vistorias" className="w-full max-w-4xl rounded-lg shadow-lg" />
+        </div>
+      ),
+      bgColor: 'bg-white',
+      textColor: 'text-gray-900'
+    },
+    {
+      id: 8,
+      title: 'Gestão de Equipe',
+      subtitle: '👥 Controle de Técnicos e Desempenho',
+      content: (
+        <div className="flex justify-center">
+          <img src="/sistema-equipe.png" alt="Gestão de Equipe" className="w-full max-w-4xl rounded-lg shadow-lg" />
+        </div>
+      ),
+      bgColor: 'bg-white',
+      textColor: 'text-gray-900'
+    },
+    {
+      id: 9,
       title: 'Plano Individual',
       subtitle: 'R$ 99/mês',
       content: (
@@ -237,7 +177,43 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 8,
+      id: 10,
+      title: 'Plano Individual',
+      subtitle: 'R$ 99/mês',
+      content: (
+        <div className="space-y-6">
+          <p className="text-xl text-gray-700 font-semibold">Perfeito para profissionais autônomos</p>
+          <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-xl">
+            <ul className="space-y-3 text-lg">
+              <li className="flex items-center gap-3">
+                <span className="text-orange-500 font-bold">✓</span>
+                <span>1 usuário ativo</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-orange-500 font-bold">✓</span>
+                <span>Ordens de serviço ilimitadas</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-orange-500 font-bold">✓</span>
+                <span>Suporte técnico</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-orange-500 font-bold">✓</span>
+                <span>App mobile</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="text-orange-500 font-bold">✓</span>
+                <span>Relatórios básicos</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+      bgColor: 'bg-white',
+      textColor: 'text-gray-900'
+    },
+    {
+      id: 11,
       title: 'Plano Pequenas Equipes',
       subtitle: 'R$ 199/mês',
       content: (
@@ -278,7 +254,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 9,
+      id: 12,
       title: 'Plano Equipes Médias',
       subtitle: 'R$ 299/mês',
       content: (
@@ -322,7 +298,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 10,
+      id: 13,
       title: 'Termos do Contrato',
       subtitle: 'Transparência e Segurança',
       content: (
@@ -354,7 +330,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 11,
+      id: 14,
       title: 'Por Que Escolher APP MANUTENÇÃO?',
       subtitle: 'Diferenciais que fazem a diferença',
       content: (
@@ -385,7 +361,7 @@ export default function Apresentacao() {
       textColor: 'text-gray-900'
     },
     {
-      id: 12,
+      id: 15,
       title: 'Próximos Passos',
       subtitle: 'Comece sua transformação agora',
       content: (

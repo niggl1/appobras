@@ -1302,3 +1302,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar navegação entre slides
 - [x] Adicionar animações e transições
 - [x] Integrar à navegação do site
+
+
+## Criar Apresentação com Imagens do Sistema (17/01/2026)
+- [x] Gerar imagens bonitas do dashboard
+- [x] Gerar imagens da seção de ordens de serviço
+- [x] Gerar imagens de relatórios
+- [x] Gerar imagens do app mobile
+- [x] Integrar imagens aos slides
