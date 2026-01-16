@@ -1496,3 +1496,12 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Corrigir erro de quantidade null no PDF
 - [x] Todos os 121 testes passando
 - [x] Zero erros TypeScript
+
+## Fase 60: Corrigir Modal de Seleção de Responsáveis
+- [x] Diagnosticar problema de listagem de funcionários (não havia cadastrados)
+- [x] Verificar query trpc.funcionario.list (funcionando corretamente)
+- [x] Adicionar query de moradores como alternativa
+- [x] Melhorar modal com seções separadas (Funcionários/Moradores)
+- [x] Adicionar mensagem informativa quando não há cadastros
+- [x] Adicionar botão "Digitar nome manualmente"
+- [x] Todos os 121 testes passando

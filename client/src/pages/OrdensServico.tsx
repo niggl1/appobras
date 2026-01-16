@@ -113,6 +113,10 @@ export default function OrdensServico() {
     { condominioId: condominioAtivo?.id || 0 },
     { enabled: !!condominioAtivo?.id }
   );
+  const { data: moradores } = trpc.morador.list.useQuery(
+    { condominioId: condominioAtivo?.id || 0 },
+    { enabled: !!condominioAtivo?.id }
+  );
 
   // Mutations
   const createOS = trpc.ordensServico.create.useMutation();
@@ -899,16 +903,18 @@ export default function OrdensServico() {
 
       {/* Modal de Seleção de Responsável */}
       <Dialog open={showSelectResponsavel} onOpenChange={setShowSelectResponsavel}>
-        <DialogContent className="w-[95vw] max-w-md">
+        <DialogContent className="w-[95vw] max-w-md max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Selecionar Responsável</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              {funcionarios && funcionarios.length > 0 ? (
-                funcionarios.map((funcionario) => (
+            {/* Funcionários */}
+            {funcionarios && funcionarios.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-muted-foreground">Funcionários</h4>
+                {funcionarios.map((funcionario) => (
                   <Button
-                    key={funcionario.id}
+                    key={`func-${funcionario.id}`}
                     variant="outline"
                     className="w-full justify-start"
                     onClick={() => {
@@ -918,13 +924,58 @@ export default function OrdensServico() {
                   >
                     <Users className="w-4 h-4 mr-2" />
                     {funcionario.nome}
+                    {funcionario.cargo && <span className="ml-2 text-xs text-muted-foreground">({funcionario.cargo})</span>}
                   </Button>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Nenhum funcionário cadastrado
+                ))}
+              </div>
+            )}
+            
+            {/* Moradores */}
+            {moradores && moradores.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-muted-foreground">Moradores</h4>
+                {moradores.slice(0, 10).map((morador) => (
+                  <Button
+                    key={`mor-${morador.id}`}
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setNovaOS({ ...novaOS, responsavelPrincipal: morador.nome });
+                      setShowSelectResponsavel(false);
+                    }}
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    {morador.nome}
+                    {morador.apartamento && <span className="ml-2 text-xs text-muted-foreground">(Apt {morador.apartamento})</span>}
+                  </Button>
+                ))}
+                {moradores.length > 10 && (
+                  <p className="text-xs text-muted-foreground text-center">E mais {moradores.length - 10} moradores...</p>
+                )}
+              </div>
+            )}
+            
+            {/* Mensagem quando não há ninguém cadastrado */}
+            {(!funcionarios || funcionarios.length === 0) && (!moradores || moradores.length === 0) && (
+              <div className="text-center py-4 space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Nenhum funcionário ou morador cadastrado neste condomínio.
                 </p>
-              )}
+                <p className="text-xs text-muted-foreground">
+                  Digite o nome do responsável manualmente no campo acima.
+                </p>
+              </div>
+            )}
+            
+            {/* Botão para fechar e digitar manualmente */}
+            <div className="pt-2 border-t">
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => setShowSelectResponsavel(false)}
+              >
+                Digitar nome manualmente
+              </Button>
             </div>
           </div>
         </DialogContent>
