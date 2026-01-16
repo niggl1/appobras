@@ -70,6 +70,7 @@ import {
   Share2,
   Copy,
   ExternalLink,
+  X,
 } from "lucide-react";
 
 // Mapeamento de ícones
@@ -181,6 +182,9 @@ export default function OrdensServico() {
     tempoEstimadoMinutos: 0,
     valorEstimado: "",
     solicitanteNome: "",
+    responsavelPrincipal: "",
+    protocolo: "",
+    materiais: [] as Array<{ nome: string; quantidade: number }>,
   });
 
   const handleCreateOS = () => {
@@ -653,7 +657,17 @@ export default function OrdensServico() {
               {/* Categoria, Prioridade, Setor */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-gray-700">Categoria</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-gray-700">Categoria</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-amber-600 hover:bg-amber-50"
+                      onClick={() => alert('Adicionar nova categoria')}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <Select
                     value={novaOS.categoriaId}
                     onValueChange={(v) => setNovaOS({ ...novaOS, categoriaId: v })}
@@ -671,7 +685,17 @@ export default function OrdensServico() {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-gray-700">Prioridade</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-gray-700">Prioridade</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-amber-600 hover:bg-amber-50"
+                      onClick={() => alert('Adicionar nova prioridade')}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <Select
                     value={novaOS.prioridadeId}
                     onValueChange={(v) => setNovaOS({ ...novaOS, prioridadeId: v })}
@@ -689,7 +713,17 @@ export default function OrdensServico() {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-gray-700">Setor</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label className="text-gray-700">Setor</Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-amber-600 hover:bg-amber-50"
+                      onClick={() => alert('Adicionar novo setor')}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <Select
                     value={novaOS.setorId}
                     onValueChange={(v) => setNovaOS({ ...novaOS, setorId: v })}
@@ -747,6 +781,29 @@ export default function OrdensServico() {
                 </div>
               </div>
 
+              {/* Responsável */}
+              <div>
+                <Label className="text-gray-700">Responsável Principal</Label>
+                <Input
+                  placeholder="Nome do responsável"
+                  value={novaOS.responsavelPrincipal || ''}
+                  onChange={(e) => setNovaOS({ ...novaOS, responsavelPrincipal: e.target.value })}
+                  className="mt-1 border-amber-200"
+                />
+              </div>
+
+              {/* Protocolo */}
+              <div>
+                <Label className="text-gray-700">Protocolo</Label>
+                <Input
+                  placeholder="Número do protocolo (gerado automaticamente)"
+                  value={novaOS.protocolo || ''}
+                  onChange={(e) => setNovaOS({ ...novaOS, protocolo: e.target.value })}
+                  className="mt-1 border-amber-200"
+                  disabled
+                />
+              </div>
+
               {/* Valor Estimado */}
               {configuracoes?.habilitarGestaoFinanceira && (
                 <div>
@@ -761,6 +818,45 @@ export default function OrdensServico() {
                   />
                 </div>
               )}
+
+              {/* Material Necessário */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-gray-700">Material Necessário</Label>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-amber-600 hover:bg-amber-50"
+                    onClick={() => alert('Adicionar novo material')}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {novaOS.materiais && novaOS.materiais.length > 0 ? (
+                  <div className="space-y-2 bg-amber-50 p-3 rounded-lg">
+                    {novaOS.materiais.map((material, idx) => (
+                      <div key={idx} className="flex justify-between items-center bg-white p-2 rounded border border-amber-200">
+                        <span className="text-sm text-gray-700">{material.nome} (Qtd: {material.quantidade})</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-red-600 hover:bg-red-50"
+                          onClick={() => {
+                            setNovaOS({
+                              ...novaOS,
+                              materiais: novaOS.materiais?.filter((_, i) => i !== idx)
+                            });
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Nenhum material adicionado</p>
+                )}
+              </div>
 
               {/* Solicitante */}
               <div>
