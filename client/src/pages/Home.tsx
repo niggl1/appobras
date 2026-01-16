@@ -615,6 +615,81 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Apresentação do Sistema Section */}
+      <section className="py-24 bg-gradient-to-br from-white to-orange-50">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Apresentação do Sistema
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Conheça todas as funcionalidades e recursos do App Manutenção
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl p-12 shadow-lg border-2 border-orange-200">
+              <div className="text-center space-y-8">
+                <p className="text-xl text-gray-700 font-semibold">
+                  Visualize uma apresentação completa com imagens do sistema, funcionalidades principais e planos de preço
+                </p>
+                
+                <div className="flex flex-wrap justify-center gap-4">
+                  <Link href="/apresentacao">
+                    <Button className="bg-orange-500 text-white text-lg px-8 py-6 flex items-center gap-2">
+                      <Play className="w-5 h-5" />
+                      Ver Apresentação
+                    </Button>
+                  </Link>
+                  <Button 
+                    onClick={() => window.print()}
+                    className="bg-blue-500 text-white text-lg px-8 py-6 flex items-center gap-2"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Imprimir
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = '/apresentacao_sistema.pdf';
+                      link.download = 'apresentacao_sistema.pdf';
+                      link.click();
+                    }}
+                    className="bg-green-500 text-white text-lg px-8 py-6 flex items-center gap-2"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Gerar PDF
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      const url = window.location.href;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: 'APP MANUTENÇÃO - Apresentação',
+                          text: 'Confira nossa apresentação do sistema de gestão de manutenção',
+                          url: url
+                        });
+                      } else {
+                        alert('Link: ' + url);
+                      }
+                    }}
+                    className="bg-purple-500 text-white text-lg px-8 py-6 flex items-center gap-2"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    Compartilhar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 bg-white">
         <div className="container">

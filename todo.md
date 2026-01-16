@@ -1316,3 +1316,10 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar estilos CSS para impressão
 - [x] Implementar funcionalidade de impressão/PDF
 - [x] Testar e validar saída em PDF
+
+
+## Adicionar Seção de Apresentação do Sistema (17/01/2026)
+- [x] Criar seção "APRESENTAÇÃO DO SISTEMA" na página inicial
+- [x] Adicionar botão de impressão
+- [x] Adicionar botão de gerar PDF
+- [x] Adicionar botão de compartilhamento
