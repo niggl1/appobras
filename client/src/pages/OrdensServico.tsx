@@ -74,6 +74,9 @@ import {
   Copy,
   ExternalLink,
   X,
+  Paperclip,
+  Download,
+  File,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -310,6 +313,7 @@ export default function OrdensServico() {
     localizacaoDescricao: "",
     materiais: [] as { nome: string; quantidade: number }[],
     imagens: [] as { file: File; preview: string }[],
+    anexos: [] as { file: File; preview: string; nome: string; tipo: string; tamanho: number }[],
   });
 
   const [novaCategoria, setNovaCategoria] = useState("");
@@ -420,6 +424,69 @@ export default function OrdensServico() {
     });
   };
 
+  // Funções para anexos (PDF e documentos)
+  const handleAnexosSelected = (files: File[]) => {
+    const validTypes = [
+      "application/pdf",
+      "image/jpeg", "image/png", "image/gif", "image/webp",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ];
+    const maxSize = 100 * 1024 * 1024; // 100MB
+
+    const newAnexos = files
+      .filter((file) => {
+        if (!validTypes.includes(file.type)) {
+          toast.error(`Tipo de arquivo não suportado: ${file.name}. Permitidos: PDF, imagens, Word, Excel`);
+          return false;
+        }
+        if (file.size > maxSize) {
+          toast.error(`Arquivo muito grande (máx 100MB): ${file.name}`);
+          return false;
+        }
+        return true;
+      })
+      .map((file) => ({
+        file,
+        preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
+        nome: file.name,
+        tipo: file.type,
+        tamanho: file.size,
+      }));
+
+    setNovaOS({
+      ...novaOS,
+      anexos: [...(novaOS.anexos || []), ...newAnexos],
+    });
+  };
+
+  const handleRemoveAnexo = (index: number) => {
+    const anexoRemovido = novaOS.anexos?.[index];
+    if (anexoRemovido?.preview) {
+      URL.revokeObjectURL(anexoRemovido.preview);
+    }
+    setNovaOS({
+      ...novaOS,
+      anexos: novaOS.anexos?.filter((_, i) => i !== index) || [],
+    });
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  };
+
+  const getFileIcon = (tipo: string) => {
+    if (tipo === "application/pdf") return "PDF";
+    if (tipo.includes("word")) return "DOC";
+    if (tipo.includes("excel") || tipo.includes("spreadsheet")) return "XLS";
+    if (tipo.startsWith("image/")) return "IMG";
+    return "FILE";
+  };
+
   const handleCreateOS = async () => {
     if (!novaOS.titulo.trim()) {
       toast.error("Título é obrigatório");
@@ -465,6 +532,7 @@ export default function OrdensServico() {
         localizacaoDescricao: "",
         materiais: [],
         imagens: [],
+        anexos: [],
       });
     } catch (error) {
       toast.error("Erro ao criar ordem de serviço");
@@ -903,6 +971,76 @@ export default function OrdensServico() {
                               >
                                 <X className="w-3 h-3" />
                               </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Seção 8: Anexos (PDF e Documentos) */}
+                  <div className="border border-border rounded-lg p-4 bg-muted/30">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <Paperclip className="w-5 h-5 text-orange-500" />
+                      Anexos (PDF e Documentos)
+                    </h3>
+                    <div className="space-y-4">
+                      {/* Drag and Drop Area para Anexos */}
+                      <div
+                        className="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center cursor-pointer hover:bg-orange-50 transition-colors"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const files = Array.from(e.dataTransfer.files);
+                          handleAnexosSelected(files);
+                        }}
+                        onClick={() => document.getElementById("anexo-input")?.click()}
+                      >
+                        <Paperclip className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                        <p className="text-sm font-medium text-foreground">Arraste documentos aqui ou clique para selecionar</p>
+                        <p className="text-xs text-muted-foreground mt-1">Máximo 100MB por arquivo (PDF, Word, Excel, Imagens)</p>
+                        <input
+                          id="anexo-input"
+                          type="file"
+                          multiple
+                          accept=".pdf,.doc,.docx,.xls,.xlsx,image/jpeg,image/png,image/gif,image/webp"
+                          className="hidden"
+                          onChange={(e) => handleAnexosSelected(Array.from(e.target.files || []))}
+                        />
+                      </div>
+                      {novaOS.anexos && novaOS.anexos.length > 0 && (
+                        <div className="space-y-2">
+                          {novaOS.anexos.map((anexo, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between bg-background p-3 rounded border border-border group"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded flex items-center justify-center text-xs font-bold text-white ${
+                                  anexo.tipo === "application/pdf" ? "bg-red-500" :
+                                  anexo.tipo.includes("word") ? "bg-blue-500" :
+                                  anexo.tipo.includes("excel") || anexo.tipo.includes("spreadsheet") ? "bg-green-500" :
+                                  anexo.tipo.startsWith("image/") ? "bg-purple-500" : "bg-gray-500"
+                                }`}>
+                                  {getFileIcon(anexo.tipo)}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
+                                    {anexo.nome}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatFileSize(anexo.tamanho)}
+                                  </p>
+                                </div>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRemoveAnexo(index)}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-4 h-4 text-red-500" />
+                              </Button>
                             </div>
                           ))}
                         </div>

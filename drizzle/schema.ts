@@ -1903,7 +1903,9 @@ export const osTimeline = mysqlTable("os_timeline", {
     "comentario",
     "foto_adicionada",
     "localizacao_atualizada",
-    "vinculo_manutencao"
+    "vinculo_manutencao",
+    "anexo_adicionado",
+    "anexo_removido"
   ]).notNull(),
   descricao: text("descricao"),
   usuarioId: int("usuarioId").references(() => users.id),
@@ -2601,4 +2603,23 @@ export const timelineNotificacoesHistorico = mysqlTable("timeline_notificacoes_h
 
 export type TimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferSelect;
 export type InsertTimelineNotificacoesHistorico = typeof timelineNotificacoesHistorico.$inferInsert;
+
+// ==================== ANEXOS DE ORDENS DE SERVIÇO ====================
+export const osAnexos = mysqlTable("os_anexos", {
+  id: int("id").autoincrement().primaryKey(),
+  ordemServicoId: int("ordemServicoId").references(() => ordensServico.id).notNull(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  nomeOriginal: varchar("nomeOriginal", { length: 255 }).notNull(),
+  url: text("url").notNull(),
+  tipo: mysqlEnum("tipo", ["pdf", "imagem", "documento", "outro"]).default("outro").notNull(),
+  mimeType: varchar("mimeType", { length: 100 }),
+  tamanho: int("tamanho"), // em bytes
+  descricao: text("descricao"),
+  uploadPor: int("uploadPor").references(() => users.id),
+  uploadPorNome: varchar("uploadPorNome", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type OsAnexo = typeof osAnexos.$inferSelect;
+export type InsertOsAnexo = typeof osAnexos.$inferInsert;
 

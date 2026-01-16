@@ -129,7 +129,8 @@ import {
   timelineEventos,
   timelineCompartilhamentos,
   timelineNotificacoesConfig,
-  timelineNotificacoesHistorico
+  timelineNotificacoesHistorico,
+  osAnexos
 } from "../drizzle/schema";
 import { eq, and, desc, like, or, sql, gte, lte, inArray, asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -15149,6 +15150,119 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           pdfBase64: pdfBuffer.toString("base64"),
           filename: `OS-${os.protocolo || os.id}-${new Date().toISOString().split("T")[0]}.pdf`,
         };
+      }),
+
+    // ========== ANEXOS (PDF e Documentos) ==========
+    uploadAnexo: protectedProcedure
+      .input(z.object({
+        ordemServicoId: z.number(),
+        fileName: z.string(),
+        fileType: z.string(),
+        fileData: z.string(),
+        descricao: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const allowedTypes = [
+          "application/pdf",
+          "image/jpeg", "image/png", "image/gif", "image/webp",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ];
+        
+        if (!allowedTypes.includes(input.fileType)) {
+          throw new Error("Tipo de ficheiro não suportado. Permitidos: PDF, imagens, Word, Excel");
+        }
+        
+        const base64Data = input.fileData.replace(/^data:[^;]+;base64,/, "");
+        let buffer = Buffer.from(base64Data, "base64");
+        
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        if (buffer.length > maxSize) {
+          throw new Error("Ficheiro muito grande. Máximo 100MB.");
+        }
+        
+        // Determinar tipo de anexo
+        let tipo: "pdf" | "imagem" | "documento" | "outro" = "outro";
+        if (input.fileType === "application/pdf") {
+          tipo = "pdf";
+        } else if (input.fileType.startsWith("image/")) {
+          tipo = "imagem";
+        } else if (input.fileType.includes("word") || input.fileType.includes("excel") || input.fileType.includes("spreadsheet")) {
+          tipo = "documento";
+        }
+        
+        const ext = input.fileName.split(".").pop() || "pdf";
+        const uniqueId = nanoid(10);
+        const fileKey = `os-anexos/${input.ordemServicoId}/${uniqueId}.${ext}`;
+        
+        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        
+        const [result] = await db.insert(osAnexos).values({
+          ordemServicoId: input.ordemServicoId,
+          nome: fileKey,
+          nomeOriginal: input.fileName,
+          url,
+          tipo,
+          mimeType: input.fileType,
+          tamanho: buffer.length,
+          descricao: input.descricao,
+          uploadPor: ctx.user.id,
+          uploadPorNome: ctx.user.name || "Usuário",
+        });
+        
+        // Registrar na timeline
+        await db.insert(osTimeline).values({
+          ordemServicoId: input.ordemServicoId,
+          tipo: "anexo_adicionado",
+          descricao: `Anexo adicionado: ${input.fileName}`,
+          usuarioId: ctx.user.id,
+          usuarioNome: ctx.user.name || "Usuário",
+        });
+        
+        return { success: true, id: result.insertId, url };
+      }),
+
+    listarAnexos: protectedProcedure
+      .input(z.object({ ordemServicoId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const anexos = await db.select().from(osAnexos)
+          .where(eq(osAnexos.ordemServicoId, input.ordemServicoId))
+          .orderBy(desc(osAnexos.createdAt));
+        
+        return anexos;
+      }),
+
+    deletarAnexo: protectedProcedure
+      .input(z.object({ anexoId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [anexo] = await db.select().from(osAnexos)
+          .where(eq(osAnexos.id, input.anexoId));
+        
+        if (!anexo) throw new Error("Anexo não encontrado");
+        
+        await db.delete(osAnexos).where(eq(osAnexos.id, input.anexoId));
+        
+        // Registrar na timeline
+        await db.insert(osTimeline).values({
+          ordemServicoId: anexo.ordemServicoId,
+          tipo: "anexo_removido",
+          descricao: `Anexo removido: ${anexo.nomeOriginal}`,
+          usuarioId: ctx.user.id,
+          usuarioNome: ctx.user.name || "Usuário",
+        });
+        
+        return { success: true };
       }),
 
   }),

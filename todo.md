@@ -1541,3 +1541,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Renomear "Funções Simples" para "Funções Rápidas" em todos os ficheiros
 - [x] Criar container premium bonito para a página de Funções Rápidas
 - [x] Testar alterações no navegador
+
+
+## Fase 55: Sistema de Anexos para Ordens de Serviço
+- [x] Criar tabela os_anexos no banco de dados
+- [x] Criar endpoints de upload, listagem e exclusão de anexos
+- [x] Atualizar modal de OS com seção de anexos (PDF e fotos)
+- [x] Implementar limite de 100MB por arquivo
+- [x] Testar funcionalidade completa
