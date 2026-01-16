@@ -1409,3 +1409,14 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [ ] Testar validação de tamanho máximo (100MB)
 - [ ] Testar drag-and-drop functionality
 - [ ] Testar preview e remoção de imagens
+
+## Fase 51: Melhorias no Modal de Nova Ordem de Serviço
+- [x] Implementar geração automática de protocolo (6 dígitos)
+- [x] Implementar localização automática (GPS/Geolocalização)
+- [x] Implementar compartilhamento com equipe (usando ShareModal)
+- [x] Adicionar campo de protocolo com botão de geração manual
+- [x] Adicionar seção de localização com captura GPS
+- [x] Adicionar botão de compartilhamento após criar OS
+- [x] Adicionar descrição de localização
+- [x] Corrigir erros de JSX e estrutura do modal
+- [x] Executar testes (107 testes passando)

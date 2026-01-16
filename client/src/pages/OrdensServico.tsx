@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { ShareModal } from "@/components/ShareModal";
 import {
   Plus,
   Search,
@@ -79,6 +80,8 @@ const iconMap: Record<string, any> = {
   XCircle, Wrench, Tag, Flag, Circle, Search, Package,
 };
 
+
+      {/* Modal de Compartilhamento */}
 export default function OrdensServico() {
   const { condominioAtivo } = useCondominioAtivo();
   const [, setLocation] = useLocation();
@@ -130,6 +133,9 @@ export default function OrdensServico() {
     tempoEstimadoDias: 0,
     tempoEstimadoHoras: 0,
     tempoEstimadoMinutos: 0,
+    latitude: "",
+    longitude: "",
+    localizacaoDescricao: "",
     materiais: [] as { nome: string; quantidade: number }[],
     imagens: [] as { file: File; preview: string }[],
   });
@@ -138,6 +144,9 @@ export default function OrdensServico() {
   const [novaPrioridade, setNovaPrioridade] = useState("");
   const [novoSetor, setNovoSetor] = useState("");
   const [novoMaterial, setNovoMaterial] = useState({ nome: "", quantidade: 1 });
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [osIdCriada, setOsIdCriada] = useState<number | null>(null);
+  const [osProtocoloCriada, setOsProtocoloCriada] = useState<string>("");
 
   const handleCreateCategoria = async () => {
     if (!novaCategoria.trim()) return;
@@ -246,6 +255,8 @@ export default function OrdensServico() {
     }
 
     try {
+      // Gerar protocolo automático se não foi preenchido
+      const protocoloFinal = novaOS.protocolo.trim() || String(Math.floor(100000 + Math.random() * 900000));
       await createOS.mutateAsync({
         condominioId: condominioAtivo?.id || 0,
         solicitanteNome: novaOS.responsavelPrincipal,
@@ -272,6 +283,9 @@ export default function OrdensServico() {
         tempoEstimadoDias: 0,
         tempoEstimadoHoras: 0,
         tempoEstimadoMinutos: 0,
+        latitude: "",
+        longitude: "",
+        localizacaoDescricao: "",
         materiais: [],
         imagens: [],
       });
@@ -337,15 +351,32 @@ export default function OrdensServico() {
                           />
                         </div>
                         <div>
-                          <Label className="text-sm font-medium">Protocolo</Label>
-                          <Input
-                            placeholder="Ex: OS-2026-001"
-                            value={novaOS.protocolo}
-                            onChange={(e) =>
-                              setNovaOS({ ...novaOS, protocolo: e.target.value })
-                            }
-                            className="mt-1"
-                          />
+                          <Label className="text-sm font-medium">Protocolo (Auto-gerado)</Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input
+                              placeholder="Deixe em branco para auto-gerar"
+                              value={novaOS.protocolo}
+                              onChange={(e) =>
+                                setNovaOS({ ...novaOS, protocolo: e.target.value })
+                              }
+                              className="mt-0"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const novoProtocolo = String(Math.floor(100000 + Math.random() * 900000));
+                                setNovaOS({ ...novaOS, protocolo: novoProtocolo });
+                              }}
+                              className="whitespace-nowrap"
+                            >
+                              Gerar
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {novaOS.protocolo ? `Protocolo: ${novaOS.protocolo}` : "Será gerado automaticamente ao salvar"}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -516,9 +547,67 @@ export default function OrdensServico() {
                         />
                       </div>
                     </div>
+
+                  {/* Seção 5: Localização */}
+                  <div className="border border-border rounded-lg p-4 bg-muted/30">
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-orange-500" />
+                      Localização
+                    </h3>
+                    <div className="space-y-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-dashed border-orange-300 hover:bg-orange-50"
+                        onClick={() => {
+                          if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                              (position) => {
+                                const { latitude, longitude } = position.coords;
+                                setNovaOS({
+                                  ...novaOS,
+                                  latitude: latitude.toString(),
+                                  longitude: longitude.toString(),
+                                });
+                                toast.success(`Localização capturada: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+                              },
+                              (error) => {
+                                toast.error("Erro ao capturar localização: " + error.message);
+                              }
+                            );
+                          } else {
+                            toast.error("Geolocalização não suportada no seu navegador");
+                          }
+                        }}
+                      >
+                        <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+                        Capturar Localização (GPS)
+                      </Button>
+                      {novaOS.latitude && novaOS.longitude && (
+                        <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                            ✓ Localização capturada
+                          </p>
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
+                            Latitude: {novaOS.latitude} | Longitude: {novaOS.longitude}
+                          </p>
+                        </div>
+                      )}
+                      <div>
+                        <Label className="text-sm font-medium">Descrição da Localização</Label>
+                        <Input
+                          placeholder="Ex: Sala de máquinas, Andar 3"
+                          value={novaOS.localizacaoDescricao || ""}
+                          onChange={(e) =>
+                            setNovaOS({ ...novaOS, localizacaoDescricao: e.target.value })
+                          }
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Seção 5: Material Necessário */}
+                  {/* Seção 6: Material Necessário */}
                   <div className="border border-border rounded-lg p-4 bg-muted/30">
                     <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Package className="w-5 h-5 text-orange-500" />
@@ -576,7 +665,7 @@ export default function OrdensServico() {
                     </div>
                   </div>
 
-                  {/* Seção 6: Upload de Imagens */}
+                  {/* Seção 7: Upload de Imagens */}
                   <div className="border border-border rounded-lg p-4 bg-muted/30">
                     <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Image className="w-5 h-5 text-orange-500" />
@@ -645,7 +734,22 @@ export default function OrdensServico() {
                       {createOS.isPending ? "Criando..." : "Criar Ordem"}
                     </Button>
                   </div>
+
+                  {/* Botão de Compartilhamento (aparece após criar) */}
+                  {osIdCriada && (
+                    <div className="pt-4 border-t border-border">
+                      <Button
+                        onClick={() => setShowShareModal(true)}
+                        variant="outline"
+                        className="w-full border-orange-300 text-orange-600 hover:bg-orange-50"
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Compartilhar com Equipe
+                      </Button>
+                    </div>
+                  )}
                 </div>
+              </div>
               </DialogContent>
             </Dialog>
           </div>
