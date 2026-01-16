@@ -1329,3 +1329,14 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Investigar erro "Ordem de serviço não encontrada" ao clicar em +nova ordem de serviço
 - [x] Corrigir rota ou lógica de criação de nova ordem
 - [x] Testar funcionalidade de criação
+
+
+## Melhorias no Modal de Ordem de Serviço (17/01/2026)
+- [x] Adicionar espaço para responsável acima do título
+- [x] Adicionar botão de + em categorias
+- [x] Adicionar botão de + em prioridade
+- [x] Adicionar botão de + em setor
+- [x] Criar campo para protocolo
+- [x] Adicionar campo de material necessário abaixo de tempo estimado
+- [x] Adicionar botão de + para adicionar materiais
+- [x] Adicionar campo de quantidade no modal de material

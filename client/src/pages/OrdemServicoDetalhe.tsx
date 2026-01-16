@@ -350,6 +350,8 @@ export default function OrdemServicoDetalhe() {
     prioridadeId: "",
     statusId: "",
     setorId: "",
+    responsavelPrincipal: "",
+    protocolo: "",
     tempoEstimadoDias: 0,
     tempoEstimadoHoras: 0,
     tempoEstimadoMinutos: 0,
@@ -374,6 +376,8 @@ export default function OrdemServicoDetalhe() {
         prioridadeId: ordemAtual.prioridadeId ? String(ordemAtual.prioridadeId) : "",
         statusId: ordemAtual.statusId ? String(ordemAtual.statusId) : "",
         setorId: ordemAtual.setorId ? String(ordemAtual.setorId) : "",
+        responsavelPrincipal: ordemAtual.responsavelPrincipal || "",
+        protocolo: ordemAtual.protocolo || "",
         tempoEstimadoDias: ordemAtual.tempoEstimadoDias || 0,
         tempoEstimadoHoras: ordemAtual.tempoEstimadoHoras || 0,
         tempoEstimadoMinutos: ordemAtual.tempoEstimadoMinutos || 0,
@@ -399,6 +403,8 @@ export default function OrdemServicoDetalhe() {
       prioridadeId: editForm.prioridadeId ? parseInt(editForm.prioridadeId) : undefined,
       statusId: editForm.statusId ? parseInt(editForm.statusId) : undefined,
       setorId: editForm.setorId ? parseInt(editForm.setorId) : undefined,
+      responsavelPrincipal: editForm.responsavelPrincipal || undefined,
+      protocolo: editForm.protocolo || undefined,
       tempoEstimadoDias: editForm.tempoEstimadoDias,
       tempoEstimadoHoras: editForm.tempoEstimadoHoras,
       tempoEstimadoMinutos: editForm.tempoEstimadoMinutos,
@@ -854,6 +860,36 @@ export default function OrdemServicoDetalhe() {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
+                    <Label className="text-gray-700">Responsável</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editForm.responsavelPrincipal || ''}
+                        onChange={(e) => setEditForm({ ...editForm, responsavelPrincipal: e.target.value })}
+                        className="mt-1 border-amber-200"
+                        placeholder="Nome do responsável"
+                      />
+                    ) : (
+                      <p className="mt-1 text-gray-800">{ordemAtual.responsavelPrincipal || "-"}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label className="text-gray-700">Protocolo</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editForm.protocolo || ''}
+                        onChange={(e) => setEditForm({ ...editForm, protocolo: e.target.value })}
+                        className="mt-1 border-amber-200"
+                        placeholder="Número do protocolo"
+                      />
+                    ) : (
+                      <p className="mt-1 text-gray-800">{ordemAtual.protocolo || "-"}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 mt-6">
+                  <div>
                     <Label className="text-gray-700">Título</Label>
                     {isEditing ? (
                       <Input
@@ -907,7 +943,17 @@ export default function OrdemServicoDetalhe() {
                   </div>
 
                   <div>
-                    <Label className="text-gray-700">Categoria</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-gray-700">Categoria</Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowGerenciarCategorias(true)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                     {isEditing ? (
                       <Select
                         value={editForm.categoriaId}
@@ -930,7 +976,17 @@ export default function OrdemServicoDetalhe() {
                   </div>
 
                   <div>
-                    <Label className="text-gray-700">Prioridade</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-gray-700">Prioridade</Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowGerenciarPrioridades(true)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                     {isEditing ? (
                       <Select
                         value={editForm.prioridadeId}
@@ -953,7 +1009,17 @@ export default function OrdemServicoDetalhe() {
                   </div>
 
                   <div>
-                    <Label className="text-gray-700">Setor</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-gray-700">Setor</Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowGerenciarSetores(true)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                     {isEditing ? (
                       <Select
                         value={editForm.setorId}
@@ -1016,6 +1082,42 @@ export default function OrdemServicoDetalhe() {
                       <p className="mt-1 text-gray-800">
                         {formatTempo(ordemAtual.tempoEstimadoDias || 0, ordemAtual.tempoEstimadoHoras || 0, ordemAtual.tempoEstimadoMinutos || 0)}
                       </p>
+                    )}
+                  </div>
+
+                  <div className="col-span-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-gray-700">Material Necessário</Label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowAddMaterial(true)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    {!isEditing && materiais && materiais.length > 0 ? (
+                      <div className="mt-2 space-y-2">
+                        {materiais.map((m, idx) => (
+                          <div key={idx} className="flex items-center justify-between bg-amber-50 p-2 rounded">
+                            <span className="text-sm text-gray-700">{m.nome} - Qtd: {m.quantidade}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const newMateriais = materiais.filter((_, i) => i !== idx);
+                                refetchMateriais();
+                              }}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-1 text-gray-800">-</p>
                     )}
                   </div>
 
