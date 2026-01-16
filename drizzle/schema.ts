@@ -2061,7 +2061,7 @@ export const camposRapidosTemplates = mysqlTable("campos_rapidos_templates", {
   userId: int("userId").references(() => users.id),
   
   // Tipo do campo: titulo, descricao, local, etc.
-  tipoCampo: mysqlEnum("tipoCampo", ["titulo", "descricao", "local", "observacao"]).notNull(),
+  tipoCampo: mysqlEnum("tipoCampo", ["titulo", "descricao", "local", "observacao", "responsavel_os", "titulo_os"]).notNull(),
   
   // Tipo da tarefa (opcional - para filtrar por contexto)
   tipoTarefa: mysqlEnum("tipoTarefa", ["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]),

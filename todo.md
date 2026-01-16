@@ -1519,3 +1519,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Substituir modal de seleção de Título por modal de cadastro simples
 - [x] Design similar ao modal "Nova Categoria" (campo de texto + botões Cancelar/Criar)
 - [x] Todos os 121 testes passando
+
+
+## Fase 51: Botões "+" com Dropdown e Templates Personalizados na OS
+- [x] Analisar componente TemplateSelector existente
+- [x] Adicionar tipos de template para OS (responsavel_os, titulo_os)
+- [x] Integrar TemplateSelector no campo Responsável Principal
+- [x] Integrar TemplateSelector no campo Título
+- [x] Testar salvamento e busca de templates personalizados

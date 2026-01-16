@@ -141,6 +141,13 @@
       "when": 1768570488478,
       "tag": "0019_tiresome_the_hand",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1768571909482,
+      "tag": "0020_narrow_colonel_america",
+      "breakpoints": true
     }
   ]
 }

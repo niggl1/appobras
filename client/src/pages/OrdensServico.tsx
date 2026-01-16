@@ -24,8 +24,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { ShareModal } from "@/components/ShareModal";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Plus,
+  Star,
+  History,
+  Loader2,
   Search,
   Filter,
   ClipboardList,
@@ -80,8 +84,168 @@ const iconMap: Record<string, any> = {
   XCircle, Wrench, Tag, Flag, Circle, Search, Package,
 };
 
+// Tipo de campo para templates de OS
+type TipoCampoOS = "responsavel_os" | "titulo_os";
 
-      {/* Modal de Compartilhamento */}
+// Componente para botão de salvar/selecionar template de OS
+interface OSTemplateSelectorProps {
+  condominioId: number;
+  tipoCampo: TipoCampoOS;
+  valorAtual: string;
+  onSelect: (valor: string) => void;
+}
+
+function OSTemplateSelector({ condominioId, tipoCampo, valorAtual, onSelect }: OSTemplateSelectorProps) {
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const utils = trpc.useUtils();
+
+  // Buscar templates salvos
+  const { data: templates, isLoading } = trpc.camposRapidosTemplates.listar.useQuery(
+    { condominioId, tipoCampo },
+    { enabled: popoverOpen && condominioId > 0 }
+  );
+
+  // Mutations
+  const criarTemplateMutation = trpc.camposRapidosTemplates.criar.useMutation({
+    onSuccess: () => {
+      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      toast.success("Valor salvo para reutilização!");
+    },
+    onError: () => {
+      toast.error("Erro ao salvar valor");
+    }
+  });
+
+  const usarTemplateMutation = trpc.camposRapidosTemplates.usar.useMutation();
+  
+  const toggleFavoritoMutation = trpc.camposRapidosTemplates.toggleFavorito.useMutation({
+    onSuccess: () => {
+      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+    }
+  });
+
+  const deletarTemplateMutation = trpc.camposRapidosTemplates.deletar.useMutation({
+    onSuccess: () => {
+      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      toast.success("Template removido");
+    }
+  });
+
+  const handleSalvarAtual = () => {
+    if (!valorAtual.trim()) {
+      toast.error("Digite um valor antes de salvar");
+      return;
+    }
+    criarTemplateMutation.mutate({
+      condominioId,
+      tipoCampo,
+      valor: valorAtual.trim(),
+    });
+  };
+
+  const handleSelectTemplate = (template: { id: number; valor: string }) => {
+    onSelect(template.valor);
+    usarTemplateMutation.mutate({ id: template.id });
+    setPopoverOpen(false);
+  };
+
+  return (
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          size="sm"
+          className="bg-orange-500 text-white px-3 hover:bg-orange-600"
+          title="Salvar ou selecionar valor frequente"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0" align="start">
+        <div className="p-3 border-b bg-orange-50">
+          <h4 className="font-semibold text-sm text-orange-800 flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Valores Salvos
+          </h4>
+          <p className="text-xs text-orange-600 mt-1">
+            Selecione um valor salvo ou salve o atual
+          </p>
+        </div>
+
+        {/* Botão para salvar valor atual */}
+        {valorAtual.trim() && (
+          <div className="p-2 border-b">
+            <Button
+              onClick={handleSalvarAtual}
+              disabled={criarTemplateMutation.isPending}
+              className="w-full h-8 text-xs bg-orange-500 hover:bg-orange-600"
+            >
+              {criarTemplateMutation.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              ) : (
+                <Plus className="h-3 w-3 mr-1" />
+              )}
+              Salvar "{valorAtual.substring(0, 30)}{valorAtual.length > 30 ? '...' : ''}"
+            </Button>
+          </div>
+        )}
+
+        {/* Lista de templates */}
+        <div className="max-h-48 overflow-y-auto">
+          {isLoading ? (
+            <div className="p-4 text-center text-gray-500">
+              <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+            </div>
+          ) : templates && templates.length > 0 ? (
+            <div className="p-1">
+              {templates.map((template) => (
+                <div
+                  key={template.id}
+                  className="flex items-center gap-1 p-2 hover:bg-gray-50 rounded group"
+                >
+                  <button
+                    onClick={() => handleSelectTemplate(template)}
+                    className="flex-1 text-left text-sm text-gray-700 truncate hover:text-orange-600"
+                  >
+                    {template.valor}
+                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => toggleFavoritoMutation.mutate({ id: template.id })}
+                      className={`p-1 rounded ${template.favorito ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}
+                      title={template.favorito ? "Remover dos favoritos" : "Marcar como favorito"}
+                    >
+                      <Star className="h-3 w-3" fill={template.favorito ? "currentColor" : "none"} />
+                    </button>
+                    <button
+                      onClick={() => deletarTemplateMutation.mutate({ id: template.id })}
+                      className="p-1 rounded text-gray-400 hover:text-red-500"
+                      title="Remover"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                  {template.vezesUsado && template.vezesUsado > 1 && (
+                    <span className="text-xs text-gray-400 ml-1">
+                      {template.vezesUsado}x
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 text-center text-gray-500 text-sm">
+              Nenhum valor salvo ainda.
+              <br />
+              <span className="text-xs">Digite um valor e clique em "Salvar"</span>
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function OrdensServico() {
   const { condominioAtivo } = useCondominioAtivo();
   const [, setLocation] = useLocation();
@@ -155,8 +319,6 @@ export default function OrdensServico() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [osIdCriada, setOsIdCriada] = useState<number | null>(null);
   const [osProtocoloCriada, setOsProtocoloCriada] = useState<string>("");
-  const [showSelectResponsavel, setShowSelectResponsavel] = useState(false);
-  const [showSelectTitulo, setShowSelectTitulo] = useState(false);
 
   const handleCreateCategoria = async () => {
     if (!novaCategoria.trim()) return;
@@ -357,14 +519,12 @@ export default function OrdensServico() {
                         <div>
                           <Label className="text-sm font-medium">Responsável Principal</Label>
                           <div className="flex gap-2 mt-1">
-                            <Button
-                              type="button"
-                              size="sm"
-                              className="bg-orange-500 text-white px-3"
-                              onClick={() => setShowSelectResponsavel(true)}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            <OSTemplateSelector
+                              condominioId={condominioAtivo?.id || 0}
+                              tipoCampo="responsavel_os"
+                              valorAtual={novaOS.responsavelPrincipal}
+                              onSelect={(valor) => setNovaOS({ ...novaOS, responsavelPrincipal: valor })}
+                            />
                             <Input
                               placeholder="Nome do responsável"
                               value={novaOS.responsavelPrincipal}
@@ -417,14 +577,12 @@ export default function OrdensServico() {
                       <div>
                         <Label className="text-sm font-medium">Título *</Label>
                         <div className="flex gap-2 mt-1">
-                          <Button
-                            type="button"
-                            size="sm"
-                            className="bg-orange-500 text-white px-3"
-                            onClick={() => setShowSelectTitulo(true)}
-                          >
-                            <Plus className="w-4 h-4" />
-                          </Button>
+                          <OSTemplateSelector
+                            condominioId={condominioAtivo?.id || 0}
+                            tipoCampo="titulo_os"
+                            valorAtual={novaOS.titulo}
+                            onSelect={(valor) => setNovaOS({ ...novaOS, titulo: valor })}
+                          />
                           <Input
                             placeholder="Ex: Reparo na bomba d'água"
                             value={novaOS.titulo}
@@ -901,63 +1059,7 @@ export default function OrdensServico() {
         </div>
       </div>
 
-      {/* Modal de Cadastro de Responsável */}
-      <Dialog open={showSelectResponsavel} onOpenChange={setShowSelectResponsavel}>
-        <DialogContent className="w-[95vw] max-w-md">
-          <DialogHeader>
-            <DialogTitle>Novo Responsável</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Input
-              placeholder="Nome do responsável"
-              value={novaOS.responsavelPrincipal}
-              onChange={(e) => setNovaOS({ ...novaOS, responsavelPrincipal: e.target.value })}
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowSelectResponsavel(false)} className="flex-1">
-                Cancelar
-              </Button>
-              <Button 
-                onClick={() => setShowSelectResponsavel(false)} 
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
-                disabled={!novaOS.responsavelPrincipal.trim()}
-              >
-                Criar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      {/* Modal de Cadastro de Título */}
-      <Dialog open={showSelectTitulo} onOpenChange={setShowSelectTitulo}>
-        <DialogContent className="w-[95vw] max-w-md">
-          <DialogHeader>
-            <DialogTitle>Novo Título</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Input
-              placeholder="Título da ordem de serviço"
-              value={novaOS.titulo}
-              onChange={(e) => setNovaOS({ ...novaOS, titulo: e.target.value })}
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowSelectTitulo(false)} className="flex-1">
-                Cancelar
-              </Button>
-              <Button 
-                onClick={() => setShowSelectTitulo(false)} 
-                className="flex-1 bg-orange-500 hover:bg-orange-600"
-                disabled={!novaOS.titulo.trim()}
-              >
-                Criar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

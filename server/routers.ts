@@ -15734,7 +15734,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     listar: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipoCampo: z.enum(["titulo", "descricao", "local", "observacao"]).optional(),
+        tipoCampo: z.enum(["titulo", "descricao", "local", "observacao", "responsavel_os", "titulo_os"]).optional(),
         tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
       }))
       .query(async ({ input }) => {
@@ -15763,7 +15763,7 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
     criar: protectedProcedure
       .input(z.object({
         condominioId: z.number(),
-        tipoCampo: z.enum(["titulo", "descricao", "local", "observacao"]),
+        tipoCampo: z.enum(["titulo", "descricao", "local", "observacao", "responsavel_os", "titulo_os"]),
         tipoTarefa: z.enum(["vistoria", "manutencao", "ocorrencia", "antes_depois", "checklist"]).optional(),
         valor: z.string().min(1),
         nome: z.string().optional(),
