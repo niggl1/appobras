@@ -45,11 +45,13 @@ const CORES_PRIORIDADE = {
   "Sem prioridade": "#6b7280",
 };
 
-export default function TimelineDashboardPage() {
+interface TimelineDashboardPageProps {
+  condominioId: number;
+}
+
+export default function TimelineDashboardPage({ condominioId }: TimelineDashboardPageProps) {
   const { user } = useAuth();
   const [periodo, setPeriodo] = useState<"7dias" | "30dias" | "90dias" | "ano" | "todos">("30dias");
-  
-  const condominioId = user?.condominioAtivo || 1;
 
   const { data: estatisticas, isLoading: loadingEstatisticas, refetch: refetchEstatisticas } = 
     trpc.timeline.estatisticas.useQuery({ condominioId, periodo });

@@ -866,7 +866,7 @@ export default function Dashboard() {
           {currentSection === "historico" && (condominios?.[0] ? <HistoricoAtividadesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
           {currentSection === "timeline" && (condominios?.[0] ? <TimelinePage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
           {currentSection === "timeline-historico" && (condominios?.[0] ? <TimelineHistoricoPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "timeline-dashboard" && (condominios?.[0] ? <TimelineDashboardPage /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline-dashboard" && (condominios?.[0] ? <TimelineDashboardPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
         </div>
       </main>
 
