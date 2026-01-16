@@ -1531,3 +1531,7 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Fase 52: Remover opção Nova OS do menu lateral
 - [x] Remover item "+ Nova OS" do submenu de Ordens de Serviço
+
+
+## Fase 53: Corrigir erro Map container not found
+- [x] Corrigir erro do mapa na página de Funções Simples (checklist)

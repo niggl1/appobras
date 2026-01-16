@@ -69,14 +69,14 @@
  *
  * -------------------------------
  * ✅ SUMMARY
- * - “map-attached” → AdvancedMarkerElement, DirectionsRenderer, Layers.
- * - “standalone” → Geocoder, DirectionsService, DistanceMatrixService, ElevationService.
- * - “data-only” → Place, Geometry utilities.
+ * - "map-attached" → AdvancedMarkerElement, DirectionsRenderer, Layers.
+ * - "standalone" → Geocoder, DirectionsService, DistanceMatrixService, ElevationService.
+ * - "data-only" → Place, Geometry utilities.
  */
 
 /// <reference types="@types/google.maps" />
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePersistFn } from "@/hooks/usePersistFn";
 import { cn } from "@/lib/utils";
 
@@ -92,21 +92,35 @@ const FORGE_BASE_URL =
   "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
 
-function loadMapScript() {
-  return new Promise(resolve => {
+let scriptLoadPromise: Promise<void> | null = null;
+
+function loadMapScript(): Promise<void> {
+  // Se já existe uma promise de carregamento, retorna ela
+  if (scriptLoadPromise) {
+    return scriptLoadPromise;
+  }
+
+  // Se o Google Maps já está carregado, retorna imediatamente
+  if (window.google?.maps) {
+    return Promise.resolve();
+  }
+
+  scriptLoadPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = `${MAPS_PROXY_URL}/maps/api/js?key=${API_KEY}&v=weekly&libraries=marker,places,geocoding,geometry`;
     script.async = true;
     script.crossOrigin = "anonymous";
     script.onload = () => {
-      resolve(null);
-      script.remove(); // Clean up immediately
+      resolve();
     };
     script.onerror = () => {
-      console.error("Failed to load Google Maps script");
+      scriptLoadPromise = null; // Reset para permitir retry
+      reject(new Error("Failed to load Google Maps script"));
     };
     document.head.appendChild(script);
   });
+
+  return scriptLoadPromise;
 }
 
 interface MapViewProps {
@@ -124,32 +138,73 @@ export function MapView({
 }: MapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<google.maps.Map | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const initAttempted = useRef(false);
 
   const init = usePersistFn(async () => {
-    await loadMapScript();
-    if (!mapContainer.current) {
-      console.error("Map container not found");
+    // Evitar múltiplas inicializações
+    if (initAttempted.current || map.current) {
       return;
     }
-    map.current = new window.google.maps.Map(mapContainer.current, {
-      zoom: initialZoom,
-      center: initialCenter,
-      mapTypeControl: true,
-      fullscreenControl: true,
-      zoomControl: true,
-      streetViewControl: true,
-      mapId: "DEMO_MAP_ID",
-    });
-    if (onMapReady) {
-      onMapReady(map.current);
+    initAttempted.current = true;
+
+    try {
+      await loadMapScript();
+      
+      // Aguardar o próximo frame para garantir que o DOM está pronto
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      
+      // Verificar se o container existe
+      if (!mapContainer.current) {
+        console.warn("Map container not available, skipping initialization");
+        initAttempted.current = false; // Permitir retry
+        return;
+      }
+
+      // Verificar se o Google Maps está disponível
+      if (!window.google?.maps) {
+        console.warn("Google Maps not available");
+        initAttempted.current = false;
+        return;
+      }
+
+      map.current = new window.google.maps.Map(mapContainer.current, {
+        zoom: initialZoom,
+        center: initialCenter,
+        mapTypeControl: true,
+        fullscreenControl: true,
+        zoomControl: true,
+        streetViewControl: true,
+        mapId: "DEMO_MAP_ID",
+      });
+      
+      setIsReady(true);
+      
+      if (onMapReady) {
+        onMapReady(map.current);
+      }
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      initAttempted.current = false; // Permitir retry em caso de erro
     }
   });
 
   useEffect(() => {
-    init();
+    // Pequeno delay para garantir que o container está montado
+    const timeoutId = setTimeout(() => {
+      init();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [init]);
 
   return (
-    <div ref={mapContainer} className={cn("w-full h-[500px]", className)} />
+    <div 
+      ref={mapContainer} 
+      className={cn("w-full h-[500px]", className)}
+      style={{ minHeight: "100px" }}
+    />
   );
 }
