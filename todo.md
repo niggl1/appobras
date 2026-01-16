@@ -1214,3 +1214,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar plano de R$299 (Plano Enterprise) na página inicial
 - [x] Manter as mesmas vantagens para todos os planos
 - [x] Plano Profissional marcado como "Recomendado" com destaque visual
+
+
+## Renomear Planos de Preço (17/01/2026)
+- [x] Renomear "Plano Básico" para "1 Usuário"
+- [x] Renomear "Plano Profissional" para "3 Usuários"
+- [x] Renomear "Plano Enterprise" para "5 Usuários"
