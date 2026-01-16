@@ -1202,3 +1202,15 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar filtro por período
 - [x] Adicionar entrada no menu lateral (Operacional/Manutenção > Dashboard Timeline)
 - [x] Testar funcionalidade completa
+
+
+## Próximas Funcionalidades - Timeline (Pendente para 17/01/2026)
+- [ ] Adicionar eventos à timeline - Permitir registar múltiplos eventos/atualizações numa mesma timeline para acompanhar a evolução ao longo do tempo
+- [ ] Relatório consolidado de timelines - Criar exportação de múltiplas timelines num único PDF para apresentação a gestores
+
+
+## Novos Planos de Preço (17/01/2026)
+- [x] Adicionar plano de R$199 (Plano Profissional) na página inicial
+- [x] Adicionar plano de R$299 (Plano Enterprise) na página inicial
+- [x] Manter as mesmas vantagens para todos os planos
+- [x] Plano Profissional marcado como "Recomendado" com destaque visual

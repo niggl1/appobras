@@ -382,10 +382,10 @@ export default function Home() {
               Preço
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Plano único e completo
+              Planos flexíveis para sua organização
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Acesso a todas as funcionalidades por um preço acessível
+              Escolha o plano que melhor se adapta às suas necessidades
             </p>
           </motion.div>
 
@@ -393,12 +393,13 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="max-w-lg mx-auto"
+            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
           >
-            <Card className="border-0 shadow-2xl bg-white overflow-hidden">
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">Plano Completo</h3>
-                <p className="text-orange-100">Tudo que você precisa</p>
+            {/* Plano Básico - R$99 */}
+            <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="bg-gradient-to-r from-gray-500 to-gray-600 p-6 text-center">
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Básico</h3>
+                <p className="text-gray-100">Para começar</p>
               </div>
               <CardContent className="p-8">
                 <div className="text-center mb-8">
@@ -420,16 +421,103 @@ export default function Home() {
                     "Atualizações gratuitas",
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-gray-600" />
+                      </div>
+                      <span className="text-gray-700 text-sm">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link href="/dashboard" className="block">
+                  <Button className="w-full bg-gray-500 hover:bg-gray-600 text-white text-lg py-6">
+                    Começar Agora
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Plano Profissional - R$199 */}
+            <Card className="border-2 border-orange-500 shadow-2xl bg-white overflow-hidden scale-105">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-center">
+                <div className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold text-white mb-2">Recomendado</div>
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Profissional</h3>
+                <p className="text-orange-100">Mais recursos e prioridade</p>
+              </div>
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-lg text-gray-500">R$</span>
+                    <span className="text-6xl font-bold text-gray-900">199</span>
+                    <span className="text-gray-500">/mês</span>
+                  </div>
+                  <p className="text-gray-500 mt-2">Sem taxa de adesão</p>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    "Ordens de Serviço ilimitadas",
+                    "Vistorias e Checklists",
+                    "Relatórios profissionais",
+                    "App mobile incluso",
+                    "Suporte técnico prioritário",
+                    "Atualizações gratuitas",
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
                       <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
                         <Check className="w-3 h-3 text-orange-600" />
                       </div>
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-gray-700 text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>
 
                 <Link href="/dashboard" className="block">
                   <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white text-lg py-6">
+                    Começar Agora
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Plano Enterprise - R$299 */}
+            <Card className="border-0 shadow-lg bg-white overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="bg-gradient-to-r from-gray-700 to-gray-800 p-6 text-center">
+                <h3 className="text-2xl font-bold text-white mb-2">Plano Enterprise</h3>
+                <p className="text-gray-100">Solução completa</p>
+              </div>
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-lg text-gray-500">R$</span>
+                    <span className="text-6xl font-bold text-gray-900">299</span>
+                    <span className="text-gray-500">/mês</span>
+                  </div>
+                  <p className="text-gray-500 mt-2">Sem taxa de adesão</p>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    "Ordens de Serviço ilimitadas",
+                    "Vistorias e Checklists",
+                    "Relatórios profissionais",
+                    "App mobile incluso",
+                    "Suporte técnico 24/7",
+                    "Atualizações gratuitas",
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-gray-700" />
+                      </div>
+                      <span className="text-gray-700 text-sm">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link href="/dashboard" className="block">
+                  <Button className="w-full bg-gray-700 hover:bg-gray-800 text-white text-lg py-6">
                     Começar Agora
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
