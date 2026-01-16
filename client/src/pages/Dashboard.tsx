@@ -109,6 +109,7 @@ import VistoriasPage from "./VistoriasPage";
 import ManutencoesPage from "./ManutencoesPage";
 import TimelinePage from "./TimelinePage";
 import TimelineHistoricoPage from "./TimelineHistoricoPage";
+import TimelineDashboardPage from "./TimelineDashboardPage";
 import OcorrenciasPage from "./OcorrenciasPage";
 import ChecklistsPage from "./ChecklistsPage";
 import { PainelControloPage } from "./PainelControloPage";
@@ -185,6 +186,7 @@ const menuSections = [
       { id: "vencimentos", label: "Agenda de Vencimentos", icon: CalendarClock, funcaoId: "agenda-vencimentos" },
       { id: "timeline", label: "Timeline", icon: Clock, funcaoId: "timeline" },
       { id: "timeline-historico", label: "Histórico Timeline", icon: History, funcaoId: "timeline" },
+      { id: "timeline-dashboard", label: "Dashboard Timeline", icon: BarChart3, funcaoId: "timeline" },
     ]
   },
   {
@@ -864,6 +866,7 @@ export default function Dashboard() {
           {currentSection === "historico" && (condominios?.[0] ? <HistoricoAtividadesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
           {currentSection === "timeline" && (condominios?.[0] ? <TimelinePage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
           {currentSection === "timeline-historico" && (condominios?.[0] ? <TimelineHistoricoPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline-dashboard" && (condominios?.[0] ? <TimelineDashboardPage /> : <SemOrganizacaoMessage />)}
         </div>
       </main>
 

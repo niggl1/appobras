@@ -1173,3 +1173,32 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 
 ## Bug: Timeline não aparece no menu lateral (16/01/2026)
 - [x] Adicionar Timeline e Histórico Timeline ao menu lateral (adicionado à lista FUNCOES_DISPONIVEIS)
+
+
+## Painel de Controle de Timelines (16/01/2026)
+- [ ] Criar rotas tRPC para estatísticas de timelines (total, por status, por prioridade)
+- [ ] Criar rota para alertas de timelines pendentes/atrasadas
+- [ ] Criar rota para estatísticas por período (últimos 7, 30, 90 dias)
+- [ ] Criar página TimelineDashboardPage.tsx com gráficos
+- [ ] Implementar gráfico de pizza para status
+- [ ] Implementar gráfico de barras para prioridades
+- [ ] Implementar gráfico de linha para evolução temporal
+- [ ] Criar seção de alertas com timelines pendentes
+- [ ] Adicionar filtros por período e responsável
+- [ ] Adicionar entrada no menu lateral
+- [ ] Testar funcionalidade completa
+
+
+## Painel de Controle de Timelines (16/01/2026)
+- [x] Criar rotas tRPC para estatísticas de timelines
+- [x] Criar rota para alertas e pendências
+- [x] Criar rota para resumo rápido
+- [x] Criar página TimelineDashboardPage.tsx
+- [x] Implementar cards de resumo (total, pendentes, em andamento, finalizadas, urgentes)
+- [x] Implementar gráfico de pizza para distribuição por status
+- [x] Implementar gráfico de barras para distribuição por prioridade
+- [x] Implementar gráfico de linha para evolução temporal
+- [x] Implementar lista de alertas e pendências
+- [x] Adicionar filtro por período
+- [x] Adicionar entrada no menu lateral (Operacional/Manutenção > Dashboard Timeline)
+- [x] Testar funcionalidade completa

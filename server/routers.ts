@@ -17451,8 +17451,8 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
         return { success: true };
       }),
 
-    // ==================== TIMELINE - ESTATÍSTICAS ====================
-    estatisticas: protectedProcedure
+    // ==================== TIMELINE - ESTATÍSTICAS BÁSICAS ====================
+    estatisticasBasicas: protectedProcedure
       .input(z.object({ condominioId: z.number() }))
       .query(async ({ input }) => {
         const db = await getDb();
@@ -17712,6 +17712,284 @@ Para gerenciar suas notificações, acesse a Agenda de Vencimentos no painel.
           .limit(input.limite);
         
         return historico;
+      }),
+
+    // ==================== DASHBOARD / ESTATÍSTICAS ====================
+    estatisticas: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        periodo: z.enum(["7dias", "30dias", "90dias", "ano", "todos"]).default("30dias"),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return {
+          total: 0,
+          porStatus: [],
+          porPrioridade: [],
+          porResponsavel: [],
+          evolucaoTemporal: [],
+          mediaTempoResolucao: 0,
+        };
+        
+        // Calcular data inicial baseada no período
+        let dataInicio: Date | null = null;
+        const agora = new Date();
+        switch (input.periodo) {
+          case "7dias":
+            dataInicio = new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+          case "30dias":
+            dataInicio = new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+          case "90dias":
+            dataInicio = new Date(agora.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+          case "ano":
+            dataInicio = new Date(agora.getTime() - 365 * 24 * 60 * 60 * 1000);
+            break;
+          default:
+            dataInicio = null;
+        }
+        
+        // Buscar todas as timelines do período
+        const todasTimelines = await db.select().from(timelines)
+          .where(eq(timelines.condominioId, input.condominioId));
+        
+        // Buscar nomes de status, prioridades e responsáveis
+        const statusList = await db.select().from(timelineStatus)
+          .where(eq(timelineStatus.condominioId, input.condominioId));
+        const prioridadesList = await db.select().from(timelinePrioridades)
+          .where(eq(timelinePrioridades.condominioId, input.condominioId));
+        const responsaveisList = await db.select().from(timelineResponsaveis)
+          .where(eq(timelineResponsaveis.condominioId, input.condominioId));
+        
+        const statusMap = new Map(statusList.map(s => [s.id, s.nome]));
+        const prioridadeMap = new Map(prioridadesList.map(p => [p.id, p.nome]));
+        const responsavelMap = new Map(responsaveisList.map(r => [r.id, r.nome]));
+        
+        // Filtrar por período se necessário
+        const timelinesFiltradas = dataInicio 
+          ? todasTimelines.filter(t => new Date(t.createdAt!) >= dataInicio!)
+          : todasTimelines;
+        
+        // Contar por status
+        const statusCount: Record<string, number> = {};
+        timelinesFiltradas.forEach(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) || "Sem status" : "Sem status";
+          statusCount[statusNome] = (statusCount[statusNome] || 0) + 1;
+        });
+        const porStatus = Object.entries(statusCount).map(([nome, quantidade]) => ({ nome, quantidade }));
+        
+        // Contar por prioridade
+        const prioridadeCount: Record<string, number> = {};
+        timelinesFiltradas.forEach(t => {
+          const prioridadeNome = t.prioridadeId ? prioridadeMap.get(t.prioridadeId) || "Sem prioridade" : "Sem prioridade";
+          prioridadeCount[prioridadeNome] = (prioridadeCount[prioridadeNome] || 0) + 1;
+        });
+        const porPrioridade = Object.entries(prioridadeCount).map(([nome, quantidade]) => ({ nome, quantidade }));
+        
+        // Contar por responsável
+        const responsavelCount: Record<string, number> = {};
+        timelinesFiltradas.forEach(t => {
+          const responsavelNome = t.responsavelId ? responsavelMap.get(t.responsavelId) || "Sem responsável" : "Sem responsável";
+          responsavelCount[responsavelNome] = (responsavelCount[responsavelNome] || 0) + 1;
+        });
+        const porResponsavel = Object.entries(responsavelCount)
+          .map(([nome, quantidade]) => ({ nome, quantidade }))
+          .sort((a, b) => b.quantidade - a.quantidade)
+          .slice(0, 10);
+        
+        // Evolução temporal (agrupar por dia/semana/mês)
+        const evolucaoMap: Record<string, { criadas: number; finalizadas: number }> = {};
+        timelinesFiltradas.forEach(t => {
+          const data = new Date(t.createdAt!);
+          const chave = input.periodo === "7dias" 
+            ? data.toISOString().split('T')[0]
+            : input.periodo === "30dias"
+            ? data.toISOString().split('T')[0]
+            : `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+          
+          if (!evolucaoMap[chave]) {
+            evolucaoMap[chave] = { criadas: 0, finalizadas: 0 };
+          }
+          evolucaoMap[chave].criadas++;
+          
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          if (statusNome === "Finalizado" || statusNome === "Concluído") {
+            evolucaoMap[chave].finalizadas++;
+          }
+        });
+        const evolucaoTemporal = Object.entries(evolucaoMap)
+          .map(([data, valores]) => ({ data, ...valores }))
+          .sort((a, b) => a.data.localeCompare(b.data));
+        
+        return {
+          total: timelinesFiltradas.length,
+          porStatus,
+          porPrioridade,
+          porResponsavel,
+          evolucaoTemporal,
+          mediaTempoResolucao: 0, // TODO: calcular média de tempo de resolução
+        };
+      }),
+
+    alertas: protectedProcedure
+      .input(z.object({
+        condominioId: z.number(),
+        limite: z.number().default(20),
+      }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return [];
+        
+        // Buscar timelines ativas
+        const timelinesAtivas = await db.select().from(timelines)
+          .where(eq(timelines.condominioId, input.condominioId))
+          .orderBy(desc(timelines.createdAt))
+          .limit(input.limite * 2);
+        
+        // Buscar nomes de status, prioridades e responsáveis
+        const statusList = await db.select().from(timelineStatus)
+          .where(eq(timelineStatus.condominioId, input.condominioId));
+        const prioridadesList = await db.select().from(timelinePrioridades)
+          .where(eq(timelinePrioridades.condominioId, input.condominioId));
+        const responsaveisList = await db.select().from(timelineResponsaveis)
+          .where(eq(timelineResponsaveis.condominioId, input.condominioId));
+        
+        const statusMap = new Map(statusList.map(s => [s.id, s.nome]));
+        const prioridadeMap = new Map(prioridadesList.map(p => [p.id, p.nome]));
+        const responsavelMap = new Map(responsaveisList.map(r => [r.id, r.nome]));
+        
+        // Filtrar timelines não finalizadas
+        const timelinesFiltradas = timelinesAtivas.filter(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          return statusNome !== "Finalizado" && statusNome !== "Concluído" && statusNome !== "Cancelado";
+        }).slice(0, input.limite);
+        
+        // Classificar alertas por urgência
+        const alertas = timelinesFiltradas.map(t => {
+          const diasCriacao = Math.floor((Date.now() - new Date(t.createdAt!).getTime()) / (1000 * 60 * 60 * 24));
+          let urgencia: "alta" | "media" | "baixa" = "baixa";
+          let mensagem = "";
+          
+          const prioridadeNome = t.prioridadeId ? prioridadeMap.get(t.prioridadeId) : null;
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          const responsavelNome = t.responsavelId ? responsavelMap.get(t.responsavelId) : null;
+          
+          if (prioridadeNome === "Urgente" || prioridadeNome === "Crítica") {
+            urgencia = "alta";
+            mensagem = `Prioridade ${prioridadeNome} - ${diasCriacao} dias sem resolução`;
+          } else if (diasCriacao > 7) {
+            urgencia = "alta";
+            mensagem = `Pendente há ${diasCriacao} dias`;
+          } else if (diasCriacao > 3) {
+            urgencia = "media";
+            mensagem = `Pendente há ${diasCriacao} dias`;
+          } else {
+            mensagem = `Criada há ${diasCriacao} dias`;
+          }
+          
+          return {
+            id: t.id,
+            titulo: t.titulo,
+            responsavel: responsavelNome || "Sem responsável",
+            status: statusNome || "Sem status",
+            prioridade: prioridadeNome || "Sem prioridade",
+            urgencia,
+            mensagem,
+            diasCriacao,
+            createdAt: t.createdAt,
+          };
+        }).sort((a, b) => {
+          // Ordenar por urgência (alta > media > baixa) e depois por dias
+          const urgenciaOrder = { alta: 0, media: 1, baixa: 2 };
+          if (urgenciaOrder[a.urgencia] !== urgenciaOrder[b.urgencia]) {
+            return urgenciaOrder[a.urgencia] - urgenciaOrder[b.urgencia];
+          }
+          return b.diasCriacao - a.diasCriacao;
+        });
+        
+        return alertas;
+      }),
+
+    resumoRapido: protectedProcedure
+      .input(z.object({ condominioId: z.number() }))
+      .query(async ({ input }) => {
+        const db = await getDb();
+        if (!db) return {
+          totalAtivas: 0,
+          pendentes: 0,
+          emAndamento: 0,
+          finalizadasHoje: 0,
+          criadasHoje: 0,
+          urgentes: 0,
+        };
+        
+        // Buscar timelines com status e prioridade
+        const todasTimelines = await db.select({
+          id: timelines.id,
+          estado: timelines.estado,
+          statusId: timelines.statusId,
+          prioridadeId: timelines.prioridadeId,
+          createdAt: timelines.createdAt,
+          updatedAt: timelines.updatedAt,
+        }).from(timelines)
+          .where(eq(timelines.condominioId, input.condominioId));
+        
+        // Buscar nomes de status e prioridades
+        const statusList = await db.select().from(timelineStatus)
+          .where(eq(timelineStatus.condominioId, input.condominioId));
+        const prioridadesList = await db.select().from(timelinePrioridades)
+          .where(eq(timelinePrioridades.condominioId, input.condominioId));
+        
+        const statusMap = new Map(statusList.map(s => [s.id, s.nome]));
+        const prioridadeMap = new Map(prioridadesList.map(p => [p.id, p.nome]));
+        
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        const totalAtivas = todasTimelines.filter(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          return statusNome !== "Finalizado" && statusNome !== "Concluído" && statusNome !== "Cancelado";
+        }).length;
+        
+        const pendentes = todasTimelines.filter(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          return statusNome === "Pendente" || t.estado === "rascunho" || !statusNome;
+        }).length;
+        
+        const emAndamento = todasTimelines.filter(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          return statusNome === "Em Andamento" || statusNome === "Em Progresso";
+        }).length;
+        
+        const finalizadasHoje = todasTimelines.filter(t => {
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          if (statusNome !== "Finalizado" && statusNome !== "Concluído") return false;
+          const dataUpdate = new Date(t.updatedAt!);
+          return dataUpdate >= hoje;
+        }).length;
+        
+        const criadasHoje = todasTimelines.filter(t => {
+          const dataCriacao = new Date(t.createdAt!);
+          return dataCriacao >= hoje;
+        }).length;
+        
+        const urgentes = todasTimelines.filter(t => {
+          const prioridadeNome = t.prioridadeId ? prioridadeMap.get(t.prioridadeId) : null;
+          const statusNome = t.statusId ? statusMap.get(t.statusId) : null;
+          return (prioridadeNome === "Urgente" || prioridadeNome === "Crítica") &&
+            statusNome !== "Finalizado" && statusNome !== "Concluído" && statusNome !== "Cancelado";
+        }).length;
+        
+        return {
+          totalAtivas,
+          pendentes,
+          emAndamento,
+          finalizadasHoje,
+          criadasHoje,
+          urgentes,
+        };
       }),
   }),
 });
