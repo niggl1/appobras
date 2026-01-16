@@ -1377,3 +1377,11 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar campo responsavelPrincipal à tabela ordensServico no schema
 - [x] Executar migração do banco de dados
 - [x] Atualizar tipos TypeScript
+
+
+## Refazer Modal de Nova Ordem com Design Premium (17/01/2026)
+- [x] Reorganizar campos com melhor espaçamento
+- [x] Melhorar visual dos botões
+- [x] Definir seções claras no formulário
+- [x] Adicionar ícones e visual premium
+- [x] Testar responsividade
