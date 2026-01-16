@@ -1323,3 +1323,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 - [x] Adicionar botão de impressão
 - [x] Adicionar botão de gerar PDF
 - [x] Adicionar botão de compartilhamento
+
+
+## Bug: Erro ao Criar Nova Ordem de Serviço (17/01/2026)
+- [x] Investigar erro "Ordem de serviço não encontrada" ao clicar em +nova ordem de serviço
+- [x] Corrigir rota ou lógica de criação de nova ordem
+- [x] Testar funcionalidade de criação

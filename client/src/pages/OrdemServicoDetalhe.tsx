@@ -136,12 +136,13 @@ export default function OrdemServicoDetalhe() {
     uploading: boolean;
   }>({ file: null, preview: null, uploading: false });
 
-  const osId = params.id ? parseInt(params.id) : 0;
+  const osId = params.id && params.id !== 'nova' ? parseInt(params.id) : 0;
+  const isNovaOrdem = params.id === 'nova';
 
   // Queries
   const { data: ordem, refetch: refetchOrdem, isLoading: isLoadingOrdem, error: errorOrdem } = trpc.ordensServico.getById.useQuery(
     { id: osId },
-    { enabled: !!osId, retry: 1 }
+    { enabled: !!osId && !isNovaOrdem, retry: 1 }
   );
 
   const { data: categorias, refetch: refetchCategorias } = trpc.ordensServico.getCategorias.useQuery(
@@ -367,17 +368,17 @@ export default function OrdemServicoDetalhe() {
   useEffect(() => {
     if (ordem) {
       setEditForm({
-        titulo: ordem.titulo,
-        descricao: ordem.descricao || "",
-        categoriaId: ordem.categoriaId ? String(ordem.categoriaId) : "",
-        prioridadeId: ordem.prioridadeId ? String(ordem.prioridadeId) : "",
-        statusId: ordem.statusId ? String(ordem.statusId) : "",
-        setorId: ordem.setorId ? String(ordem.setorId) : "",
-        tempoEstimadoDias: ordem.tempoEstimadoDias || 0,
-        tempoEstimadoHoras: ordem.tempoEstimadoHoras || 0,
-        tempoEstimadoMinutos: ordem.tempoEstimadoMinutos || 0,
-        valorEstimado: ordem.valorEstimado || "",
-        valorReal: ordem.valorReal || "",
+        titulo: ordemAtual.titulo,
+        descricao: ordemAtual.descricao || "",
+        categoriaId: ordemAtual.categoriaId ? String(ordemAtual.categoriaId) : "",
+        prioridadeId: ordemAtual.prioridadeId ? String(ordemAtual.prioridadeId) : "",
+        statusId: ordemAtual.statusId ? String(ordemAtual.statusId) : "",
+        setorId: ordemAtual.setorId ? String(ordemAtual.setorId) : "",
+        tempoEstimadoDias: ordemAtual.tempoEstimadoDias || 0,
+        tempoEstimadoHoras: ordemAtual.tempoEstimadoHoras || 0,
+        tempoEstimadoMinutos: ordemAtual.tempoEstimadoMinutos || 0,
+        valorEstimado: ordemAtual.valorEstimado || "",
+        valorReal: ordemAtual.valorReal || "",
       });
     }
   }, [ordem]);
@@ -391,7 +392,7 @@ export default function OrdemServicoDetalhe() {
   const handleSaveEdit = () => {
     if (!ordem) return;
     updateOS.mutate({
-      id: ordem.id,
+      id: ordemAtual.id,
       titulo: editForm.titulo,
       descricao: editForm.descricao || undefined,
       categoriaId: editForm.categoriaId ? parseInt(editForm.categoriaId) : undefined,
@@ -421,14 +422,14 @@ export default function OrdemServicoDetalhe() {
             const endereco = data.display_name || "";
             
             updateLocalizacao.mutate({
-              ordemServicoId: ordem.id,
+              ordemServicoId: ordemAtual.id,
               latitude: latitude,
               longitude: longitude,
               endereco,
             });
           } catch (error) {
             updateLocalizacao.mutate({
-              ordemServicoId: ordem.id,
+              ordemServicoId: ordemAtual.id,
               latitude: latitude,
               longitude: longitude,
               endereco: null,
@@ -525,7 +526,7 @@ export default function OrdemServicoDetalhe() {
 
       // Enviar mensagem
       await sendChatMessage.mutateAsync({
-        ordemServicoId: ordem.id,
+        ordemServicoId: ordemAtual.id,
         mensagem: chatMessage || undefined,
         anexoUrl,
         anexoNome,
@@ -554,8 +555,8 @@ export default function OrdemServicoDetalhe() {
 
   const calcularTempoDecorrido = () => {
     if (!ordem?.dataInicio) return "-";
-    const inicio = new Date(ordem.dataInicio);
-    const fim = ordem.dataFim ? new Date(ordem.dataFim) : new Date();
+    const inicio = new Date(ordemAtual.dataInicio);
+    const fim = ordemAtual.dataFim ? new Date(ordemAtual.dataFim) : new Date();
     const diff = fim.getTime() - inicio.getTime();
     const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -569,7 +570,7 @@ export default function OrdemServicoDetalhe() {
 
   const copyShareLink = () => {
     if (!ordem) return;
-    const link = `${window.location.origin}/compartilhado/os/${ordem.protocolo}`;
+    const link = `${window.location.origin}/compartilhado/os/${ordemAtual.protocolo}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
   };
@@ -595,7 +596,7 @@ export default function OrdemServicoDetalhe() {
     );
   }
 
-  if (!ordem) {
+  if (!ordem && !isNovaOrdem) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <p className="text-gray-500">Ordem de serviço não encontrada</p>
@@ -607,10 +608,13 @@ export default function OrdemServicoDetalhe() {
     );
   }
 
+  // Usar ordem ou objeto vazio para nova ordem
+  const ordemAtual = ordem || {} as any;
+  
   // Calcular progresso e ícones
-  const StatusIcon = ordem.status?.icone ? getIconComponent(ordem.status.icone) : Circle;
-  const CategoriaIcon = ordem.categoria?.icone ? getIconComponent(ordem.categoria.icone) : Tag;
-  const PrioridadeIcon = ordem.prioridade?.icone ? getIconComponent(ordem.prioridade.icone) : Flag;
+  const StatusIcon = ordemAtual.status?.icone ? getIconComponent(ordemAtual.status.icone) : Circle;
+  const CategoriaIcon = ordemAtual.categoria?.icone ? getIconComponent(ordemAtual.categoria.icone) : Tag;
+  const PrioridadeIcon = ordemAtual.prioridade?.icone ? getIconComponent(ordemAtual.prioridade.icone) : Flag;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50">
@@ -638,13 +642,13 @@ export default function OrdemServicoDetalhe() {
                 variant="outline"
                 className="bg-white/20 border-white/30 text-white hover:bg-white/30"
                 onClick={() => {
-                  const texto = `*Ordem de Serviço #${ordem.protocolo}*%0A%0A` +
-                    `*Título:* ${ordem.titulo}%0A` +
-                    `*Status:* ${ordem.status?.nome || 'Sem status'}%0A` +
-                    `*Prioridade:* ${ordem.prioridade?.nome || 'Normal'}%0A` +
-                    `*Categoria:* ${ordem.categoria?.nome || 'Sem categoria'}%0A` +
-                    (ordem.descricao ? `*Descrição:* ${ordem.descricao}%0A` : '') +
-                    `%0A*Link:* ${window.location.origin}/os/${ordem.shareToken}`;
+                  const texto = `*Ordem de Serviço #${ordemAtual.protocolo}*%0A%0A` +
+                    `*Título:* ${ordemAtual.titulo}%0A` +
+                    `*Status:* ${ordemAtual.status?.nome || 'Sem status'}%0A` +
+                    `*Prioridade:* ${ordemAtual.prioridade?.nome || 'Normal'}%0A` +
+                    `*Categoria:* ${ordemAtual.categoria?.nome || 'Sem categoria'}%0A` +
+                    (ordemAtual.descricao ? `*Descrição:* ${ordemAtual.descricao}%0A` : '') +
+                    `%0A*Link:* ${window.location.origin}/os/${ordemAtual.shareToken}`;
                   window.open(`https://wa.me/?text=${texto}`, '_blank');
                 }}
               >
@@ -655,25 +659,25 @@ export default function OrdemServicoDetalhe() {
                 variant="outline"
                 className="bg-white/20 border-white/30 text-white hover:bg-white/30"
                 onClick={() => {
-                  window.open(`/api/ordens-servico/${ordem.id}/pdf`, '_blank');
+                  window.open(`/api/ordens-servico/${ordemAtual.id}/pdf`, '_blank');
                 }}
               >
                 <FileText className="w-4 h-4 mr-2" />
                 PDF
               </Button>
-              {!ordem.dataInicio && (
+              {!ordemAtual.dataInicio && (
                 <Button
                   className="bg-green-500 text-white hover:bg-green-600"
-                  onClick={() => iniciarOS.mutate({ id: ordem.id })}
+                  onClick={() => iniciarOS.mutate({ id: ordemAtual.id })}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Iniciar
                 </Button>
               )}
-              {ordem.dataInicio && !ordem.dataFim && (
+              {ordemAtual.dataInicio && !ordemAtual.dataFim && (
                 <Button
                   className="bg-red-500 text-white hover:bg-red-600"
-                  onClick={() => finalizarOS.mutate({ id: ordem.id })}
+                  onClick={() => finalizarOS.mutate({ id: ordemAtual.id })}
                 >
                   <Square className="w-4 h-4 mr-2" />
                   Finalizar
@@ -689,28 +693,28 @@ export default function OrdemServicoDetalhe() {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-sm font-mono bg-white/20 text-white px-3 py-1 rounded-full">
-                  #{ordem.protocolo}
+                  #{ordemAtual.protocolo}
                 </span>
                 <Badge
-                  style={{ backgroundColor: ordem.status?.cor || "#EAB308" }}
+                  style={{ backgroundColor: ordemAtual.status?.cor || "#EAB308" }}
                   className="text-white"
                 >
                   <StatusIcon className="w-3 h-3 mr-1" />
-                  {ordem.status?.nome || "Sem status"}
+                  {ordemAtual.status?.nome || "Sem status"}
                 </Badge>
                 <Badge
                   className="bg-white/20 text-white"
-                  style={{ borderColor: ordem.prioridade?.cor || undefined }}
+                  style={{ borderColor: ordemAtual.prioridade?.cor || undefined }}
                 >
                   <PrioridadeIcon className="w-3 h-3 mr-1" />
-                  {ordem.prioridade?.nome || "Normal"}
+                  {ordemAtual.prioridade?.nome || "Normal"}
                 </Badge>
               </div>
               <h1 className="text-2xl font-bold text-white drop-shadow-sm">
-                {ordem.titulo}
+                {ordemAtual.titulo}
               </h1>
-              {ordem.descricao && (
-                <p className="text-white/80 mt-1">{ordem.descricao}</p>
+              {ordemAtual.descricao && (
+                <p className="text-white/80 mt-1">{ordemAtual.descricao}</p>
               )}
             </div>
           </div>
@@ -723,7 +727,7 @@ export default function OrdemServicoDetalhe() {
                 Tempo Estimado
               </div>
               <div className="text-lg font-bold text-white">
-                {formatTempo(ordem.tempoEstimadoDias || 0, ordem.tempoEstimadoHoras || 0, ordem.tempoEstimadoMinutos || 0)}
+                {formatTempo(ordemAtual.tempoEstimadoDias || 0, ordemAtual.tempoEstimadoHoras || 0, ordemAtual.tempoEstimadoMinutos || 0)}
               </div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
@@ -743,7 +747,7 @@ export default function OrdemServicoDetalhe() {
                     Valor Estimado
                   </div>
                   <div className="text-lg font-bold text-white">
-                    {ordem.valorEstimado ? `R$ ${parseFloat(ordem.valorEstimado).toFixed(2)}` : "-"}
+                    {ordemAtual.valorEstimado ? `R$ ${parseFloat(ordemAtual.valorEstimado).toFixed(2)}` : "-"}
                   </div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
@@ -752,7 +756,7 @@ export default function OrdemServicoDetalhe() {
                     Valor Real
                   </div>
                   <div className="text-lg font-bold text-white">
-                    {ordem.valorReal ? `R$ ${parseFloat(ordem.valorReal).toFixed(2)}` : "-"}
+                    {ordemAtual.valorReal ? `R$ ${parseFloat(ordemAtual.valorReal).toFixed(2)}` : "-"}
                   </div>
                 </div>
               </>
@@ -858,7 +862,7 @@ export default function OrdemServicoDetalhe() {
                         className="mt-1 border-amber-200"
                       />
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordem.titulo}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.titulo}</p>
                     )}
                   </div>
 
@@ -882,8 +886,8 @@ export default function OrdemServicoDetalhe() {
                       </Select>
                     ) : (
                       <div className="mt-1 flex items-center gap-2">
-                        <Badge style={{ backgroundColor: ordem.status?.cor || "#EAB308" }} className="text-white">
-                          {ordem.status?.nome || "Sem status"}
+                        <Badge style={{ backgroundColor: ordemAtual.status?.cor || "#EAB308" }} className="text-white">
+                          {ordemAtual.status?.nome || "Sem status"}
                         </Badge>
                       </div>
                     )}
@@ -898,7 +902,7 @@ export default function OrdemServicoDetalhe() {
                         className="mt-1 border-amber-200 min-h-[100px]"
                       />
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordem.descricao || "-"}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.descricao || "-"}</p>
                     )}
                   </div>
 
@@ -921,7 +925,7 @@ export default function OrdemServicoDetalhe() {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordem.categoria?.nome || "-"}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.categoria?.nome || "-"}</p>
                     )}
                   </div>
 
@@ -944,7 +948,7 @@ export default function OrdemServicoDetalhe() {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordem.prioridade?.nome || "-"}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.prioridade?.nome || "-"}</p>
                     )}
                   </div>
 
@@ -967,7 +971,7 @@ export default function OrdemServicoDetalhe() {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <p className="mt-1 text-gray-800">{ordem.setor?.nome || "-"}</p>
+                      <p className="mt-1 text-gray-800">{ordemAtual.setor?.nome || "-"}</p>
                     )}
                   </div>
 
@@ -1010,7 +1014,7 @@ export default function OrdemServicoDetalhe() {
                       </div>
                     ) : (
                       <p className="mt-1 text-gray-800">
-                        {formatTempo(ordem.tempoEstimadoDias || 0, ordem.tempoEstimadoHoras || 0, ordem.tempoEstimadoMinutos || 0)}
+                        {formatTempo(ordemAtual.tempoEstimadoDias || 0, ordemAtual.tempoEstimadoHoras || 0, ordemAtual.tempoEstimadoMinutos || 0)}
                       </p>
                     )}
                   </div>
@@ -1029,7 +1033,7 @@ export default function OrdemServicoDetalhe() {
                           />
                         ) : (
                           <p className="mt-1 text-gray-800">
-                            {ordem.valorEstimado ? `R$ ${parseFloat(ordem.valorEstimado).toFixed(2)}` : "-"}
+                            {ordemAtual.valorEstimado ? `R$ ${parseFloat(ordemAtual.valorEstimado).toFixed(2)}` : "-"}
                           </p>
                         )}
                       </div>
@@ -1046,7 +1050,7 @@ export default function OrdemServicoDetalhe() {
                           />
                         ) : (
                           <p className="mt-1 text-gray-800">
-                            {ordem.valorReal ? `R$ ${parseFloat(ordem.valorReal).toFixed(2)}` : "-"}
+                            {ordemAtual.valorReal ? `R$ ${parseFloat(ordemAtual.valorReal).toFixed(2)}` : "-"}
                           </p>
                         )}
                       </div>
@@ -1056,13 +1060,13 @@ export default function OrdemServicoDetalhe() {
                   <div>
                     <Label className="text-gray-700">Data de Criação</Label>
                     <p className="mt-1 text-gray-800">
-                      {new Date(ordem.createdAt).toLocaleString("pt-BR")}
+                      {new Date(ordemAtual.createdAt).toLocaleString("pt-BR")}
                     </p>
                   </div>
 
                   <div>
                     <Label className="text-gray-700">Solicitante</Label>
-                    <p className="mt-1 text-gray-800">{ordem.solicitanteNome || "-"}</p>
+                    <p className="mt-1 text-gray-800">{ordemAtual.solicitanteNome || "-"}</p>
                   </div>
                 </div>
               </div>
@@ -1260,7 +1264,7 @@ export default function OrdemServicoDetalhe() {
                   </Button>
                 </div>
 
-                {ordem.latitude && ordem.longitude ? (
+                {ordemAtual.latitude && ordemAtual.longitude ? (
                   <div className="space-y-4">
                     <div className="bg-amber-50 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -1268,12 +1272,12 @@ export default function OrdemServicoDetalhe() {
                         <span className="font-medium text-gray-800">Coordenadas</span>
                       </div>
                       <p className="text-gray-600">
-                        Latitude: {ordem.latitude}
+                        Latitude: {ordemAtual.latitude}
                         <br />
-                        Longitude: {ordem.longitude}
+                        Longitude: {ordemAtual.longitude}
                       </p>
-                      {ordem.endereco && (
-                        <p className="mt-2 text-gray-800">{ordem.endereco}</p>
+                      {ordemAtual.endereco && (
+                        <p className="mt-2 text-gray-800">{ordemAtual.endereco}</p>
                       )}
                     </div>
 
@@ -1284,7 +1288,7 @@ export default function OrdemServicoDetalhe() {
                         height="100%"
                         frameBorder="0"
                         scrolling="no"
-                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(ordem.longitude) - 0.01},${parseFloat(ordem.latitude) - 0.01},${parseFloat(ordem.longitude) + 0.01},${parseFloat(ordem.latitude) + 0.01}&layer=mapnik&marker=${ordem.latitude},${ordem.longitude}`}
+                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(ordemAtual.longitude) - 0.01},${parseFloat(ordemAtual.latitude) - 0.01},${parseFloat(ordemAtual.longitude) + 0.01},${parseFloat(ordemAtual.latitude) + 0.01}&layer=mapnik&marker=${ordemAtual.latitude},${ordemAtual.longitude}`}
                       />
                     </div>
 
@@ -1292,7 +1296,7 @@ export default function OrdemServicoDetalhe() {
                       <Button
                         variant="outline"
                         className="flex-1"
-                        onClick={() => window.open(`https://www.google.com/maps?q=${ordem.latitude},${ordem.longitude}`, "_blank")}
+                        onClick={() => window.open(`https://www.google.com/maps?q=${ordemAtual.latitude},${ordemAtual.longitude}`, "_blank")}
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Abrir no Google Maps
@@ -1300,7 +1304,7 @@ export default function OrdemServicoDetalhe() {
                       <Button
                         variant="outline"
                         className="flex-1"
-                        onClick={() => window.open(`https://waze.com/ul?ll=${ordem.latitude},${ordem.longitude}&navigate=yes`, "_blank")}
+                        onClick={() => window.open(`https://waze.com/ul?ll=${ordemAtual.latitude},${ordemAtual.longitude}&navigate=yes`, "_blank")}
                       >
                         <Navigation className="w-4 h-4 mr-2" />
                         Abrir no Waze
@@ -2045,7 +2049,7 @@ export default function OrdemServicoDetalhe() {
                 onClick={() => {
                   if (!novoMaterial.nome) return;
                   addMaterial.mutate({
-                    ordemServicoId: ordem.id,
+                    ordemServicoId: ordemAtual.id,
                     nome: novoMaterial.nome,
                     quantidade: novoMaterial.quantidade,
                     unidade: novoMaterial.unidade,
@@ -2107,7 +2111,7 @@ export default function OrdemServicoDetalhe() {
                 onClick={() => {
                   if (!novoOrcamento.descricao || !novoOrcamento.valor) return;
                   addOrcamento.mutate({
-                    ordemServicoId: ordem.id,
+                    ordemServicoId: ordemAtual.id,
                     descricao: novoOrcamento.descricao,
                     valor: novoOrcamento.valor,
                     fornecedor: novoOrcamento.fornecedor || undefined,
@@ -2182,7 +2186,7 @@ export default function OrdemServicoDetalhe() {
                 onClick={() => {
                   if (!novoResponsavel.nome) return;
                   addResponsavel.mutate({
-                    ordemServicoId: ordem.id,
+                    ordemServicoId: ordemAtual.id,
                     nome: novoResponsavel.nome,
                     cargo: novoResponsavel.cargo || undefined,
                     telefone: novoResponsavel.telefone || undefined,

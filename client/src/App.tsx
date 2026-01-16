@@ -138,6 +138,7 @@ function Router() {
       <Route path="/dashboard/relatorios/novo" component={RelatorioBuilder} />
       {/* Rota de ordens-servico agora usa o Dashboard.tsx */}
       <Route path="/dashboard/ordens-servico/configuracoes" component={OrdensServicoConfig} />
+      <Route path="/dashboard/ordens-servico/nova" component={OrdemServicoDetalhe} />
       <Route path="/dashboard/ordens-servico/:id" component={OrdemServicoDetalhe} />
       {/* Rota criar-projeto removida - sistema focado em manutenção */}
       <Route path="/dashboard/funcoes-simples" component={HistoricoTarefasSimples} />
