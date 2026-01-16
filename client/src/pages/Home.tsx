@@ -537,7 +537,7 @@ export default function Home() {
                 Para equipes maiores
               </h3>
               <p className="text-gray-600 mb-6">
-                Precisa de uma solução customizada com mais usuários e funcionalidades avançadas? Entre em contato com o nosso suporte.
+                Precisa de uma solução customizada com mais usuários e funcionalidades personalizadas? Entre em contato com o nosso suporte.
               </p>
               <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white">
