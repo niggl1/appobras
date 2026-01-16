@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useLocation, useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useCondominioAtivo } from "@/hooks/useCondominioAtivo";
+import { ShareModal } from "@/components/ShareModal";
 // DashboardLayout removido - agora renderizado dentro do Dashboard.tsx
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +128,7 @@ export default function OrdemServicoDetalhe() {
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [showAddOrcamento, setShowAddOrcamento] = useState(false);
   const [showAddResponsavel, setShowAddResponsavel] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatFileInputRef = useRef<HTMLInputElement>(null);
@@ -940,6 +942,14 @@ export default function OrdemServicoDetalhe() {
               >
                 <FileText className="w-4 h-4 mr-2" />
                 PDF
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                onClick={() => setShowShareModal(true)}
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                Compartilhar
               </Button>
               {!ordemAtual.dataInicio && (
                 <Button
@@ -2571,6 +2581,17 @@ export default function OrdemServicoDetalhe() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* ShareModal para compartilhamento com equipe */}
+        {showShareModal && ordem && (
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            itemType="ordem_servico"
+            itemId={ordem.id}
+            itemTitle={`Ordem de Serviço #${ordem.protocolo}`}
+          />
+        )}
     </div>
   );
 }
