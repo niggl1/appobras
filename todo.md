@@ -1253,3 +1253,9 @@ Remover DashboardLayout das páginas e fazer todas usarem o menu do Dashboard.ts
 ## Substituir Logo do Rodapé (17/01/2026)
 - [x] Substituir logo do rodapé pela nova logo
 - [x] Remover texto "App Manutenção" do rodapé
+
+
+## Criar Seção "Conheça nosso contrato" (17/01/2026)
+- [x] Criar nova seção antes da seção CTA final
+- [x] Adicionar 3 cards com características do contrato
+- [x] Aplicar design com gradiente laranja

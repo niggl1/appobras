@@ -550,6 +550,62 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Conheça nosso contrato Section */}
+      <section className="py-24 bg-gradient-to-br from-orange-50 to-white">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Conheça nosso contrato
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Transparência e flexibilidade em cada detalhe
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Sem Compromisso Longo",
+                  description: "Cancele a qualquer momento sem multas ou penalidades. Você está no controle.",
+                  icon: "✓",
+                },
+                {
+                  title: "Sem Taxa de Adesão",
+                  description: "Comece a usar imediatamente. Nenhuma taxa oculta ou inicial.",
+                  icon: "✓",
+                },
+                {
+                  title: "Suporte Dedicado",
+                  description: "Equipa de suporte técnico pronta para ajudar com suas dúvidas.",
+                  icon: "✓",
+                },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100 hover:shadow-xl transition-shadow"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white text-xl font-bold mb-4">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                  <p className="text-gray-600">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 bg-white">
         <div className="container">
