@@ -1,17 +1,37 @@
-# Robots.txt para App Síndico
-# https://appsindico.com.br
+# Robots.txt para AppObras
+# https://appobras.com.br
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://appsindico.com.br/sitemap.xml
+Sitemap: https://appobras.com.br/sitemap.xml
 
-# Bloquear páginas de autenticação internas
+# Bloquear páginas internas e APIs
 Disallow: /api/
 Disallow: /redefinir-senha
+Disallow: /_next/
+Disallow: /admin/
 
 # Permitir indexação de páginas públicas
+Allow: /
 Allow: /login
 Allow: /registar
 Allow: /recuperar-senha
+
+# Bloquear crawlers de IA que consomem recursos
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# Crawl-delay para bots genéricos (evitar sobrecarga)
+User-agent: *
+Crawl-delay: 1
