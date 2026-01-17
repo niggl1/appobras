@@ -43,7 +43,7 @@ interface InputWithSaveProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  condominioId: number;
+  obraId: number;
   tipo: TipoValor;
   placeholder?: string;
   className?: string;
@@ -55,7 +55,7 @@ export default function InputWithSave({
   label,
   value,
   onChange,
-  condominioId,
+  obraId,
   tipo,
   placeholder,
   className = "",
@@ -69,8 +69,8 @@ export default function InputWithSave({
 
   // Buscar valores salvos
   const { data: valoresSalvos = [] } = trpc.valoresSalvos.list.useQuery(
-    { condominioId, tipo },
-    { enabled: !!condominioId }
+    { obraId, tipo },
+    { enabled: !!obraId }
   );
 
   // Mutation para criar novo valor
@@ -102,7 +102,7 @@ export default function InputWithSave({
       return;
     }
     createMutation.mutate({
-      condominioId,
+      obraId,
       tipo,
       valor: value.trim(),
     });

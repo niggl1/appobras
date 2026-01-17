@@ -100,17 +100,17 @@ export function saveSelectedQuickFunctions(functions: string[]) {
 interface QuickFunctionsEditorProps {
   onSave?: () => void;
   triggerClassName?: string;
-  condominioId?: number;
+  obraId?: number;
 }
 
-export default function QuickFunctionsEditor({ onSave, triggerClassName, condominioId }: QuickFunctionsEditorProps) {
+export default function QuickFunctionsEditor({ onSave, triggerClassName, obraId }: QuickFunctionsEditorProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(getSelectedQuickFunctions());
   
   // Query para buscar funções rápidas da base de dados
   const { data: funcoesRapidasDB, isLoading: isLoadingDB } = trpc.funcoesRapidas.listar.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId && open }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId && open }
   );
   
   // Mutations
@@ -120,7 +120,7 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
 
   useEffect(() => {
     if (open) {
-      if (condominioId && funcoesRapidasDB) {
+      if (obraId && funcoesRapidasDB) {
         // Usar dados da base de dados
         setSelected(funcoesRapidasDB.map(f => f.funcaoId));
       } else {
@@ -128,7 +128,7 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
         setSelected(getSelectedQuickFunctions());
       }
     }
-  }, [open, funcoesRapidasDB, condominioId]);
+  }, [open, funcoesRapidasDB, obraId]);
 
   const toggleFunction = async (id: string) => {
     if (selected.includes(id)) {
@@ -138,10 +138,10 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
         return;
       }
       
-      if (condominioId) {
+      if (obraId) {
         try {
-          await removerMutation.mutateAsync({ condominioId, funcaoId: id });
-          utils.funcoesRapidas.listar.invalidate({ condominioId });
+          await removerMutation.mutateAsync({ obraId, funcaoId: id });
+          utils.funcoesRapidas.listar.invalidate({ obraId });
         } catch {
           toast.error("Erro ao remover função");
           return;
@@ -156,19 +156,19 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
       }
       
       const func = allQuickFunctions.find(f => f.id === id);
-      if (condominioId && func) {
+      if (obraId && func) {
         const ordem = selected.length;
         const cor = CORES_FUNCOES_RAPIDAS[ordem % CORES_FUNCOES_RAPIDAS.length];
         try {
               await adicionarMutation.mutateAsync({
-                condominioId,
+                obraId,
                 funcaoId: id,
                 nome: func.label,
                 icone: func.icon.displayName || "Zap",
                 path: func.path,
                 cor
               });
-          utils.funcoesRapidas.listar.invalidate({ condominioId });
+          utils.funcoesRapidas.listar.invalidate({ obraId });
         } catch {
           toast.error("Erro ao adicionar função");
           return;
@@ -187,12 +187,12 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
   };
 
   const handleReset = async () => {
-    if (condominioId) {
+    if (obraId) {
       // Remover todas e adicionar as padrão
       for (const funcId of selected) {
         if (!DEFAULT_FUNCTIONS.includes(funcId)) {
           try {
-            await removerMutation.mutateAsync({ condominioId, funcaoId: funcId });
+            await removerMutation.mutateAsync({ obraId, funcaoId: funcId });
           } catch {}
         }
       }
@@ -203,7 +203,7 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
           if (func) {
             try {
               await adicionarMutation.mutateAsync({
-                condominioId,
+                obraId,
                 funcaoId: funcId,
                 nome: func.label,
                 icone: func.icon.displayName || "Zap",
@@ -214,7 +214,7 @@ export default function QuickFunctionsEditor({ onSave, triggerClassName, condomi
           }
         }
       }
-      utils.funcoesRapidas.listar.invalidate({ condominioId });
+      utils.funcoesRapidas.listar.invalidate({ obraId });
     }
     setSelected(DEFAULT_FUNCTIONS);
   };

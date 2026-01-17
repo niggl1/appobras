@@ -74,11 +74,11 @@ const FUNCOES_CONFIG: Record<string, {
     route: "/funcionario/equipe",
     color: "from-cyan-500 to-teal-600",
   },
-  moradores: {
+  colaboradores: {
     icon: Home,
-    label: "Moradores",
+    label: "Colaboradores",
     description: "Informações da equipa",
-    route: "/funcionario/moradores",
+    route: "/funcionario/colaboradores",
     color: "from-amber-500 to-yellow-600",
   },
   avisos: {
@@ -110,15 +110,15 @@ const TIPOS_FUNCIONARIO: Record<string, string> = {
   porteiro: "Porteiro",
   zelador: "Zelador",
   supervisor: "Supervisor de Rota",
-  gerente: "Gerente de Condomínio",
-  sindico_externo: "Síndico Externo",
+  gerente: "Gerente de Obra",
+  engenheiro_externo: "Engenheiro Externo",
 };
 
 export default function FuncionarioDashboard() {
   const [, setLocation] = useLocation();
   const [funcoesHabilitadas, setFuncoesHabilitadas] = useState<string[]>([]);
-  const [selectedCondominio, setSelectedCondominio] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<"condominios" | "apps" | "funcoes">("condominios");
+  const [selectedObra, setSelectedObra] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<"obras" | "apps" | "funcoes">("obras");
 
   // Verificar sessão do funcionário
   const { data: funcionario, isLoading } = trpc.funcionario.me.useQuery(undefined, {
@@ -142,20 +142,20 @@ export default function FuncionarioDashboard() {
   // Determinar modo de visualização inicial
   useEffect(() => {
     if (funcionario) {
-      const temMultiplosCondominios = funcionario.condominiosVinculados && funcionario.condominiosVinculados.length > 1;
+      const temMultiplosObras = funcionario.obrasVinculados && funcionario.obrasVinculados.length > 1;
       const temApps = funcionario.appsVinculados && funcionario.appsVinculados.length > 0;
       
-      if (temMultiplosCondominios) {
-        setViewMode("condominios");
+      if (temMultiplosObras) {
+        setViewMode("obras");
       } else if (temApps) {
         setViewMode("apps");
-        if (funcionario.condominiosVinculados && funcionario.condominiosVinculados.length === 1) {
-          setSelectedCondominio(funcionario.condominiosVinculados[0].id);
+        if (funcionario.obrasVinculados && funcionario.obrasVinculados.length === 1) {
+          setSelectedObra(funcionario.obrasVinculados[0].id);
         }
       } else {
         setViewMode("funcoes");
-        if (funcionario.condominioId) {
-          setSelectedCondominio(funcionario.condominioId);
+        if (funcionario.obraId) {
+          setSelectedObra(funcionario.obraId);
         }
       }
     }
@@ -194,8 +194,8 @@ export default function FuncionarioDashboard() {
     setLocation(route);
   };
 
-  const handleSelectCondominio = (condominioId: number) => {
-    setSelectedCondominio(condominioId);
+  const handleSelectObra = (obraId: number) => {
+    setSelectedObra(obraId);
     // Se tem apps vinculados, mostrar apps, senão mostrar funções
     if (funcionario.appsVinculados && funcionario.appsVinculados.length > 0) {
       setViewMode("apps");
@@ -211,9 +211,9 @@ export default function FuncionarioDashboard() {
 
   const handleBack = () => {
     if (viewMode === "funcoes" || viewMode === "apps") {
-      if (funcionario.condominiosVinculados && funcionario.condominiosVinculados.length > 1) {
-        setViewMode("condominios");
-        setSelectedCondominio(null);
+      if (funcionario.obrasVinculados && funcionario.obrasVinculados.length > 1) {
+        setViewMode("obras");
+        setSelectedObra(null);
       }
     }
   };
@@ -224,12 +224,12 @@ export default function FuncionarioDashboard() {
   );
 
   // Filtrar apps da organização selecionado
-  const appsDoCondominio = funcionario.appsVinculados?.filter(
-    app => !selectedCondominio || app.condominioId === selectedCondominio
+  const appsDoObra = funcionario.appsVinculados?.filter(
+    app => !selectedObra || app.obraId === selectedObra
   ) || [];
 
   // Obter nome da organização selecionado
-  const condominioSelecionado = funcionario.condominiosVinculados?.find(c => c.id === selectedCondominio);
+  const obraSelecionado = funcionario.obrasVinculados?.find(c => c.id === selectedObra);
 
   const tipoLabel = funcionario.tipoFuncionario ? TIPOS_FUNCIONARIO[funcionario.tipoFuncionario] || funcionario.tipoFuncionario : funcionario.cargo;
 
@@ -240,7 +240,7 @@ export default function FuncionarioDashboard() {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {(viewMode === "apps" || viewMode === "funcoes") && funcionario.condominiosVinculados && funcionario.condominiosVinculados.length > 1 && (
+              {(viewMode === "apps" || viewMode === "funcoes") && funcionario.obrasVinculados && funcionario.obrasVinculados.length > 1 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -256,7 +256,7 @@ export default function FuncionarioDashboard() {
               <div>
                 <h1 className="font-semibold text-slate-800">Portal do Funcionário</h1>
                 <p className="text-xs text-slate-500">
-                  {condominioSelecionado ? condominioSelecionado.nome : "Sistema de Gestão"}
+                  {obraSelecionado ? obraSelecionado.nome : "Sistema de Gestão"}
                 </p>
               </div>
             </div>
@@ -304,20 +304,20 @@ export default function FuncionarioDashboard() {
             Olá, {funcionario.nome.split(" ")[0]}!
           </h2>
           <p className="text-slate-600 mt-1">
-            {viewMode === "condominios" && "Selecione a organização que deseja acessar"}
+            {viewMode === "obras" && "Selecione a organização que deseja acessar"}
             {viewMode === "apps" && "Selecione o app que deseja utilizar"}
             {viewMode === "funcoes" && "Selecione uma das funções abaixo para começar"}
           </p>
         </div>
 
-        {/* Seleção de Condomínios */}
-        {viewMode === "condominios" && funcionario.condominiosVinculados && funcionario.condominiosVinculados.length > 0 && (
+        {/* Seleção de Obras */}
+        {viewMode === "obras" && funcionario.obrasVinculados && funcionario.obrasVinculados.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {funcionario.condominiosVinculados.map((cond) => (
+            {funcionario.obrasVinculados.map((cond) => (
               <Card 
                 key={cond.id}
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm overflow-hidden"
-                onClick={() => handleSelectCondominio(cond.id)}
+                onClick={() => handleSelectObra(cond.id)}
               >
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
@@ -347,9 +347,9 @@ export default function FuncionarioDashboard() {
         )}
 
         {/* Seleção de Apps */}
-        {viewMode === "apps" && appsDoCondominio.length > 0 && (
+        {viewMode === "apps" && appsDoObra.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {appsDoCondominio.map((app) => (
+            {appsDoObra.map((app) => (
               <Card 
                 key={app.id}
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm overflow-hidden"
@@ -452,7 +452,7 @@ export default function FuncionarioDashboard() {
                   </h3>
                   <p className="text-slate-500 max-w-md mx-auto">
                     O administrador ainda não habilitou funções para o seu acesso. 
-                    Entre em contacto com o síndico ou administrador da organização.
+                    Entre em contacto com o engenheiro ou administrador da organização.
                   </p>
                 </CardContent>
               </Card>
@@ -460,8 +460,8 @@ export default function FuncionarioDashboard() {
           </>
         )}
 
-        {/* Mensagem quando não há condomínios nem apps */}
-        {viewMode === "condominios" && (!funcionario.condominiosVinculados || funcionario.condominiosVinculados.length === 0) && (
+        {/* Mensagem quando não há obras nem apps */}
+        {viewMode === "obras" && (!funcionario.obrasVinculados || funcionario.obrasVinculados.length === 0) && (
           <Card className="bg-white/80 backdrop-blur-sm border-0">
             <CardContent className="py-12 text-center">
               <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
@@ -482,9 +482,9 @@ export default function FuncionarioDashboard() {
         <div className="mt-8 pt-8 border-t border-slate-200">
           <p className="text-sm text-slate-500 text-center">
             {tipoLabel} • 
-            {funcionario.condominiosVinculados && funcionario.condominiosVinculados.length > 0 
-              ? ` ${funcionario.condominiosVinculados.length} condomínio(s)` 
-              : ` Condomínio ID: ${funcionario.condominioId}`
+            {funcionario.obrasVinculados && funcionario.obrasVinculados.length > 0 
+              ? ` ${funcionario.obrasVinculados.length} obra(s)` 
+              : ` Obra ID: ${funcionario.obraId}`
             }
             {funcionario.appsVinculados && funcionario.appsVinculados.length > 0 && ` • ${funcionario.appsVinculados.length} app(s)`}
           </p>

@@ -70,10 +70,10 @@ import {
 } from "@/components/ui/form-modal";
 
 interface ChecklistsPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
+export default function ChecklistsPage({ obraId }: ChecklistsPageProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -119,29 +119,29 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
   const utils = trpc.useUtils();
 
   // Buscar dados da organização para obter o logo
-  const { data: condominio } = trpc.condominio.get.useQuery(
-    { id: condominioId },
-    { enabled: !!condominioId }
+  const { data: obra } = trpc.obra.get.useQuery(
+    { id: obraId },
+    { enabled: !!obraId }
   );
 
   // Query de templates
   const { data: templates = [] } = trpc.checklist.listTemplates.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: checklists = [], isLoading } = trpc.checklist.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: stats } = trpc.checklist.getStats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: searchResults = [] } = trpc.checklist.searchByProtocolo.useQuery(
-    { protocolo: searchProtocolo, condominioId },
+    { protocolo: searchProtocolo, obraId },
     { enabled: !!searchProtocolo && searchProtocolo.length >= 3 }
   );
   
@@ -328,7 +328,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
       toast.error("Título é obrigatório");
       return;
     }
-    createMutation.mutate({ ...formData, condominioId });
+    createMutation.mutate({ ...formData, obraId });
   };
 
   const handleStatusChange = (checklistId: number, newStatus: string) => {
@@ -362,7 +362,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
     }
     
     createTemplateMutation.mutate({
-      condominioId,
+      obraId,
       nome: saveTemplateData.nome,
       descricao: saveTemplateData.descricao || undefined,
       categoria: saveTemplateData.categoria || undefined,
@@ -712,7 +712,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
                   label="Tipo"
                   value={formData.tipo}
                   onChange={(v) => setFormData({ ...formData, tipo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="tipo_checklist"
                   placeholder="Ex: Diário, Semanal"
                 />
@@ -720,7 +720,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
                   label="Categoria"
                   value={formData.categoria}
                   onChange={(v) => setFormData({ ...formData, categoria: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="categoria_checklist"
                   placeholder="Ex: Segurança, Limpeza"
                 />
@@ -734,7 +734,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
                   label="Responsável"
                   value={formData.responsavelNome}
                   onChange={(v) => setFormData({ ...formData, responsavelNome: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="responsavel"
                   placeholder="Nome do responsável"
                 />
@@ -742,7 +742,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
                   label="Localização"
                   value={formData.localizacao}
                   onChange={(v) => setFormData({ ...formData, localizacao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="localizacao"
                   placeholder="Local da verificação"
                 />
@@ -883,7 +883,7 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <ImageEditSection
                   label="Editar Imagem com Anotações"
-                  logoUrl={condominio?.logoUrl || undefined}
+                  logoUrl={obra?.logoUrl || undefined}
                   onSaveEditedImage={(editedImage) => {
                     setImagens(prev => [...prev, editedImage]);
                     toast.success("Imagem editada adicionada à galeria!");
@@ -1149,12 +1149,12 @@ export default function ChecklistsPage({ condominioId }: ChecklistsPageProps) {
         itemId={selectedChecklist?.id || 0}
         itemTitulo={selectedChecklist?.titulo || ""}
         itemProtocolo={selectedChecklist?.protocolo || ""}
-        condominioId={condominioId}
+        obraId={obraId}
       />
 
       {/* Modal de Compartilhar com Equipe */}
       <CompartilharComEquipe
-        condominioId={condominioId}
+        obraId={obraId}
         tipo="checklist"
         itemId={selectedChecklist?.id || 0}
         itemTitulo={selectedChecklist?.titulo || ""}

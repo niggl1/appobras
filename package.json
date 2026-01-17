@@ -1,5 +1,5 @@
 {
-  "name": "app-manutencao",
+  "name": "appobras",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
@@ -154,6 +154,14 @@
     },
     "onlyBuiltDependencies": [
       "bcrypt"
+    ],
+    "ignoredBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "canvas",
+      "core-js",
+      "esbuild",
+      "puppeteer",
+      "sharp"
     ]
   }
 }

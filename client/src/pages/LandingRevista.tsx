@@ -108,7 +108,7 @@ export default function LandingRevista() {
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
                 Uma Revista
                 <span className="text-emerald-600"> Profissional</span>
-                <br />para seu Condomínio
+                <br />para seu Obra
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Crie revistas digitais interativas com navegação elegante página a página, 

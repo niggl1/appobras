@@ -27,7 +27,7 @@ import {
 
 interface SectionProps {
   revistaId: number;
-  condominioId: number;
+  obraId: number;
   hiddenSections: Set<string>;
   toggleSectionVisibility: (sectionId: string) => void;
   showForm: boolean;
@@ -35,18 +35,18 @@ interface SectionProps {
 }
 
 // ==================== GALERIA DE FOTOS ====================
-export function GaleriaSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function GaleriaSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [fotos, setFotos] = useState<string[]>([]);
   
   const utils = trpc.useUtils();
-  const { data: albuns, isLoading } = trpc.album.list.useQuery({ condominioId }, { enabled: condominioId > 0 });
+  const { data: albuns, isLoading } = trpc.album.list.useQuery({ obraId }, { enabled: obraId > 0 });
   
   const createAlbumMutation = trpc.album.create.useMutation({
     onSuccess: () => {
       toast.success("Álbum criado com sucesso!");
-      utils.album.list.invalidate({ condominioId });
+      utils.album.list.invalidate({ obraId });
       setTitulo("");
       setDescricao("");
       setFotos([]);
@@ -58,7 +58,7 @@ export function GaleriaSection({ revistaId, condominioId, hiddenSections, toggle
   const deleteAlbumMutation = trpc.album.delete.useMutation({
     onSuccess: () => {
       toast.success("Álbum removido!");
-      utils.album.list.invalidate({ condominioId });
+      utils.album.list.invalidate({ obraId });
     },
   });
 
@@ -129,7 +129,7 @@ export function GaleriaSection({ revistaId, condominioId, hiddenSections, toggle
                     <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancelar</Button>
                     <Button 
                       className="flex-1 bg-gradient-to-r from-violet-500 to-purple-500"
-                      onClick={() => createAlbumMutation.mutate({ condominioId, titulo, descricao, categoria: "eventos" })}
+                      onClick={() => createAlbumMutation.mutate({ obraId, titulo, descricao, categoria: "eventos" })}
                       disabled={!titulo || createAlbumMutation.isPending}
                     >
                       {createAlbumMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -178,7 +178,7 @@ export function GaleriaSection({ revistaId, condominioId, hiddenSections, toggle
 }
 
 // ==================== COMUNICADOS ====================
-export function ComunicadosSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function ComunicadosSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [conteudo, setConteudo] = useState("");
   const [categoria, setCategoria] = useState("outros");
@@ -316,18 +316,18 @@ export function ComunicadosSection({ revistaId, condominioId, hiddenSections, to
 }
 
 // ==================== REGRAS E NORMAS ====================
-export function RegrasSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function RegrasSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState("geral");
   
   const utils = trpc.useUtils();
-  const { data: regras, isLoading } = trpc.regra.list.useQuery({ condominioId }, { enabled: condominioId > 0 });
+  const { data: regras, isLoading } = trpc.regra.list.useQuery({ obraId }, { enabled: obraId > 0 });
   
   const createMutation = trpc.regra.create.useMutation({
     onSuccess: () => {
       toast.success("Regra adicionada!");
-      utils.regra.list.invalidate({ condominioId });
+      utils.regra.list.invalidate({ obraId });
       setTitulo("");
       setDescricao("");
       setShowForm(false);
@@ -338,7 +338,7 @@ export function RegrasSection({ revistaId, condominioId, hiddenSections, toggleS
   const deleteMutation = trpc.regra.delete.useMutation({
     onSuccess: () => {
       toast.success("Regra removida!");
-      utils.regra.list.invalidate({ condominioId });
+      utils.regra.list.invalidate({ obraId });
     },
   });
 
@@ -409,7 +409,7 @@ export function RegrasSection({ revistaId, condominioId, hiddenSections, toggleS
                     <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancelar</Button>
                     <Button 
                       className="flex-1 bg-gradient-to-r from-slate-500 to-gray-600"
-                      onClick={() => createMutation.mutate({ condominioId, titulo, descricao, categoria: categoria as any })}
+                      onClick={() => createMutation.mutate({ obraId, titulo, descricao, categoria: categoria as any })}
                       disabled={!titulo || !descricao || createMutation.isPending}
                     >
                       {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -456,18 +456,18 @@ export function RegrasSection({ revistaId, condominioId, hiddenSections, toggleS
 }
 
 // ==================== DICAS DE SEGURANÇA ====================
-export function DicasSegurancaSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function DicasSegurancaSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState("geral");
   
   const utils = trpc.useUtils();
-  const { data: dicas, isLoading } = trpc.dicaSeguranca.list.useQuery({ condominioId }, { enabled: condominioId > 0 });
+  const { data: dicas, isLoading } = trpc.dicaSeguranca.list.useQuery({ obraId }, { enabled: obraId > 0 });
   
   const createMutation = trpc.dicaSeguranca.create.useMutation({
     onSuccess: () => {
       toast.success("Dica adicionada!");
-      utils.dicaSeguranca.list.invalidate({ condominioId });
+      utils.dicaSeguranca.list.invalidate({ obraId });
       setTitulo("");
       setDescricao("");
       setShowForm(false);
@@ -478,7 +478,7 @@ export function DicasSegurancaSection({ revistaId, condominioId, hiddenSections,
   const deleteMutation = trpc.dicaSeguranca.delete.useMutation({
     onSuccess: () => {
       toast.success("Dica removida!");
-      utils.dicaSeguranca.list.invalidate({ condominioId });
+      utils.dicaSeguranca.list.invalidate({ obraId });
     },
   });
 
@@ -548,7 +548,7 @@ export function DicasSegurancaSection({ revistaId, condominioId, hiddenSections,
                     <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancelar</Button>
                     <Button 
                       className="flex-1 bg-gradient-to-r from-yellow-500 to-amber-500"
-                      onClick={() => createMutation.mutate({ condominioId, titulo, descricao, categoria: categoria as any })}
+                      onClick={() => createMutation.mutate({ obraId, titulo, descricao, categoria: categoria as any })}
                       disabled={!titulo || !descricao || createMutation.isPending}
                     >
                       {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -595,7 +595,7 @@ export function DicasSegurancaSection({ revistaId, condominioId, hiddenSections,
 }
 
 // ==================== REALIZAÇÕES ====================
-export function RealizacoesSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function RealizacoesSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [imagens, setImagens] = useState<string[]>([]);
@@ -735,7 +735,7 @@ export function RealizacoesSection({ revistaId, condominioId, hiddenSections, to
 }
 
 // ==================== MELHORIAS ====================
-export function MelhoriasSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function MelhoriasSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [status, setStatus] = useState("planejada");
@@ -894,7 +894,7 @@ export function MelhoriasSection({ revistaId, condominioId, hiddenSections, togg
 }
 
 // ==================== AQUISIÇÕES ====================
-export function AquisicoesSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function AquisicoesSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [imagens, setImagens] = useState<string[]>([]);
@@ -1034,7 +1034,7 @@ export function AquisicoesSection({ revistaId, condominioId, hiddenSections, tog
 }
 
 // ==================== PUBLICIDADE ====================
-export function PublicidadeSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
+export function PublicidadeSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility, showForm, setShowForm }: SectionProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [empresa, setEmpresa] = useState("");
@@ -1042,12 +1042,12 @@ export function PublicidadeSection({ revistaId, condominioId, hiddenSections, to
   const [imagemUrl, setImagemUrl] = useState("");
   
   const utils = trpc.useUtils();
-  const { data: publicidades, isLoading } = trpc.publicidade.list.useQuery({ condominioId }, { enabled: condominioId > 0 });
+  const { data: publicidades, isLoading } = trpc.publicidade.list.useQuery({ obraId }, { enabled: obraId > 0 });
   
   const createMutation = trpc.publicidade.create.useMutation({
     onSuccess: () => {
       toast.success("Publicidade adicionada!");
-      utils.publicidade.list.invalidate({ condominioId });
+      utils.publicidade.list.invalidate({ obraId });
       setTitulo("");
       setDescricao("");
       setEmpresa("");
@@ -1061,7 +1061,7 @@ export function PublicidadeSection({ revistaId, condominioId, hiddenSections, to
   const deleteMutation = trpc.publicidade.delete.useMutation({
     onSuccess: () => {
       toast.success("Publicidade removida!");
-      utils.publicidade.list.invalidate({ condominioId });
+      utils.publicidade.list.invalidate({ obraId });
     },
   });
 
@@ -1138,7 +1138,7 @@ export function PublicidadeSection({ revistaId, condominioId, hiddenSections, to
                     <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancelar</Button>
                     <Button 
                       className="flex-1 bg-gradient-to-r from-rose-500 to-red-500"
-                      onClick={() => createMutation.mutate({ condominioId, anunciante: empresa, titulo, descricao, telefone, imagemUrl })}
+                      onClick={() => createMutation.mutate({ obraId, anunciante: empresa, titulo, descricao, telefone, imagemUrl })}
                       disabled={!titulo || !empresa || createMutation.isPending}
                     >
                       {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -1186,21 +1186,21 @@ export function PublicidadeSection({ revistaId, condominioId, hiddenSections, to
 }
 
 // ==================== CADASTRE-SE PARA RECEBER ====================
-export function CadastroSection({ revistaId, condominioId, hiddenSections, toggleSectionVisibility }: Omit<SectionProps, 'showForm' | 'setShowForm'>) {
+export function CadastroSection({ revistaId, obraId, hiddenSections, toggleSectionVisibility }: Omit<SectionProps, 'showForm' | 'setShowForm'>) {
   const utils = trpc.useUtils();
-  const { data: inscricoes, isLoading } = trpc.inscricaoRevista.list.useQuery({ condominioId }, { enabled: condominioId > 0 });
+  const { data: inscricoes, isLoading } = trpc.inscricaoRevista.list.useQuery({ obraId }, { enabled: obraId > 0 });
   
   const ativarMutation = trpc.inscricaoRevista.ativar.useMutation({
     onSuccess: () => {
       toast.success("Inscrição ativada!");
-      utils.inscricaoRevista.list.invalidate({ condominioId });
+      utils.inscricaoRevista.list.invalidate({ obraId });
     },
   });
 
   const deleteMutation = trpc.inscricaoRevista.delete.useMutation({
     onSuccess: () => {
       toast.success("Inscrição removida!");
-      utils.inscricaoRevista.list.invalidate({ condominioId });
+      utils.inscricaoRevista.list.invalidate({ obraId });
     },
   });
 
@@ -1219,7 +1219,7 @@ export function CadastroSection({ revistaId, condominioId, hiddenSections, toggl
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">Cadastre-se para Receber</h3>
-              <p className="text-sm text-slate-500">Inscrições de moradores</p>
+              <p className="text-sm text-slate-500">Inscrições de colaboradores</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={() => toggleSectionVisibility("cadastro")} className="text-slate-500 hover:text-red-500 hover:bg-red-50">
@@ -1266,7 +1266,7 @@ export function CadastroSection({ revistaId, condominioId, hiddenSections, toggl
               <Send className="w-6 h-6 text-green-500" />
             </div>
             <p className="font-medium text-slate-700">Nenhuma inscrição</p>
-            <p className="text-sm text-slate-500 mt-1">Os moradores podem se inscrever pela revista</p>
+            <p className="text-sm text-slate-500 mt-1">Os colaboradores podem se inscrever pela revista</p>
           </div>
         )}
       </div>

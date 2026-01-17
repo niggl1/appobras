@@ -405,7 +405,7 @@ export default function TimelineVisualizarPage({ token }: TimelineVisualizarPage
             </Button>
           </div>
           <p className="text-sm text-gray-500 mt-6">
-            Gerado por <span className="font-semibold text-orange-600">App Manutenção</span>
+            Gerado por <span className="font-semibold text-orange-600">AppObras</span>
           </p>
         </div>
       </div>

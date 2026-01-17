@@ -182,26 +182,26 @@ export default function RelatorioBuilder() {
   
   // Estados para cabeçalho/rodapé
   const [cabecalhoLogoUrl, setCabecalhoLogoUrl] = useState("");
-  const [cabecalhoNomeCondominio, setCabecalhoNomeCondominio] = useState("");
-  const [cabecalhoNomeSindico, setCabecalhoNomeSindico] = useState("");
+  const [cabecalhoNomeObra, setCabecalhoNomeObra] = useState("");
+  const [cabecalhoNomeEngenheiro, setCabecalhoNomeEngenheiro] = useState("");
   const [rodapeTexto, setRodapeTexto] = useState("");
   const [rodapeContato, setRodapeContato] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const { data: condominios, refetch: refetchCondominios } = trpc.condominio.list.useQuery();
-  const selectedCondominio = condominios?.[0];
+  const { data: obras, refetch: refetchObras } = trpc.obra.list.useQuery();
+  const selectedObra = obras?.[0];
 
-  // Queries para buscar dados das seções de manutenção (usando condominio ID quando disponível)
-  const condominioId = selectedCondominio?.id || 0;
-  const manutencoesQuery = trpc.manutencao.listWithDetails.useQuery({ condominioId }, { enabled: !!selectedCondominio && selectedSections.includes("manutencoes") });
-  const ocorrenciasQuery = trpc.ocorrencia.listWithDetails.useQuery({ condominioId }, { enabled: !!selectedCondominio && selectedSections.includes("ocorrencias") });
-  const vistoriasQuery = trpc.vistoria.listWithDetails.useQuery({ condominioId }, { enabled: !!selectedCondominio && selectedSections.includes("vistorias") });
-  const checklistsQuery = trpc.checklist.listWithDetails.useQuery({ condominioId }, { enabled: !!selectedCondominio && selectedSections.includes("checklists") });
-  const antesDepoisQuery = trpc.antesDepois.list.useQuery({ revistaId: condominioId }, { enabled: !!selectedCondominio && selectedSections.includes("antes_depois") });
+  // Queries para buscar dados das seções de manutenção (usando obra ID quando disponível)
+  const obraId = selectedObra?.id || 0;
+  const manutencoesQuery = trpc.manutencao.listWithDetails.useQuery({ obraId }, { enabled: !!selectedObra && selectedSections.includes("manutencoes") });
+  const ocorrenciasQuery = trpc.ocorrencia.listWithDetails.useQuery({ obraId }, { enabled: !!selectedObra && selectedSections.includes("ocorrencias") });
+  const vistoriasQuery = trpc.vistoria.listWithDetails.useQuery({ obraId }, { enabled: !!selectedObra && selectedSections.includes("vistorias") });
+  const checklistsQuery = trpc.checklist.listWithDetails.useQuery({ obraId }, { enabled: !!selectedObra && selectedSections.includes("checklists") });
+  const antesDepoisQuery = trpc.antesDepois.list.useQuery({ revistaId: obraId }, { enabled: !!selectedObra && selectedSections.includes("antes_depois") });
   
-  const updateCondominio = trpc.condominio.update.useMutation({
+  const updateObra = trpc.obra.update.useMutation({
     onSuccess: () => {
-      refetchCondominios();
+      refetchObras();
       toast.success("Configurações de cabeçalho/rodapé salvas!");
       setShowHeaderConfig(false);
     },
@@ -212,14 +212,14 @@ export default function RelatorioBuilder() {
 
   // Carregar dados da organização
   useEffect(() => {
-    if (selectedCondominio) {
-      setCabecalhoLogoUrl((selectedCondominio as any).cabecalhoLogoUrl || "");
-      setCabecalhoNomeCondominio((selectedCondominio as any).cabecalhoNomeCondominio || selectedCondominio.nome || "");
-      setCabecalhoNomeSindico((selectedCondominio as any).cabecalhoNomeSindico || "");
-      setRodapeTexto((selectedCondominio as any).rodapeTexto || "");
-      setRodapeContato((selectedCondominio as any).rodapeContato || "");
+    if (selectedObra) {
+      setCabecalhoLogoUrl((selectedObra as any).cabecalhoLogoUrl || "");
+      setCabecalhoNomeObra((selectedObra as any).cabecalhoNomeObra || selectedObra.nome || "");
+      setCabecalhoNomeEngenheiro((selectedObra as any).cabecalhoNomeEngenheiro || "");
+      setRodapeTexto((selectedObra as any).rodapeTexto || "");
+      setRodapeContato((selectedObra as any).rodapeContato || "");
     }
-  }, [selectedCondominio]);
+  }, [selectedObra]);
 
   // Definir datas padrão baseadas no período
   useEffect(() => {
@@ -284,7 +284,7 @@ export default function RelatorioBuilder() {
       return;
     }
 
-    if (!selectedCondominio) {
+    if (!selectedObra) {
       toast.error("Nenhuma organização selecionado");
       return;
     }
@@ -346,7 +346,7 @@ export default function RelatorioBuilder() {
 
       // Gerar o PDF baseado no tipo selecionado
       const dadosRelatorio = {
-        condominio: selectedCondominio,
+        obra: selectedObra,
         periodo: { inicio: dateStart, fim: dateEnd },
         secoes: dadosSecoes,
         totais: totais,
@@ -356,8 +356,8 @@ export default function RelatorioBuilder() {
       const configRelatorio = {
         nomeRelatorio: reportName,
         cabecalhoLogoUrl: cabecalhoLogoUrl || undefined,
-        cabecalhoNomeCondominio: cabecalhoNomeCondominio || selectedCondominio?.nome,
-        cabecalhoNomeSindico: cabecalhoNomeSindico || undefined,
+        cabecalhoNomeObra: cabecalhoNomeObra || selectedObra?.nome,
+        cabecalhoNomeEngenheiro: cabecalhoNomeEngenheiro || undefined,
         rodapeTexto: rodapeTexto || undefined,
         rodapeContato: rodapeContato || undefined,
         incluirGraficos: includeCharts,
@@ -406,9 +406,9 @@ export default function RelatorioBuilder() {
         return [title, section?.description || "-", "Incluído"];
       }),
       {
-        nome: cabecalhoNomeCondominio || selectedCondominio?.nome || "Condomínio",
+        nome: cabecalhoNomeObra || selectedObra?.nome || "Obra",
         logoUrl: cabecalhoLogoUrl || null,
-        endereco: selectedCondominio?.endereco || null,
+        endereco: selectedObra?.endereco || null,
       }
     );
     toast.success("Relatório gerado com sucesso!");
@@ -436,21 +436,21 @@ export default function RelatorioBuilder() {
       colunas,
       dados,
       {
-        nome: cabecalhoNomeCondominio || selectedCondominio?.nome || "Condomínio",
+        nome: cabecalhoNomeObra || selectedObra?.nome || "Obra",
         logoUrl: cabecalhoLogoUrl || null,
-        endereco: selectedCondominio?.endereco || null,
+        endereco: selectedObra?.endereco || null,
       }
     );
   };
 
   const handleSaveHeaderConfig = () => {
-    if (!selectedCondominio) return;
+    if (!selectedObra) return;
     
-    updateCondominio.mutate({
-      id: selectedCondominio.id,
+    updateObra.mutate({
+      id: selectedObra.id,
       cabecalhoLogoUrl,
-      cabecalhoNomeCondominio,
-      cabecalhoNomeSindico,
+      cabecalhoNomeObra,
+      cabecalhoNomeEngenheiro,
       rodapeTexto,
       rodapeContato,
     } as any);
@@ -1241,7 +1241,7 @@ export default function RelatorioBuilder() {
                           name: "Comunicação",
                           description: "Avisos, comunicados e notificações",
                           icon: Megaphone,
-                          sections: ["avisos", "comunicados", "notificacoes", "mensagens_sindico"],
+                          sections: ["avisos", "comunicados", "notificacoes", "mensagens_engenheiro"],
                         },
                         {
                           name: "Comunidade",
@@ -1251,9 +1251,9 @@ export default function RelatorioBuilder() {
                         },
                         {
                           name: "Gestão",
-                          description: "Moradores e funcionários",
+                          description: "Colaboradores e funcionários",
                           icon: Building2,
-                          sections: ["moradores", "funcionarios", "condominios"],
+                          sections: ["colaboradores", "funcionarios", "obras"],
                         },
                         {
                           name: "Galeria",
@@ -1346,7 +1346,7 @@ export default function RelatorioBuilder() {
               
               <div className="space-y-5">
                 <div className="space-y-3">
-                  <Label className="text-slate-300 text-sm font-medium">Logo do Condomínio</Label>
+                  <Label className="text-slate-300 text-sm font-medium">Logo do Obra</Label>
                   <div className="flex items-center gap-5">
                     {cabecalhoLogoUrl ? (
                       <div className="relative group">
@@ -1385,27 +1385,27 @@ export default function RelatorioBuilder() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nomeCondominio" className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                    <Label htmlFor="nomeObra" className="text-slate-300 text-sm font-medium flex items-center gap-2">
                       <Building2 className="h-3.5 w-3.5 text-slate-500" />
-                      Nome do Condomínio
+                      Nome do Obra
                     </Label>
                     <Input
-                      id="nomeCondominio"
-                      value={cabecalhoNomeCondominio}
-                      onChange={(e) => setCabecalhoNomeCondominio(e.target.value)}
+                      id="nomeObra"
+                      value={cabecalhoNomeObra}
+                      onChange={(e) => setCabecalhoNomeObra(e.target.value)}
                       placeholder="Ex: Residencial Jardins"
                       className="bg-slate-800/50 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="nomeSindico" className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                    <Label htmlFor="nomeEngenheiro" className="text-slate-300 text-sm font-medium flex items-center gap-2">
                       <Users className="h-3.5 w-3.5 text-slate-500" />
                       Nome do Gestor
                     </Label>
                     <Input
-                      id="nomeSindico"
-                      value={cabecalhoNomeSindico}
-                      onChange={(e) => setCabecalhoNomeSindico(e.target.value)}
+                      id="nomeEngenheiro"
+                      value={cabecalhoNomeEngenheiro}
+                      onChange={(e) => setCabecalhoNomeEngenheiro(e.target.value)}
                       placeholder="Ex: João Silva"
                       className="bg-slate-800/50 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-500/50 focus:ring-emerald-500/20 rounded-xl"
                     />
@@ -1448,7 +1448,7 @@ export default function RelatorioBuilder() {
                     id="rodapeContato"
                     value={rodapeContato}
                     onChange={(e) => setRodapeContato(e.target.value)}
-                    placeholder="Ex: Tel: (11) 1234-5678 | email@condominio.com"
+                    placeholder="Ex: Tel: (11) 1234-5678 | email@obra.com"
                     className="bg-slate-800/50 border-white/10 text-white placeholder:text-slate-500 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl"
                   />
                 </div>
@@ -1471,8 +1471,8 @@ export default function RelatorioBuilder() {
                     </div>
                   )}
                   <div className="border-l-2 border-emerald-500 pl-4">
-                    <p className="font-bold text-slate-800">{cabecalhoNomeCondominio || "Nome do Condomínio"}</p>
-                    <p className="text-sm text-slate-500">{cabecalhoNomeSindico || "Nome do Gestor"}</p>
+                    <p className="font-bold text-slate-800">{cabecalhoNomeObra || "Nome do Obra"}</p>
+                    <p className="text-sm text-slate-500">{cabecalhoNomeEngenheiro || "Nome do Gestor"}</p>
                   </div>
                 </div>
               </div>
@@ -1489,10 +1489,10 @@ export default function RelatorioBuilder() {
             </Button>
             <Button 
               onClick={handleSaveHeaderConfig} 
-              disabled={updateCondominio.isPending}
+              disabled={updateObra.isPending}
               className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40"
             >
-              {updateCondominio.isPending ? (
+              {updateObra.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Salvando...

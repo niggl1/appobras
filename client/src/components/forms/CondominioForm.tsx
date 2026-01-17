@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
 
-interface CondominioFormProps {
+interface ObraFormProps {
   onSuccess?: (id: number) => void;
   initialData?: {
     id?: number;
@@ -25,7 +25,7 @@ interface CondominioFormProps {
   };
 }
 
-export default function CondominioForm({ onSuccess, initialData }: CondominioFormProps) {
+export default function ObraForm({ onSuccess, initialData }: ObraFormProps) {
   const [formData, setFormData] = useState({
     nome: initialData?.nome || "",
     endereco: initialData?.endereco || "",
@@ -40,10 +40,10 @@ export default function CondominioForm({ onSuccess, initialData }: CondominioFor
 
   const utils = trpc.useUtils();
 
-  const createMutation = trpc.condominio.create.useMutation({
+  const createMutation = trpc.obra.create.useMutation({
     onSuccess: (data) => {
       toast.success("Organização cadastrada com sucesso!");
-      utils.condominio.list.invalidate();
+      utils.obra.list.invalidate();
       onSuccess?.(data.id);
     },
     onError: (error) => {
@@ -51,12 +51,12 @@ export default function CondominioForm({ onSuccess, initialData }: CondominioFor
     },
   });
 
-  const updateMutation = trpc.condominio.update.useMutation({
+  const updateMutation = trpc.obra.update.useMutation({
     onSuccess: () => {
       toast.success("Organização atualizada com sucesso!");
-      utils.condominio.list.invalidate();
+      utils.obra.list.invalidate();
       if (initialData?.id) {
-        utils.condominio.get.invalidate({ id: initialData.id });
+        utils.obra.get.invalidate({ id: initialData.id });
       }
     },
     onError: (error) => {
@@ -100,7 +100,7 @@ export default function CondominioForm({ onSuccess, initialData }: CondominioFor
               <ImageUpload
                 value={formData.logoUrl || undefined}
                 onChange={(url) => setFormData({ ...formData, logoUrl: url || "" })}
-                folder="condominios/logos"
+                folder="obras/logos"
                 aspectRatio="square"
                 placeholder="Carregar logotipo"
               />
@@ -113,7 +113,7 @@ export default function CondominioForm({ onSuccess, initialData }: CondominioFor
               <ImageUpload
                 value={formData.bannerUrl || undefined}
                 onChange={(url) => setFormData({ ...formData, bannerUrl: url || "" })}
-                folder="condominios/banners"
+                folder="obras/banners"
                 aspectRatio="banner"
                 placeholder="Carregar banner"
               />

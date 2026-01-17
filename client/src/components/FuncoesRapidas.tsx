@@ -121,7 +121,7 @@ interface HistoricoItem {
 }
 
 interface FuncoesRapidasProps {
-  condominioId: number;
+  obraId: number;
 }
 
 // Componente para download de PDF
@@ -203,7 +203,7 @@ function DownloadPdfButton({ tipo, id, protocolo }: { tipo: FuncaoRapidaTipo; id
   );
 }
 
-export default function FuncoesRapidas({ condominioId }: FuncoesRapidasProps) {
+export default function FuncoesRapidas({ obraId }: FuncoesRapidasProps) {
   const [, setLocation] = useLocation();
   const [modalOpen, setModalOpen] = useState(false);
   const [funcaoSelecionada, setFuncaoSelecionada] = useState<FuncaoRapidaConfig | null>(null);
@@ -241,19 +241,19 @@ export default function FuncoesRapidas({ condominioId }: FuncoesRapidasProps) {
 
   // Buscar histórico
   const { data: checklistsData } = trpc.checklist.list.useQuery(
-    { condominioId },
+    { obraId },
     { enabled: showHistorico }
   );
   const { data: manutencoesData } = trpc.manutencao.list.useQuery(
-    { condominioId },
+    { obraId },
     { enabled: showHistorico }
   );
   const { data: ocorrenciasData } = trpc.ocorrencia.list.useQuery(
-    { condominioId },
+    { obraId },
     { enabled: showHistorico }
   );
   const { data: vistoriasData } = trpc.vistoria.list.useQuery(
-    { condominioId },
+    { obraId },
     { enabled: showHistorico }
   );
 
@@ -550,7 +550,7 @@ export default function FuncoesRapidas({ condominioId }: FuncoesRapidasProps) {
     }
 
     const baseData = {
-      condominioId,
+      obraId,
       titulo,
       descricao: descricao || undefined,
       latitude: geoLocation?.latitude?.toString(),
@@ -1153,8 +1153,8 @@ export default function FuncoesRapidas({ condominioId }: FuncoesRapidasProps) {
             descricao: descricao || titulo,
             linkPublico: `compartilhado/${itemCriado.tipo}/${itemCriado.id}`,
           }}
-          condominio={{
-            nome: "Condomínio",
+          obra={{
+            nome: "Obra",
           }}
         />
       )}

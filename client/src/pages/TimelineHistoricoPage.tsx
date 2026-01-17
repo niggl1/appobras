@@ -47,10 +47,10 @@ import { TimelineNotificacoesConfig } from "@/components/TimelineNotificacoesCon
 import { Link } from "wouter";
 
 interface TimelineHistoricoPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function TimelineHistoricoPage({ condominioId }: TimelineHistoricoPageProps) {
+export default function TimelineHistoricoPage({ obraId }: TimelineHistoricoPageProps) {
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
@@ -62,15 +62,15 @@ export default function TimelineHistoricoPage({ condominioId }: TimelineHistoric
 
   // Queries
   const { data: timelinesData, isLoading, refetch } = trpc.timeline.listar.useQuery({
-    condominioId,
+    obraId,
     busca: busca || undefined,
     statusId: filtroStatus !== "todos" ? parseInt(filtroStatus) : undefined,
     estado: filtroEstado !== "todos" ? filtroEstado as "rascunho" | "enviado" | "registado" : undefined,
     prioridadeId: filtroPrioridade !== "todos" ? parseInt(filtroPrioridade) : undefined,
   });
 
-  const { data: statusList = [] } = trpc.timeline.listarStatus.useQuery({ condominioId });
-  const { data: prioridades = [] } = trpc.timeline.listarPrioridades.useQuery({ condominioId });
+  const { data: statusList = [] } = trpc.timeline.listarStatus.useQuery({ obraId });
+  const { data: prioridades = [] } = trpc.timeline.listarPrioridades.useQuery({ obraId });
 
   // Mutations
   const excluirMutation = trpc.timeline.excluir.useMutation({

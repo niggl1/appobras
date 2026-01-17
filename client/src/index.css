@@ -69,99 +69,99 @@
 }
 
 :root {
-  /* App Manutenção - Paleta Laranja, Branco e Preto */
-  --primary: oklch(0.65 0.2 45);
-  --primary-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.65 0.2 45);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --chart-1: oklch(0.65 0.2 45);
-  --chart-2: oklch(0.55 0.18 45);
-  --chart-3: oklch(0.75 0.15 45);
-  --chart-4: oklch(0.45 0.15 45);
-  --chart-5: oklch(0.7 0.12 45);
+  /* AppObras - Paleta Amarelo, Branco e Preto */
+  --primary: oklch(0.795 0.184 86.047);
+  --primary-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.795 0.184 86.047);
+  --sidebar-primary-foreground: oklch(0.145 0 0);
+  --chart-1: oklch(0.795 0.184 86.047);
+  --chart-2: oklch(0.7 0.16 86);
+  --chart-3: oklch(0.85 0.14 86);
+  --chart-4: oklch(0.6 0.14 86);
+  --chart-5: oklch(0.75 0.12 86);
   --radius: 1rem;
   
   /* Light Theme - Branco Limpo */
   --background: oklch(0.995 0 0);
-  --foreground: oklch(0.15 0 0);
+  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
+  --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.96 0.005 45);
-  --secondary-foreground: oklch(0.2 0 0);
-  --muted: oklch(0.95 0.005 45);
+  --popover-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.96 0.005 86);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.95 0.005 86);
   --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.7 0.18 45);
-  --accent-foreground: oklch(0.15 0 0);
+  --accent: oklch(0.85 0.15 86);
+  --accent-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9 0.01 45);
-  --input: oklch(0.92 0.01 45);
-  --ring: oklch(0.65 0.2 45);
+  --border: oklch(0.9 0.01 86);
+  --input: oklch(0.92 0.01 86);
+  --ring: oklch(0.795 0.184 86.047);
   
   /* Sidebar - Preto Elegante */
-  --sidebar: oklch(0.12 0 0);
+  --sidebar: oklch(0.1 0 0);
   --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-accent: oklch(0.2 0.02 45);
+  --sidebar-accent: oklch(0.18 0.02 86);
   --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.65 0.2 45);
+  --sidebar-border: oklch(0.22 0 0);
+  --sidebar-ring: oklch(0.795 0.184 86.047);
   
-  /* Premium Custom Colors - Laranja */
-  --premium-gold: oklch(0.72 0.18 45);
-  --premium-navy: oklch(0.15 0 0);
-  --premium-cream: oklch(0.98 0.01 45);
-  --premium-emerald: oklch(0.6 0.16 45);
+  /* Premium Custom Colors - Amarelo/Dourado */
+  --premium-gold: oklch(0.795 0.184 86.047);
+  --premium-navy: oklch(0.1 0 0);
+  --premium-cream: oklch(0.98 0.01 86);
+  --premium-emerald: oklch(0.6 0.16 145);
   --premium-coral: oklch(0.7 0.2 35);
-  --premium-violet: oklch(0.55 0.15 45);
+  --premium-violet: oklch(0.55 0.15 300);
   
-  /* Gradient Colors - Laranja */
-  --gradient-start: oklch(0.65 0.2 45);
-  --gradient-mid: oklch(0.6 0.18 40);
-  --gradient-end: oklch(0.7 0.18 50);
+  /* Gradient Colors - Amarelo */
+  --gradient-start: oklch(0.795 0.184 86.047);
+  --gradient-mid: oklch(0.75 0.17 80);
+  --gradient-end: oklch(0.85 0.15 90);
 }
 
 .dark {
-  --primary: oklch(0.7 0.2 45);
+  --primary: oklch(0.85 0.18 86);
   --primary-foreground: oklch(0.1 0 0);
-  --sidebar-primary: oklch(0.7 0.2 45);
+  --sidebar-primary: oklch(0.85 0.18 86);
   --sidebar-primary-foreground: oklch(0.1 0 0);
-  --background: oklch(0.1 0 0);
+  --background: oklch(0.08 0 0);
   --foreground: oklch(0.95 0 0);
-  --card: oklch(0.14 0 0);
+  --card: oklch(0.12 0 0);
   --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.14 0 0);
+  --popover: oklch(0.12 0 0);
   --popover-foreground: oklch(0.95 0 0);
-  --secondary: oklch(0.2 0.01 45);
+  --secondary: oklch(0.18 0.01 86);
   --secondary-foreground: oklch(0.9 0 0);
-  --muted: oklch(0.2 0.01 45);
+  --muted: oklch(0.18 0.01 86);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.65 0.18 45);
+  --accent: oklch(0.7 0.16 86);
   --accent-foreground: oklch(0.1 0 0);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.95 0 0);
-  --border: oklch(0.28 0.01 45);
-  --input: oklch(0.28 0.01 45);
-  --ring: oklch(0.7 0.2 45);
-  --chart-1: oklch(0.7 0.2 45);
-  --chart-2: oklch(0.6 0.18 45);
-  --chart-3: oklch(0.8 0.15 45);
-  --chart-4: oklch(0.5 0.15 45);
-  --chart-5: oklch(0.75 0.12 45);
-  --sidebar: oklch(0.08 0 0);
+  --border: oklch(0.25 0.01 86);
+  --input: oklch(0.25 0.01 86);
+  --ring: oklch(0.85 0.18 86);
+  --chart-1: oklch(0.85 0.18 86);
+  --chart-2: oklch(0.75 0.16 86);
+  --chart-3: oklch(0.9 0.14 86);
+  --chart-4: oklch(0.65 0.14 86);
+  --chart-5: oklch(0.8 0.12 86);
+  --sidebar: oklch(0.06 0 0);
   --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-accent: oklch(0.18 0.02 45);
+  --sidebar-accent: oklch(0.15 0.02 86);
   --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.22 0 0);
-  --sidebar-ring: oklch(0.7 0.2 45);
+  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-ring: oklch(0.85 0.18 86);
   
-  --premium-gold: oklch(0.75 0.18 45);
-  --premium-navy: oklch(0.2 0 0);
-  --premium-cream: oklch(0.95 0.01 45);
-  --premium-emerald: oklch(0.65 0.16 45);
+  --premium-gold: oklch(0.85 0.18 86);
+  --premium-navy: oklch(0.15 0 0);
+  --premium-cream: oklch(0.95 0.01 86);
+  --premium-emerald: oklch(0.65 0.16 145);
   --premium-coral: oklch(0.72 0.2 35);
-  --premium-violet: oklch(0.6 0.15 45);
+  --premium-violet: oklch(0.6 0.15 300);
 }
 
 @layer base {
@@ -267,7 +267,7 @@
     @apply bg-black/40 border-white/10;
   }
 
-  /* Premium Gradients */
+  /* Premium Gradients - Amarelo */
   .gradient-premium {
     background: linear-gradient(135deg, 
       var(--gradient-start) 0%, 
@@ -277,38 +277,38 @@
 
   .gradient-premium-subtle {
     background: linear-gradient(135deg, 
-      oklch(0.65 0.2 45 / 0.1) 0%, 
-      oklch(0.7 0.18 50 / 0.1) 100%);
+      oklch(0.795 0.184 86.047 / 0.1) 0%, 
+      oklch(0.85 0.15 90 / 0.1) 100%);
   }
 
   .gradient-gold {
     background: linear-gradient(135deg, 
-      oklch(0.7 0.2 45) 0%, 
-      oklch(0.6 0.18 40) 100%);
+      oklch(0.795 0.184 86.047) 0%, 
+      oklch(0.75 0.17 80) 100%);
   }
 
   .gradient-mesh {
     background: 
-      radial-gradient(at 40% 20%, oklch(0.65 0.2 45 / 0.15) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, oklch(0.7 0.18 50 / 0.1) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, oklch(0.6 0.18 40 / 0.1) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, oklch(0.75 0.15 45 / 0.08) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.65 0.2 45 / 0.1) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, oklch(0.795 0.184 86.047 / 0.15) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, oklch(0.85 0.15 90 / 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, oklch(0.75 0.17 80 / 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, oklch(0.9 0.12 86 / 0.08) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, oklch(0.795 0.184 86.047 / 0.1) 0px, transparent 50%);
   }
 
-  /* Text Gradient */
+  /* Text Gradient - Amarelo */
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, 
-      oklch(0.65 0.2 45) 0%, 
-      oklch(0.55 0.18 40) 100%);
+      oklch(0.795 0.184 86.047) 0%, 
+      oklch(0.7 0.16 80) 100%);
   }
 
   .text-gradient-gold {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, 
-      oklch(0.7 0.2 45) 0%, 
-      oklch(0.6 0.18 40) 100%);
+      oklch(0.795 0.184 86.047) 0%, 
+      oklch(0.75 0.17 80) 100%);
   }
 
   /* Premium Buttons */
@@ -372,16 +372,16 @@
   .section-divider {
     @apply w-24 h-1 mx-auto rounded-full;
     background: linear-gradient(90deg, 
-      oklch(0.78 0.14 75) 0%, 
-      oklch(0.48 0.18 265) 100%);
+      oklch(0.795 0.184 86.047) 0%, 
+      oklch(0.1 0 0) 100%);
   }
 
   /* Premium Sidebar */
   .sidebar-premium {
     @apply bg-sidebar text-sidebar-foreground;
     background: linear-gradient(180deg, 
-      oklch(0.14 0.03 265) 0%, 
-      oklch(0.12 0.025 265) 100%);
+      oklch(0.12 0.01 86) 0%, 
+      oklch(0.08 0 0) 100%);
   }
 
   .sidebar-item {
@@ -442,8 +442,8 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px oklch(0.48 0.18 265 / 0.3); }
-    50% { box-shadow: 0 0 40px oklch(0.48 0.18 265 / 0.5); }
+    0%, 100% { box-shadow: 0 0 20px oklch(0.795 0.184 86.047 / 0.3); }
+    50% { box-shadow: 0 0 40px oklch(0.795 0.184 86.047 / 0.5); }
   }
 
   @keyframes shimmer {
@@ -500,467 +500,444 @@
     @apply bg-emerald-500/10 text-emerald-600 border-emerald-500/20;
   }
 
-  .status-reaberta {
-    @apply bg-purple-500/10 text-purple-600 border-purple-500/20;
+  .status-em-andamento {
+    @apply bg-yellow-500/10 text-yellow-700 border-yellow-500/20;
   }
 
-  /* Magazine Styles */
-  .magazine-page {
-    @apply bg-white shadow-2xl rounded-2xl overflow-hidden;
-    perspective: 2000px;
+  .status-aguardando {
+    @apply bg-gray-500/10 text-gray-600 border-gray-500/20;
   }
 
-  .magazine-flip {
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Construction/Obras specific styles */
+  .obras-card {
+    @apply bg-card rounded-2xl border-2 border-amber-200/50 shadow-sm p-6;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:shadow-lg hover:shadow-amber-500/10 hover:border-amber-400/50;
+    @apply hover:-translate-y-0.5;
+    @apply relative overflow-hidden;
   }
 
-  .magazine-page-content {
-    backface-visibility: hidden;
+  .obras-card::before {
+    content: '';
+    @apply absolute top-0 right-0 w-32 h-32;
+    @apply bg-amber-500/10 rounded-full;
+    transform: translate(30%, -30%);
   }
 
-  /* Flip Card Styles */
-  .flip-card {
-    perspective: 1000px;
+  .obras-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold;
+    @apply bg-amber-500 text-black;
   }
 
-  .flip-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+  .obras-progress {
+    @apply h-2 rounded-full bg-gray-200;
   }
 
-  .flip-card:hover .flip-card-inner {
-    transform: rotateY(180deg);
-  }
-
-  .flip-card-front,
-  .flip-card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    border-radius: 1rem;
-  }
-
-  .flip-card-front {
-    @apply bg-card shadow-md;
-  }
-
-  .flip-card-back {
-    @apply bg-primary text-primary-foreground shadow-lg;
-    transform: rotateY(180deg);
-  }
-
-  /* Scrollbar Premium */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-muted/30 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 rounded-full;
-    @apply hover:bg-muted-foreground/30;
-  }
-
-  /* Focus Ring Premium */
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2;
-  }
-
-  /* ========================================
-     GLOBAL MODAL & DIALOG IMPROVEMENTS
-     ======================================== */
-  
-  /* Dialog/Modal Container */
-  [role="dialog"] {
-    @apply rounded-2xl shadow-2xl;
-    border: 1px solid oklch(0.92 0.008 265 / 0.5);
-  }
-
-  .dark [role="dialog"] {
-    border: 1px solid oklch(0.26 0.025 265 / 0.5);
-  }
-
-  /* Dialog Header */
-  [role="dialog"] > div:first-child {
-    @apply pb-4 border-b border-border/50;
-  }
-
-  /* Dialog Title */
-  [role="dialog"] h2,
-  [data-slot="dialog-title"] {
-    @apply text-xl font-bold tracking-tight;
-  }
-
-  /* Dialog Description */
-  [role="dialog"] p.text-muted-foreground:first-of-type,
-  [data-slot="dialog-description"] {
-    @apply text-sm text-muted-foreground mt-1;
-  }
-
-  /* Dialog Content Spacing */
-  [role="dialog"] .space-y-4 {
-    @apply space-y-5;
-  }
-
-  /* ========================================
-     GLOBAL INPUT IMPROVEMENTS
-     ======================================== */
-  
-  /* All Inputs */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  textarea,
-  select {
-    @apply rounded-xl border-2 border-input/80 bg-background/50;
-    @apply px-4 py-3 text-base;
-    @apply transition-all duration-200 ease-out;
-    @apply placeholder:text-muted-foreground/60;
-  }
-
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
-  textarea:focus,
-  select:focus {
-    @apply border-primary/60 ring-4 ring-primary/10;
-    @apply bg-background;
-  }
-
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover:not(:focus),
-  textarea:hover:not(:focus),
-  select:hover:not(:focus) {
-    @apply border-input bg-background/80;
-  }
-
-  /* Textarea specific */
-  textarea {
-    @apply min-h-[120px] resize-y;
-  }
-
-  /* ========================================
-     GLOBAL LABEL IMPROVEMENTS
-     ======================================== */
-  
-  label {
-    @apply text-sm font-semibold text-foreground/90 mb-2 block;
-  }
-
-  label + input,
-  label + textarea,
-  label + select {
-    @apply mt-2;
-  }
-
-  /* Required field indicator */
-  label:has(+ input[required])::after,
-  label:has(+ textarea[required])::after {
-    content: " *";
-    @apply text-destructive;
-  }
-
-  /* ========================================
-     GLOBAL BUTTON IMPROVEMENTS IN DIALOGS
-     ======================================== */
-  
-  /* Dialog Footer Buttons */
-  [role="dialog"] button[type="submit"],
-  [role="dialog"] button.bg-primary {
-    @apply rounded-xl px-6 py-3 font-semibold;
-    @apply shadow-lg shadow-primary/20;
-    @apply hover:shadow-xl hover:shadow-primary/30;
-    @apply hover:-translate-y-0.5 active:translate-y-0;
-    @apply transition-all duration-200;
-  }
-
-  [role="dialog"] button[type="button"]:not(.bg-primary):not(.bg-destructive),
-  [role="dialog"] button.bg-secondary {
-    @apply rounded-xl px-6 py-3 font-medium;
-    @apply border-2 border-border/80;
-    @apply hover:bg-muted/50 hover:border-border;
-    @apply transition-all duration-200;
-  }
-
-  /* ========================================
-     GLOBAL FILE UPLOAD IMPROVEMENTS
-     ======================================== */
-  
-  /* Upload Area */
-  .border-dashed {
-    @apply rounded-xl border-2 border-dashed border-primary/30;
-    @apply bg-gradient-to-br from-primary/5 to-transparent;
-    @apply p-6 text-center;
-    @apply transition-all duration-200;
-  }
-
-  .border-dashed:hover {
-    @apply border-primary/50 bg-primary/10;
-  }
-
-  /* Upload Button inside dashed area */
-  .border-dashed button {
-    @apply rounded-xl px-5 py-2.5 font-medium;
-    @apply bg-primary/10 text-primary;
-    @apply hover:bg-primary/20;
-    @apply transition-all duration-200;
-  }
-
-  /* Upload hint text */
-  .border-dashed .text-xs,
-  .border-dashed .text-sm.text-muted-foreground {
-    @apply mt-3 text-muted-foreground/70;
-  }
-
-  /* ========================================
-     GLOBAL CHECKBOX IMPROVEMENTS
-     ======================================== */
-  
-  input[type="checkbox"] {
-    @apply w-5 h-5 rounded-md border-2 border-input;
-    @apply checked:bg-primary checked:border-primary;
-    @apply transition-all duration-200;
-  }
-
-  /* Checkbox label alignment */
-  label:has(input[type="checkbox"]) {
-    @apply flex items-center gap-3 font-normal cursor-pointer;
-  }
-
-  /* ========================================
-     GLOBAL SELECT/DROPDOWN IMPROVEMENTS
-     ======================================== */
-  
-  select {
-    @apply appearance-none cursor-pointer;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.75rem center;
-    background-repeat: no-repeat;
-    background-size: 1.25em 1.25em;
-    @apply pr-10;
-  }
-
-  /* ========================================
-     GLOBAL CARD IN DIALOGS
-     ======================================== */
-  
-  [role="dialog"] .bg-muted\/50,
-  [role="dialog"] .bg-secondary {
-    @apply rounded-xl p-5;
-    @apply border border-border/30;
-  }
-
-  /* ========================================
-     DIALOG ANIMATION IMPROVEMENTS
-     ======================================== */
-  
-  [role="dialog"][data-state="open"] {
-    animation: dialogIn 0.2s ease-out;
-  }
-
-  @keyframes dialogIn {
-    from {
-      opacity: 0;
-      transform: scale(0.96) translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  /* ========================================
-     MAGAZINE NAVIGATION ARROWS
-     ======================================== */
-  
-  /* Navigation Arrow Animation */
-  @keyframes arrowPulse {
-    0%, 100% {
-      transform: translateY(-50%) scale(1);
-      box-shadow: 0 0 0 0 oklch(0.48 0.18 265 / 0.7);
-    }
-    50% {
-      transform: translateY(-50%) scale(1.05);
-      box-shadow: 0 0 0 12px oklch(0.48 0.18 265 / 0);
-    }
-  }
-
-  @keyframes arrowGlow {
-    0%, 100% {
-      box-shadow: 
-        0 4px 15px oklch(0.48 0.18 265 / 0.4),
-        0 0 30px oklch(0.48 0.18 265 / 0.2);
-    }
-    50% {
-      box-shadow: 
-        0 6px 25px oklch(0.48 0.18 265 / 0.6),
-        0 0 50px oklch(0.48 0.18 265 / 0.3);
-    }
-  }
-
-  @keyframes arrowBounceLeft {
-    0%, 100% { transform: translateY(-50%) translateX(0); }
-    50% { transform: translateY(-50%) translateX(-4px); }
-  }
-
-  @keyframes arrowBounceRight {
-    0%, 100% { transform: translateY(-50%) translateX(0); }
-    50% { transform: translateY(-50%) translateX(4px); }
-  }
-
-  .magazine-nav-arrow {
-    @apply absolute top-1/2 z-20;
-    @apply w-14 h-14 rounded-full;
-    @apply flex items-center justify-center;
-    @apply bg-gradient-to-br from-primary via-primary to-primary/90;
-    @apply text-white font-bold;
-    @apply border-2 border-white/30;
-    @apply cursor-pointer select-none;
-    animation: arrowGlow 2s ease-in-out infinite;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .magazine-nav-arrow:hover:not(:disabled) {
-    @apply scale-110;
-    box-shadow: 
-      0 8px 30px oklch(0.48 0.18 265 / 0.7),
-      0 0 60px oklch(0.48 0.18 265 / 0.4);
-  }
-
-  .magazine-nav-arrow:active:not(:disabled) {
-    @apply scale-95;
-  }
-
-  .magazine-nav-arrow:disabled {
-    @apply opacity-30 cursor-not-allowed;
-    animation: none;
-    box-shadow: none;
-  }
-
-  .magazine-nav-arrow-left {
-    animation: arrowGlow 2s ease-in-out infinite, arrowBounceLeft 1.5s ease-in-out infinite;
-  }
-
-  .magazine-nav-arrow-right {
-    animation: arrowGlow 2s ease-in-out infinite, arrowBounceRight 1.5s ease-in-out infinite;
-  }
-
-  .magazine-nav-arrow-left:hover:not(:disabled) {
-    animation: none;
-  }
-
-  .magazine-nav-arrow-right:hover:not(:disabled) {
-    animation: none;
-  }
-
-  /* Swipe hint indicator */
-  .swipe-hint {
-    @apply absolute bottom-4 left-1/2 -translate-x-1/2;
-    @apply flex items-center gap-2 px-4 py-2 rounded-full;
-    @apply bg-black/60 text-white text-sm;
-    @apply backdrop-blur-sm;
-    animation: fadeInOut 3s ease-in-out forwards;
-  }
-
-  @keyframes fadeInOut {
-    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+  .obras-progress-bar {
+    @apply h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-600;
+    transition: width 0.5s ease-out;
   }
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  /* Safe Area for Mobile Bottom Navigation */
-  .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
+::-webkit-scrollbar-track {
+  @apply bg-muted/30 rounded-full;
+}
 
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+  @apply hover:bg-muted-foreground/30;
+}
 
-/* ========================================
-   ESTILOS DE IMPRESSÃO
-   ======================================== */
+/* Selection color */
+::selection {
+  @apply bg-primary/20 text-foreground;
+}
 
+/* Focus visible */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Print styles */
 @media print {
-  /* Esconder elementos de navegação durante a impressão */
-  header,
-  footer,
-  nav,
-  .no-print,
-  button,
-  .magazine-nav-arrow,
-  [data-no-print] {
+  .no-print {
     display: none !important;
   }
-  
-  /* Garantir que o conteúdo da revista seja visível */
-  body {
-    background: white !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+}
+
+
+/* ============================================
+   ESTILOS MOBILE - AppObras
+   ============================================ */
+
+/* Safe Area para dispositivos com notch */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Navegação inferior mobile */
+@media (max-width: 767px) {
+  .mobile-nav-spacer {
+    height: 4rem;
   }
   
-  /* Forçar modo contínuo para impressão */
-  .print-continuous {
-    display: block !important;
-    height: auto !important;
-    overflow: visible !important;
+  /* Ajustes para conteúdo não ficar atrás da nav */
+  main {
+    min-height: calc(100vh - 3.5rem - 4rem);
   }
   
-  /* Cada página da revista em uma página de impressão */
-  .magazine-page {
-    page-break-after: always;
-    page-break-inside: avoid;
-    break-after: page;
-    break-inside: avoid;
+  /* Cards mais compactos em mobile */
+  .card {
+    border-radius: 0.75rem;
+  }
+  
+  /* Tabelas responsivas */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Botões touch-friendly */
+  button, 
+  [role="button"],
+  a.btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Inputs maiores em mobile */
+  input, 
+  select, 
+  textarea {
+    font-size: 16px !important; /* Previne zoom no iOS */
+  }
+  
+  /* Dialogs em tela cheia no mobile */
+  [role="dialog"] {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
     margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
     border-radius: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 100vh !important;
   }
   
-  /* Última página não precisa de quebra */
-  .magazine-page:last-child {
-    page-break-after: auto;
-    break-after: auto;
+  /* Scroll suave */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
   }
   
-  /* Remover backgrounds escuros */
-  .bg-gradient-to-br,
-  .bg-gradient-to-b {
-    background: white !important;
-  }
-  
-  /* Container de scroll visível */
-  [class*="overflow-y-auto"],
-  [class*="overflow-auto"] {
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-  }
-  
-  /* Garantir cores de impressão */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  .scroll-item {
+    scroll-snap-align: start;
   }
 }
 
-/* Classe para forçar impressão de todas as páginas */
-.print-all-pages {
-  display: block !important;
-  overflow: visible !important;
-  height: auto !important;
+/* Animações otimizadas para mobile */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-@page {
-  size: A4 portrait;
-  margin: 0;
+/* Touch feedback */
+.touch-feedback {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.touch-feedback:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Pull to refresh indicator */
+.pull-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+/* Skeleton loading para mobile */
+.skeleton-mobile {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--muted-foreground) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Swipe actions */
+.swipe-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.swipe-content {
+  transition: transform 0.3s ease;
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Floating Action Button (FAB) */
+.fab {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 40;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+/* Bottom Sheet */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.bottom-sheet.open {
+  transform: translateY(0);
+}
+
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--muted-foreground);
+  border-radius: 2px;
+  margin: 8px auto;
+  opacity: 0.3;
+}
+
+/* Gestos de navegação */
+.gesture-hint {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: var(--foreground);
+  border-radius: 100px;
+  opacity: 0.2;
+}
+
+/* Status bar background */
+.status-bar-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: var(--background);
+  z-index: 100;
+}
+
+/* Otimizações de performance */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Scroll horizontal para cards */
+.horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scroll > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Grids responsivos */
+.grid-mobile-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-mobile-1 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tipografia responsiva */
+.text-responsive-xl {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.text-responsive-lg {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.text-responsive-md {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+}
+
+/* Espaçamentos responsivos */
+.p-responsive {
+  padding: clamp(1rem, 4vw, 2rem);
+}
+
+.m-responsive {
+  margin: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Imagens responsivas */
+.img-responsive {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Aspect ratios */
+.aspect-card {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    -45deg,
+    var(--muted) 40%,
+    var(--background) 50%,
+    var(--muted) 60%
+  );
+  background-size: 300% 300%;
+  animation: shimmer 1.5s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* AppObras - Cores específicas */
+.bg-appobras-primary {
+  background-color: #F59E0B;
+}
+
+.text-appobras-primary {
+  color: #F59E0B;
+}
+
+.border-appobras-primary {
+  border-color: #F59E0B;
+}
+
+.bg-appobras-dark {
+  background-color: #1a1a1a;
+}
+
+.text-appobras-dark {
+  color: #1a1a1a;
+}
+
+/* Gradientes AppObras */
+.gradient-appobras {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.gradient-appobras-dark {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+}
+
+/* Sombras personalizadas */
+.shadow-appobras {
+  box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+}
+
+.shadow-appobras-lg {
+  box-shadow: 0 10px 40px 0 rgba(245, 158, 11, 0.3);
 }

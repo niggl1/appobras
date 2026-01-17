@@ -22,7 +22,7 @@ interface EnvioMulticanalModalProps {
     linkPublico: string;
   };
   // Dados da organização
-  condominio: {
+  obra: {
     nome: string;
   };
   // Callbacks
@@ -37,7 +37,7 @@ export function EnvioMulticanalModal({
   onOpenChange,
   destinatario,
   notificacao,
-  condominio,
+  obra,
   onWhatsappSent,
   onPrint,
   baseUrl = window.location.origin,
@@ -62,7 +62,7 @@ export function EnvioMulticanalModal({
   const gerarMensagemWhatsapp = (): string => {
     const mensagem = `Olá ${destinatario.nome},
 
-Você recebeu uma notificação do *${condominio.nome}*.
+Você recebeu uma notificação do *${obra.nome}*.
 
 *Assunto:* ${notificacao.titulo}
 
@@ -70,7 +70,7 @@ Acesse o link abaixo para visualizar os detalhes e responder:
 ${linkPublico}
 
 Atenciosamente,
-Administração do Condomínio`;
+Administração do Obra`;
 
     return encodeURIComponent(mensagem);
   };
@@ -79,7 +79,7 @@ Administração do Condomínio`;
   const handleWhatsapp = () => {
     const numero = formatWhatsappNumber(destinatario.whatsapp);
     if (!numero) {
-      toast.error("Número de WhatsApp não cadastrado para este morador");
+      toast.error("Número de WhatsApp não cadastrado para este colaborador");
       return;
     }
 
@@ -88,20 +88,20 @@ Administração do Condomínio`;
     window.open(url, "_blank");
     
     onWhatsappSent?.();
-    toast.success("WhatsApp aberto! Envie a mensagem para o morador.");
+    toast.success("WhatsApp aberto! Envie a mensagem para o colaborador.");
   };
 
   // Gerar mailto
   const handleEmail = () => {
     if (!destinatario.email) {
-      toast.error("Email não cadastrado para este morador");
+      toast.error("Email não cadastrado para este colaborador");
       return;
     }
 
-    const assunto = encodeURIComponent(`Notificação - ${notificacao.titulo} - ${condominio.nome}`);
+    const assunto = encodeURIComponent(`Notificação - ${notificacao.titulo} - ${obra.nome}`);
     const corpo = encodeURIComponent(`Olá ${destinatario.nome},
 
-Você recebeu uma notificação do ${condominio.nome}.
+Você recebeu uma notificação do ${obra.nome}.
 
 Assunto: ${notificacao.titulo}
 
@@ -109,7 +109,7 @@ Acesse o link abaixo para visualizar os detalhes e responder:
 ${linkPublico}
 
 Atenciosamente,
-Administração do Condomínio`);
+Administração do Obra`);
 
     const url = `mailto:${destinatario.email}?subject=${assunto}&body=${corpo}`;
     window.location.href = url;
@@ -147,7 +147,7 @@ Administração do Condomínio`);
               Notificação Registrada!
             </DialogTitle>
             <DialogDescription className="text-green-100">
-              Escolha como deseja enviar a notificação para o morador
+              Escolha como deseja enviar a notificação para o colaborador
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -159,7 +159,7 @@ Administração do Condomínio`);
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>
                 O sistema já enviou a notificação automaticamente por email. 
-                Caso o morador não tenha recebido, reenvie pelas opções abaixo.
+                Caso o colaborador não tenha recebido, reenvie pelas opções abaixo.
               </span>
             </p>
           </div>

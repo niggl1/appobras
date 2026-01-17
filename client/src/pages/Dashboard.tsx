@@ -129,7 +129,7 @@ import NotificationAlert from "@/components/NotificationAlert";
 import FuncoesRapidas from "@/components/FuncoesRapidas";
 import FuncoesRapidasGrid from "@/components/FuncoesRapidasGrid";
 import QuickFunctionsEditor, { getSelectedQuickFunctions, allQuickFunctions, CORES_FUNCOES_RAPIDAS } from "@/components/QuickFunctionsEditor";
-// AssistenteCriacao removido - sistema focado em manutenção
+// AssistenteCriacao removido - sistema focado em obra
 import OrdensServico from "./OrdensServico";
 import AgendaVencimentos from "./AgendaVencimentos";
 import OrdemServicoDetalhe from "./OrdemServicoDetalhe";
@@ -138,7 +138,7 @@ import AdminUsuarios from "./AdminUsuarios";
 import AdminLogs from "./AdminLogs";
 import HistoricoAtividadesPage from "./HistoricoAtividades";
 
-// Estrutura do menu otimizada para gestão de manutenção
+// Estrutura do menu otimizada para gestão de obras
 // Cada item tem um funcaoId que mapeia para as funções do admin
 const menuSections = [
   {
@@ -162,21 +162,21 @@ const menuSections = [
     label: "Gestão da Organização",
     icon: Building2,
     items: [
-      { id: "condominio", label: "Cadastro da Organização", icon: Building2 },
+      { id: "obra", label: "Cadastro da Organização", icon: Building2 },
       { id: "equipe", label: "Equipe de Gestão", icon: UsersRound, funcaoId: "equipe" },
       { id: "compartilhamentos", label: "Compartilhamentos", icon: Share2 },
     ]
   },
   {
     id: "operacional",
-    label: "Operacional / Manutenção",
+    label: "Gestão de Obras",
     icon: Wrench,
     items: [
       { id: "historico", label: "⭐ Histórico Geral", icon: History, funcaoId: "historico", highlight: true },
       { id: "vistorias", label: "Vistoria Completa", icon: ClipboardCheck, funcaoId: "vistorias" },
       { id: "funcoes-simples", label: "Vistoria Rápida", icon: Zap, funcaoId: "vistoria-rapida", path: "/dashboard/funcoes-simples?tipo=vistoria" },
-      { id: "manutencoes", label: "Manutenção Completa", icon: Wrench, funcaoId: "manutencoes" },
-      { id: "funcoes-simples-manutencao", label: "Manutenção Rápida", icon: Zap, funcaoId: "manutencao-rapida", path: "/dashboard/funcoes-simples?tipo=manutencao" },
+      { id: "manutencoes", label: "Obra Completa", icon: Wrench, funcaoId: "manutencoes" },
+      { id: "funcoes-simples-obra", label: "Obra Rápida", icon: Zap, funcaoId: "obra-rapida", path: "/dashboard/funcoes-simples?tipo=obra" },
       { id: "ocorrencias", label: "Ocorrência Completa", icon: AlertTriangle, funcaoId: "ocorrencias" },
       { id: "funcoes-simples-ocorrencia", label: "Ocorrência Rápida", icon: Zap, funcaoId: "ocorrencia-rapida", path: "/dashboard/funcoes-simples?tipo=ocorrencia" },
       { id: "checklists", label: "Checklist Completo", icon: ListChecks, funcaoId: "checklists" },
@@ -227,22 +227,22 @@ export default function Dashboard() {
   const params = useParams<{ section?: string }>();
   const [, setLocation] = useLocation();
   const currentSection = params.section || "overview";
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   
   // Verificar se é membro da equipe logado
   const { data: membroLogado } = trpc.membroEquipe.me.useQuery();
   
   // Buscar funções habilitadas para a organização do usuário
-  const condominioId = condominios?.[0]?.id;
-  const { data: funcoesHabilitadas } = trpc.funcoesCondominio.listarHabilitadas.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+  const obraId = obras?.[0]?.id;
+  const { data: funcoesHabilitadas } = trpc.funcoesObra.listarHabilitadas.useQuery(
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   
   // Filtrar menu baseado nas funções habilitadas e permissões do membro
   const menuSectionsFiltrado = useMemo(() => {
-    // Se não há condomínio ou funções carregadas, mostrar tudo
-    if (!condominioId || !funcoesHabilitadas) return menuSections;
+    // Se não há obra ou funções carregadas, mostrar tudo
+    if (!obraId || !funcoesHabilitadas) return menuSections;
     
     // Se é membro da equipe com permissões limitadas, filtrar por permissões
     const permissoesMembro = membroLogado?.permissoes || [];
@@ -275,7 +275,7 @@ export default function Dashboard() {
       // Manter seções que têm path (como Visão Geral) ou que ainda têm itens
       return section.path || section.items.length > 0;
     });
-  }, [condominioId, funcoesHabilitadas, membroLogado]);
+  }, [obraId, funcoesHabilitadas, membroLogado]);
   
   // Estado para controlar seções expandidas
   const [expandedSections, setExpandedSections] = useState<string[]>(() => {
@@ -288,7 +288,7 @@ export default function Dashboard() {
 
   // Estados para modais de Registro Rápido
   const [showVistoriaRapida, setShowVistoriaRapida] = useState(false);
-  const [showManutencaoRapida, setShowManutencaoRapida] = useState(false);
+  const [showObraRapida, setShowObraRapida] = useState(false);
   const [showOcorrenciaRapida, setShowOcorrenciaRapida] = useState(false);
   const [showAntesDepoisRapido, setShowAntesDepoisRapido] = useState(false);
 
@@ -309,8 +309,8 @@ export default function Dashboard() {
 
   // Query para funções rápidas
   const { data: funcoesRapidas, refetch: refetchFuncoesRapidas } = trpc.funcoesRapidas.listar.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
 
   // Mutations
@@ -357,7 +357,7 @@ export default function Dashboard() {
   const handleZapClick = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Selecione uma organização primeiro");
       return;
     }
@@ -374,10 +374,10 @@ export default function Dashboard() {
 
   // Confirmar ação
   const handleConfirm = () => {
-    if (!selectedFuncao || !condominioId) return;
+    if (!selectedFuncao || !obraId) return;
     
     if (selectedFuncao.isRapida) {
-      removerFuncaoRapida.mutate({ condominioId, funcaoId: selectedFuncao.funcaoId });
+      removerFuncaoRapida.mutate({ obraId, funcaoId: selectedFuncao.funcaoId });
     } else {
       if ((funcoesRapidas?.length || 0) >= 12) {
         toast.error("Limite de 12 funções rápidas atingido. Remova uma primeiro.");
@@ -385,7 +385,7 @@ export default function Dashboard() {
         return;
       }
       adicionarFuncaoRapida.mutate({
-        condominioId,
+        obraId,
         funcaoId: selectedFuncao.funcaoId,
         nome: selectedFuncao.nome,
         path: selectedFuncao.path,
@@ -494,7 +494,7 @@ export default function Dashboard() {
         {/* Logo */}
         <div className="p-6 border-b border-sidebar-border">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo-manutencao.png" alt="App Manutenção" className="h-10 object-contain" />
+            <img src="/logo-appobras.png" alt="AppObras" className="h-10 object-contain" />
           </Link>
         </div>
 
@@ -504,7 +504,7 @@ export default function Dashboard() {
           <div className="px-3 mb-4">
             <div className="flex items-center justify-between mb-2 px-3">
               <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">Atalhos</p>
-              <QuickFunctionsEditor onSave={refreshQuickFunctions} condominioId={condominioId} />
+              <QuickFunctionsEditor onSave={refreshQuickFunctions} obraId={obraId} />
             </div>
             <div className="grid grid-cols-2 gap-2">
               {funcoesRapidas && funcoesRapidas.length > 0 ? (
@@ -733,7 +733,7 @@ export default function Dashboard() {
                 {user?.name || "Utilizador"}
               </p>
               <p className="text-xs text-sidebar-foreground/50 truncate">
-                {user?.tipoConta === "administradora" ? "Administradora" : "Síndico"}
+                {user?.tipoConta === "construtora" ? "Construtora" : "Engenheiro"}
               </p>
             </div>
             <NotificationBell />
@@ -756,10 +756,10 @@ export default function Dashboard() {
         <header className="lg:hidden sticky top-0 z-40 bg-card border-b border-border">
           <div className="flex items-center justify-between p-4">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo-manutencao.png" alt="App Manutenção" className="h-8 object-contain" />
+              <img src="/logo-appobras.png" alt="AppObras" className="h-8 object-contain" />
             </Link>
             <div className="flex items-center gap-2">
-              <NotificationAlert condominioId={condominios?.[0]?.id || null} />
+              <NotificationAlert obraId={obras?.[0]?.id || null} />
               <NotificationBell />
               <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="w-5 h-5" />
@@ -770,7 +770,7 @@ export default function Dashboard() {
           <div className="px-4 pb-3">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Funções Rápidas</p>
-              <QuickFunctionsEditor onSave={refreshQuickFunctions} triggerClassName="text-muted-foreground" condominioId={condominioId} />
+              <QuickFunctionsEditor onSave={refreshQuickFunctions} triggerClassName="text-muted-foreground" obraId={obraId} />
             </div>
             <div className="grid grid-cols-4 gap-2">
               {funcoesRapidas && funcoesRapidas.length > 0 ? (
@@ -818,10 +818,10 @@ export default function Dashboard() {
           {currentSection === "overview" && <OverviewSection user={user} />}
           {currentSection === "personalizado" && <PaginasCustomWrapper />}
           {currentSection === "destaques" && <DestaquesSection />}
-          {currentSection === "painel-controlo" && condominios?.[0] && <PainelControloPage condominioId={condominios[0].id} />}
+          {currentSection === "painel-controlo" && obras?.[0] && <PainelControloPage obraId={obras[0].id} />}
           {currentSection === "revistas" && <RevistasSection />}
-          {currentSection === "condominio" && <CondominioSection />}
-          {currentSection === "moradores" && <MoradoresSection />}
+          {currentSection === "obra" && <ObraSection />}
+          {currentSection === "colaboradores" && <ColaboradoresSection />}
           {currentSection === "funcionarios" && <FuncionariosSection />}
           {currentSection === "avisos" && <AvisosSection />}
           {currentSection === "comunicados" && <ComunicadosSection />}
@@ -840,16 +840,16 @@ export default function Dashboard() {
           {currentSection === "publicidade" && <PublicidadeSection />}
           {currentSection === "seguranca" && <SegurancaSection />}
           {currentSection === "regras" && <RegrasSection />}
-          {currentSection === "vistorias" && (condominios?.[0] ? <VistoriasPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "manutencoes" && (condominios?.[0] ? <ManutencoesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "ocorrencias" && (condominios?.[0] ? <OcorrenciasPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "notificar-morador" && <NotificarMoradorPage />}
-          {currentSection === "checklists" && (condominios?.[0] ? <ChecklistsPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "vencimentos" && condominios?.[0] && <VencimentosSection condominioId={condominios[0].id} />}
+          {currentSection === "vistorias" && (obras?.[0] ? <VistoriasPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "manutencoes" && (obras?.[0] ? <ManutencoesPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "ocorrencias" && (obras?.[0] ? <OcorrenciasPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "notificar-colaborador" && <NotificarMoradorPage />}
+          {currentSection === "checklists" && (obras?.[0] ? <ChecklistsPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "vencimentos" && obras?.[0] && <VencimentosSection obraId={obras[0].id} />}
           {currentSection === "assembleia" && <AssembleiaOnlineSection />}
-          {currentSection === "gestao-notificacoes" && condominios?.[0] && <NotificacoesPage condominioId={condominios[0].id} />}
-          {currentSection === "relatorios" && condominios?.[0] && <RelatoriosPage condominioId={condominios[0].id} />}
-          {currentSection === "equipe" && condominios?.[0] && <MembrosEquipePage condominioId={condominios[0].id} />}
+          {currentSection === "gestao-notificacoes" && obras?.[0] && <NotificacoesPage obraId={obras[0].id} />}
+          {currentSection === "relatorios" && obras?.[0] && <RelatoriosPage obraId={obras[0].id} />}
+          {currentSection === "equipe" && obras?.[0] && <MembrosEquipePage obraId={obras[0].id} />}
           {currentSection === "compartilhamentos" && <CompartilhamentosPage />}
           {currentSection === "configuracoes" && <ConfiguracoesSection />}
           {currentSection === "ordens-servico" && <OrdensServico />}
@@ -857,15 +857,15 @@ export default function Dashboard() {
           {currentSection === "historico-acessos" && <HistoricoAcessosPage />}
           {currentSection === "historico-infracoes" && <HistoricoInfracoesPage />}
           {currentSection === "funcoes-simples" && <HistoricoTarefasSimples />}
-          {currentSection === "notificar-morador" && <NotificarMoradorPage />}
+          {currentSection === "notificar-colaborador" && <NotificarMoradorPage />}
           {currentSection === "ordens-servico-config" && <OrdensServicoConfig />}
           {currentSection?.startsWith("ordem-servico/") && <OrdemServicoDetalhe />}
           {currentSection === "admin-usuarios" && <AdminUsuarios />}
           {currentSection === "admin-logs" && <AdminLogs />}
-          {currentSection === "historico" && (condominios?.[0] ? <HistoricoAtividadesPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "timeline" && (condominios?.[0] ? <TimelinePage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "timeline-historico" && (condominios?.[0] ? <TimelineHistoricoPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
-          {currentSection === "timeline-dashboard" && (condominios?.[0] ? <TimelineDashboardPage condominioId={condominios[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "historico" && (obras?.[0] ? <HistoricoAtividadesPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline" && (obras?.[0] ? <TimelinePage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline-historico" && (obras?.[0] ? <TimelineHistoricoPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
+          {currentSection === "timeline-dashboard" && (obras?.[0] ? <TimelineDashboardPage obraId={obras[0].id} /> : <SemOrganizacaoMessage />)}
         </div>
       </main>
 
@@ -925,7 +925,7 @@ export default function Dashboard() {
             {/* Header */}
             <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <img src="/logo-manutencao.png" alt="App Manutenção" className="w-8 h-8 object-contain" />
+                <img src="/logo-appobras.png" alt="AppObras" className="w-8 h-8 object-contain" />
                 <span className="font-bold text-lg">Menu</span>
               </div>
               <button
@@ -940,7 +940,7 @@ export default function Dashboard() {
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Funções Rápidas</p>
-                <QuickFunctionsEditor onSave={refreshQuickFunctions} triggerClassName="text-muted-foreground" condominioId={condominioId} />
+                <QuickFunctionsEditor onSave={refreshQuickFunctions} triggerClassName="text-muted-foreground" obraId={obraId} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {funcoesRapidas && funcoesRapidas.length > 0 ? (
@@ -1082,25 +1082,25 @@ export default function Dashboard() {
       <TarefasSimplesModal
         open={showVistoriaRapida}
         onOpenChange={setShowVistoriaRapida}
-        condominioId={condominios?.[0]?.id || 0}
+        obraId={obras?.[0]?.id || 0}
         tipoInicial="vistoria"
         onSuccess={() => {
           toast.success("Vistoria registrada com sucesso!");
         }}
       />
       <TarefasSimplesModal
-        open={showManutencaoRapida}
-        onOpenChange={setShowManutencaoRapida}
-        condominioId={condominios?.[0]?.id || 0}
-        tipoInicial="manutencao"
+        open={showObraRapida}
+        onOpenChange={setShowObraRapida}
+        obraId={obras?.[0]?.id || 0}
+        tipoInicial="obra"
         onSuccess={() => {
-          toast.success("Manutenção registrada com sucesso!");
+          toast.success("Obra registrada com sucesso!");
         }}
       />
       <TarefasSimplesModal
         open={showOcorrenciaRapida}
         onOpenChange={setShowOcorrenciaRapida}
-        condominioId={condominios?.[0]?.id || 0}
+        obraId={obras?.[0]?.id || 0}
         tipoInicial="ocorrencia"
         onSuccess={() => {
           toast.success("Ocorrência registrada com sucesso!");
@@ -1109,7 +1109,7 @@ export default function Dashboard() {
       <TarefasSimplesModal
         open={showAntesDepoisRapido}
         onOpenChange={setShowAntesDepoisRapido}
-        condominioId={condominios?.[0]?.id || 0}
+        obraId={obras?.[0]?.id || 0}
         tipoInicial="antes_depois"
         onSuccess={() => {
           toast.success("Antes/Depois registrado com sucesso!");
@@ -1136,18 +1136,18 @@ function OverviewSection({ user }: { user: any }) {
   });
   
   const { data: favoritosData } = trpc.favorito.list.useQuery({});
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   // Query para apps da organização
   const { data: appsData } = trpc.apps.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
@@ -1335,7 +1335,7 @@ function OverviewSection({ user }: { user: any }) {
           </CardContent>
         </Card>
 
-        {/* Card Livro de Manutenção */}
+        {/* Card Livro de Obra */}
         <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30">
           <CardContent className="p-6">
             <div className="flex items-start justify-between mb-4">
@@ -1344,7 +1344,7 @@ function OverviewSection({ user }: { user: any }) {
               </div>
               <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">0</span>
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">Livro de Manutenção</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Livro de Obra</h3>
             <p className="text-sm text-muted-foreground mb-4">Livros interativos com funcionalidades</p>
             <Link href="/dashboard/revistas">
               <button className="w-full py-2.5 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-md shadow-purple-500/25 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 flex items-center justify-center gap-2">
@@ -1487,7 +1487,7 @@ function OverviewSection({ user }: { user: any }) {
         <CardContent>
           <div className="space-y-4">
             {[
-              { step: 1, title: "Cadastre sua Organização", description: "Adicione nome, endereço e logo", done: false, path: "/dashboard/condominio" },
+              { step: 1, title: "Cadastre sua Organização", description: "Adicione nome, endereço e logo", done: false, path: "/dashboard/obra" },
               { step: 2, title: "Adicione sua Equipe", description: "Cadastre os membros da equipe de gestão", done: false, path: "/dashboard/equipe" },
               { step: 3, title: "Crie sua Primeira Vistoria", description: "Registre uma vistoria técnica", done: false, path: "/dashboard/vistorias" },
               { step: 4, title: "Registre Manutenções", description: "Adicione manutenções preventivas ou corretivas", done: false, path: "/dashboard/manutencoes" },
@@ -1576,20 +1576,20 @@ function RevistasSection() {
     generatePDF.mutate({ id: revistaId });
   };
 
-  // Get condominios
-  const { data: condominios, isLoading: condominiosLoading } = trpc.condominio.list.useQuery();
+  // Get obras
+  const { data: obras, isLoading: obrasLoading } = trpc.obra.list.useQuery();
   
-  // Get revistas for first condominio (if exists)
-  const condominioId = condominios?.[0]?.id || 0;
+  // Get revistas for first obra (if exists)
+  const obraId = obras?.[0]?.id || 0;
   const { data: revistas, isLoading: revistasLoading } = trpc.revista.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
   
-  // Get apps for first condominio (if exists)
+  // Get apps for first obra (if exists)
   const { data: appsData, isLoading: appsLoading } = trpc.apps.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const [deleteAppConfirmId, setDeleteAppConfirmId] = useState<number | null>(null);
@@ -1651,15 +1651,15 @@ function RevistasSection() {
       toast.error("O título do projeto é obrigatório");
       return;
     }
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Cadastre uma organização primeiro");
       return;
     }
-    createRevistaMutation.mutate({ condominioId, ...formData });
+    createRevistaMutation.mutate({ obraId, ...formData });
   };
 
-  const isLoading = condominiosLoading || revistasLoading || appsLoading;
-  const hasCondominios = condominios && condominios.length > 0;
+  const isLoading = obrasLoading || revistasLoading || appsLoading;
+  const hasObras = obras && obras.length > 0;
   const hasRevistas = revistas && revistas.length > 0;
   const hasApps = appsData && appsData.length > 0;
   const hasProjetos = hasRevistas || hasApps;
@@ -1945,8 +1945,8 @@ function RevistasSection() {
                   <p className="text-xs text-blue-400 font-medium">apps</p>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">App de Manutenção</h3>
-              <p className="text-sm text-slate-500 mb-6 leading-relaxed">Crie seu app de manutenção personalizado</p>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">App de Obra</h3>
+              <p className="text-sm text-slate-500 mb-6 leading-relaxed">Crie seu app de obra personalizado</p>
               <Link href="/dashboard/apps/novo">
                 <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25 font-semibold py-3 h-auto">
                   <Plus className="h-5 w-5 mr-2" />
@@ -2143,13 +2143,13 @@ function RevistasSection() {
         </DialogContent>
       </Dialog>
 
-      {/* Assistente de Criação removido - sistema focado em manutenção */}
+      {/* Assistente de Criação removido - sistema focado em obra */}
     </div>
   );
 }
 
-// Condominio Section
-function CondominioSection() {
+// Obra Section
+function ObraSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
@@ -2161,13 +2161,13 @@ function CondominioSection() {
     capaUrl: "",
   });
 
-  const { data: condominios, isLoading } = trpc.condominio.list.useQuery();
+  const { data: obras, isLoading } = trpc.obra.list.useQuery();
   const utils = trpc.useUtils();
 
-  const createMutation = trpc.condominio.create.useMutation({
+  const createMutation = trpc.obra.create.useMutation({
     onSuccess: () => {
       toast.success("Organização cadastrada com sucesso!");
-      utils.condominio.list.invalidate();
+      utils.obra.list.invalidate();
       setIsDialogOpen(false);
       setFormData({ nome: "", endereco: "", cidade: "", estado: "", logoUrl: "", bannerUrl: "", capaUrl: "" });
     },
@@ -2185,16 +2185,16 @@ function CondominioSection() {
     createMutation.mutate(formData);
   };
 
-  const hasCondominios = condominios && condominios.length > 0;
+  const hasObras = obras && obras.length > 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-serif font-bold text-foreground">Cadastro de Locais e Itens</h1>
-          <p className="text-muted-foreground">Gerencie locais e itens para manutenção</p>
+          <p className="text-muted-foreground">Gerencie locais e itens para obra</p>
         </div>
-        {hasCondominios && (
+        {hasObras && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="btn-magazine">
@@ -2287,7 +2287,7 @@ function CondominioSection() {
                         <ImageUpload
                           value={formData.logoUrl || undefined}
                           onChange={(url) => setFormData({ ...formData, logoUrl: url || "" })}
-                          folder="condominios/logos"
+                          folder="obras/logos"
                           aspectRatio="square"
                           placeholder="+"
                           className="w-full h-full"
@@ -2304,7 +2304,7 @@ function CondominioSection() {
                         <ImageUpload
                           value={formData.bannerUrl || undefined}
                           onChange={(url) => setFormData({ ...formData, bannerUrl: url || "" })}
-                          folder="condominios/banners"
+                          folder="obras/banners"
                           aspectRatio="square"
                           placeholder="+"
                           className="w-full h-full"
@@ -2321,7 +2321,7 @@ function CondominioSection() {
                         <ImageUpload
                           value={formData.capaUrl || undefined}
                           onChange={(url) => setFormData({ ...formData, capaUrl: url || "" })}
-                          folder="condominios/capas"
+                          folder="obras/capas"
                           aspectRatio="square"
                           placeholder="+"
                           className="w-full h-full"
@@ -2359,9 +2359,9 @@ function CondominioSection() {
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
-      ) : hasCondominios ? (
+      ) : hasObras ? (
         <div className="grid md:grid-cols-2 gap-6">
-          {condominios.map((condo) => (
+          {obras.map((condo) => (
             <Card key={condo.id}>
               <CardHeader>
                 <CardTitle className="font-serif">{condo.nome}</CardTitle>
@@ -2372,7 +2372,7 @@ function CondominioSection() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href={`/condominio/${condo.id}`}>
+                <Link href={`/obra/${condo.id}`}>
                   <Button variant="outline" className="w-full">
                     <Settings className="w-4 h-4 mr-2" />
                     Gerenciar
@@ -2484,7 +2484,7 @@ function CondominioSection() {
                           <ImageUpload
                             value={formData.logoUrl || undefined}
                             onChange={(url) => setFormData({ ...formData, logoUrl: url || "" })}
-                            folder="condominios/logos"
+                            folder="obras/logos"
                             aspectRatio="square"
                             placeholder="+"
                             className="w-full h-full"
@@ -2501,7 +2501,7 @@ function CondominioSection() {
                           <ImageUpload
                             value={formData.bannerUrl || undefined}
                             onChange={(url) => setFormData({ ...formData, bannerUrl: url || "" })}
-                            folder="condominios/banners"
+                            folder="obras/banners"
                             aspectRatio="square"
                             placeholder="+"
                             className="w-full h-full"
@@ -2518,7 +2518,7 @@ function CondominioSection() {
                           <ImageUpload
                             value={formData.capaUrl || undefined}
                             onChange={(url) => setFormData({ ...formData, capaUrl: url || "" })}
-                            folder="condominios/capas"
+                            folder="obras/capas"
                             aspectRatio="square"
                             placeholder="+"
                             className="w-full h-full"
@@ -2556,16 +2556,16 @@ function CondominioSection() {
   );
 }
 
-function MoradoresSection() {
-  const [showMoradorDialog, setShowMoradorDialog] = useState(false);
+function ColaboradoresSection() {
+  const [showColaboradorDialog, setShowColaboradorDialog] = useState(false);
   const [showExcelDialog, setShowExcelDialog] = useState(false);
   const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
-  const [editingMorador, setEditingMorador] = useState<any>(null);
+  const [editingColaborador, setEditingColaborador] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [excelData, setExcelData] = useState<any[]>([]);
   const [isProcessingExcel, setIsProcessingExcel] = useState(false);
-  const [selectedMoradores, setSelectedMoradores] = useState<number[]>([]);
-  const [moradorForm, setMoradorForm] = useState({
+  const [selectedColaboradores, setSelectedColaboradores] = useState<number[]>([]);
+  const [colaboradorForm, setColaboradorForm] = useState({
     nome: "",
     email: "",
     telefone: "",
@@ -2578,54 +2578,54 @@ function MoradoresSection() {
     observacoes: "",
   });
 
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
-  const { data: moradores, isLoading, refetch } = trpc.morador.list.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+  const { data: colaboradores, isLoading, refetch } = trpc.colaborador.list.useQuery(
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
 
-  const createMorador = trpc.morador.create.useMutation({
+  const createColaborador = trpc.colaborador.create.useMutation({
     onSuccess: () => {
-      toast.success("Morador cadastrado com sucesso!");
-      setShowMoradorDialog(false);
+      toast.success("Colaborador cadastrado com sucesso!");
+      setShowColaboradorDialog(false);
       resetForm();
       refetch();
     },
     onError: (error) => {
-      toast.error("Erro ao cadastrar morador: " + error.message);
+      toast.error("Erro ao cadastrar colaborador: " + error.message);
     },
   });
 
-  const updateMorador = trpc.morador.update.useMutation({
+  const updateColaborador = trpc.colaborador.update.useMutation({
     onSuccess: () => {
-      toast.success("Morador atualizado com sucesso!");
-      setShowMoradorDialog(false);
-      setEditingMorador(null);
+      toast.success("Colaborador atualizado com sucesso!");
+      setShowColaboradorDialog(false);
+      setEditingColaborador(null);
       resetForm();
       refetch();
     },
     onError: (error) => {
-      toast.error("Erro ao atualizar morador: " + error.message);
+      toast.error("Erro ao atualizar colaborador: " + error.message);
     },
   });
 
-  const deleteMorador = trpc.morador.delete.useMutation({
+  const deleteColaborador = trpc.colaborador.delete.useMutation({
     onSuccess: () => {
-      toast.success("Morador removido com sucesso!");
+      toast.success("Colaborador removido com sucesso!");
       refetch();
     },
     onError: (error: any) => {
-      toast.error("Erro ao remover morador: " + error.message);
+      toast.error("Erro ao remover colaborador: " + error.message);
     },
   });
 
   // Mutations para bloqueio de votação
   // @ts-ignore
-  const bloquearVotacao = (trpc.morador as any).bloquearVotacao.useMutation({
+  const bloquearVotacao = (trpc.colaborador as any).bloquearVotacao.useMutation({
     onSuccess: () => {
-      toast.success("Morador bloqueado para votação");
+      toast.success("Colaborador bloqueado para votação");
       refetch();
     },
     onError: (error: any) => {
@@ -2634,9 +2634,9 @@ function MoradoresSection() {
   });
 
   // @ts-ignore
-  const desbloquearVotacao = (trpc.morador as any).desbloquearVotacao.useMutation({
+  const desbloquearVotacao = (trpc.colaborador as any).desbloquearVotacao.useMutation({
     onSuccess: () => {
-      toast.success("Morador desbloqueado para votação");
+      toast.success("Colaborador desbloqueado para votação");
       refetch();
     },
     onError: (error: any) => {
@@ -2645,10 +2645,10 @@ function MoradoresSection() {
   });
 
   // @ts-ignore
-  const bloquearEmMassa = (trpc.morador as any).bloquearVotacaoEmMassa.useMutation({
+  const bloquearEmMassa = (trpc.colaborador as any).bloquearVotacaoEmMassa.useMutation({
     onSuccess: (data: any) => {
-      toast.success(`${data.count} moradores bloqueados para votação`);
-      setSelectedMoradores([]);
+      toast.success(`${data.count} colaboradores bloqueados para votação`);
+      setSelectedColaboradores([]);
       refetch();
     },
     onError: (error: any) => {
@@ -2657,10 +2657,10 @@ function MoradoresSection() {
   });
 
   // @ts-ignore
-  const desbloquearEmMassa = (trpc.morador as any).desbloquearVotacaoEmMassa.useMutation({
+  const desbloquearEmMassa = (trpc.colaborador as any).desbloquearVotacaoEmMassa.useMutation({
     onSuccess: (data: any) => {
-      toast.success(`${data.count} moradores desbloqueados para votação`);
-      setSelectedMoradores([]);
+      toast.success(`${data.count} colaboradores desbloqueados para votação`);
+      setSelectedColaboradores([]);
       refetch();
     },
     onError: (error: any) => {
@@ -2669,20 +2669,20 @@ function MoradoresSection() {
   });
 
   // @ts-ignore - Método existe no backend
-  const createBatch = (trpc.morador as any).createBatch.useMutation({
+  const createBatch = (trpc.colaborador as any).createBatch.useMutation({
     onSuccess: (data: any) => {
-      toast.success(`${data.count} moradores cadastrados com sucesso!`);
+      toast.success(`${data.count} colaboradores cadastrados com sucesso!`);
       setShowExcelDialog(false);
       setExcelData([]);
       refetch();
     },
     onError: (error: any) => {
-      toast.error("Erro ao cadastrar moradores: " + error.message);
+      toast.error("Erro ao cadastrar colaboradores: " + error.message);
     },
   });
 
   // @ts-ignore - O método existe mas o TypeScript não reconhece ainda
-  const generateToken = (trpc.condominio as any).generateCadastroToken.useMutation({
+  const generateToken = (trpc.obra as any).generateCadastroToken.useMutation({
     onSuccess: () => {
       toast.success("Token de cadastro gerado com sucesso!");
     },
@@ -2691,10 +2691,10 @@ function MoradoresSection() {
     },
   });
 
-  // Buscar condomínio completo para obter o token
-  const { data: condominioData, refetch: refetchCondominio } = trpc.condominio.get.useQuery(
-    { id: condominioId || 0 },
-    { enabled: !!condominioId }
+  // Buscar obra completo para obter o token
+  const { data: obraData, refetch: refetchObra } = trpc.obra.get.useQuery(
+    { id: obraId || 0 },
+    { enabled: !!obraId }
   );
 
   const handleExcelUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2764,7 +2764,7 @@ function MoradoresSection() {
       }
 
       setExcelData(data);
-      toast.success(`${data.length} moradores encontrados no arquivo`);
+      toast.success(`${data.length} colaboradores encontrados no arquivo`);
     } catch (error) {
       toast.error("Erro ao processar arquivo");
     }
@@ -2772,36 +2772,36 @@ function MoradoresSection() {
   };
 
   const handleBatchSubmit = () => {
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Você precisa cadastrar uma organização primeiro");
       return;
     }
     if (excelData.length === 0) {
-      toast.error("Nenhum morador para cadastrar");
+      toast.error("Nenhum colaborador para cadastrar");
       return;
     }
     createBatch.mutate({
-      condominioId,
-      moradores: excelData,
+      obraId,
+      colaboradores: excelData,
     });
   };
 
   const handleGenerateQRCode = async () => {
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Você precisa cadastrar uma organização primeiro");
       return;
     }
-    await generateToken.mutateAsync({ id: condominioId });
-    await refetchCondominio();
+    await generateToken.mutateAsync({ id: obraId });
+    await refetchObra();
     setShowQRCodeDialog(true);
   };
 
-  const cadastroUrl = (condominioData as any)?.cadastroToken 
-    ? `${window.location.origin}/cadastro/${(condominioData as any).cadastroToken}`
+  const cadastroUrl = (obraData as any)?.cadastroToken 
+    ? `${window.location.origin}/cadastro/${(obraData as any).cadastroToken}`
     : null;
 
   const resetForm = () => {
-    setMoradorForm({
+    setColaboradorForm({
       nome: "",
       email: "",
       telefone: "",
@@ -2816,70 +2816,70 @@ function MoradoresSection() {
   };
 
   const handleSubmit = () => {
-    if (!moradorForm.nome.trim()) {
+    if (!colaboradorForm.nome.trim()) {
       toast.error("O nome é obrigatório");
       return;
     }
-    if (!moradorForm.apartamento.trim()) {
+    if (!colaboradorForm.apartamento.trim()) {
       toast.error("O apartamento é obrigatório");
       return;
     }
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Você precisa cadastrar uma organização primeiro");
       return;
     }
 
-    if (editingMorador) {
-      updateMorador.mutate({
-        id: editingMorador.id,
-        nome: moradorForm.nome,
-        email: moradorForm.email || undefined,
-        telefone: moradorForm.telefone || undefined,
-        celular: moradorForm.celular || undefined,
-        apartamento: moradorForm.apartamento,
-        bloco: moradorForm.bloco || undefined,
-        andar: moradorForm.andar || undefined,
-        tipo: moradorForm.tipo,
-        cpf: moradorForm.cpf || undefined,
-        observacoes: moradorForm.observacoes || undefined,
+    if (editingColaborador) {
+      updateColaborador.mutate({
+        id: editingColaborador.id,
+        nome: colaboradorForm.nome,
+        email: colaboradorForm.email || undefined,
+        telefone: colaboradorForm.telefone || undefined,
+        celular: colaboradorForm.celular || undefined,
+        apartamento: colaboradorForm.apartamento,
+        bloco: colaboradorForm.bloco || undefined,
+        andar: colaboradorForm.andar || undefined,
+        tipo: colaboradorForm.tipo,
+        cpf: colaboradorForm.cpf || undefined,
+        observacoes: colaboradorForm.observacoes || undefined,
       });
     } else {
-      createMorador.mutate({
-        condominioId,
-        nome: moradorForm.nome,
-        email: moradorForm.email || undefined,
-        telefone: moradorForm.telefone || undefined,
-        celular: moradorForm.celular || undefined,
-        apartamento: moradorForm.apartamento,
-        bloco: moradorForm.bloco || undefined,
-        andar: moradorForm.andar || undefined,
-        tipo: moradorForm.tipo,
-        cpf: moradorForm.cpf || undefined,
-        observacoes: moradorForm.observacoes || undefined,
+      createColaborador.mutate({
+        obraId,
+        nome: colaboradorForm.nome,
+        email: colaboradorForm.email || undefined,
+        telefone: colaboradorForm.telefone || undefined,
+        celular: colaboradorForm.celular || undefined,
+        apartamento: colaboradorForm.apartamento,
+        bloco: colaboradorForm.bloco || undefined,
+        andar: colaboradorForm.andar || undefined,
+        tipo: colaboradorForm.tipo,
+        cpf: colaboradorForm.cpf || undefined,
+        observacoes: colaboradorForm.observacoes || undefined,
       });
     }
   };
 
-  const handleEdit = (morador: any) => {
-    setEditingMorador(morador);
-    setMoradorForm({
-      nome: morador.nome,
-      email: morador.email || "",
-      telefone: morador.telefone || "",
-      celular: morador.celular || "",
-      apartamento: morador.apartamento,
-      bloco: morador.bloco || "",
-      andar: morador.andar || "",
-      tipo: morador.tipo || "proprietario",
-      cpf: morador.cpf || "",
-      observacoes: morador.observacoes || "",
+  const handleEdit = (colaborador: any) => {
+    setEditingColaborador(colaborador);
+    setColaboradorForm({
+      nome: colaborador.nome,
+      email: colaborador.email || "",
+      telefone: colaborador.telefone || "",
+      celular: colaborador.celular || "",
+      apartamento: colaborador.apartamento,
+      bloco: colaborador.bloco || "",
+      andar: colaborador.andar || "",
+      tipo: colaborador.tipo || "proprietario",
+      cpf: colaborador.cpf || "",
+      observacoes: colaborador.observacoes || "",
     });
-    setShowMoradorDialog(true);
+    setShowColaboradorDialog(true);
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Tem certeza que deseja remover este morador?")) {
-      deleteMorador.mutate({ id });
+    if (confirm("Tem certeza que deseja remover este colaborador?")) {
+      deleteColaborador.mutate({ id });
     }
   };
 
@@ -2894,35 +2894,35 @@ function MoradoresSection() {
       case "funcionario":
         return { label: "Funcionário", color: "bg-amber-100 text-amber-800 border-amber-200" };
       default:
-        return { label: "Morador", color: "bg-gray-100 text-gray-800 border-gray-200" };
+        return { label: "Colaborador", color: "bg-gray-100 text-gray-800 border-gray-200" };
     }
   };
 
-  // Filtrar moradores pela busca
-  const filteredMoradores = moradores?.filter((morador) => {
+  // Filtrar colaboradores pela busca
+  const filteredColaboradores = colaboradores?.filter((colaborador) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
-      morador.nome.toLowerCase().includes(query) ||
-      morador.apartamento.toLowerCase().includes(query) ||
-      (morador.bloco && morador.bloco.toLowerCase().includes(query)) ||
-      (morador.email && morador.email.toLowerCase().includes(query))
+      colaborador.nome.toLowerCase().includes(query) ||
+      colaborador.apartamento.toLowerCase().includes(query) ||
+      (colaborador.bloco && colaborador.bloco.toLowerCase().includes(query)) ||
+      (colaborador.email && colaborador.email.toLowerCase().includes(query))
     );
   });
 
-  // Agrupar moradores por bloco
-  const moradoresPorBloco = filteredMoradores?.reduce((acc, morador) => {
-    const bloco = morador.bloco || "Sem Bloco";
+  // Agrupar colaboradores por bloco
+  const colaboradoresPorBloco = filteredColaboradores?.reduce((acc, colaborador) => {
+    const bloco = colaborador.bloco || "Sem Bloco";
     if (!acc[bloco]) acc[bloco] = [];
-    acc[bloco].push(morador);
+    acc[bloco].push(colaborador);
     return acc;
-  }, {} as Record<string, typeof filteredMoradores>);
+  }, {} as Record<string, typeof filteredColaboradores>);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-foreground">Moradores</h1>
+          <h1 className="text-2xl font-serif font-bold text-foreground">Colaboradores</h1>
           <p className="text-muted-foreground">Gerencie a equipa da organização</p>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -2930,7 +2930,7 @@ function MoradoresSection() {
           <Button 
             onClick={handleGenerateQRCode}
             className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-md"
-            disabled={!condominioId || generateToken.isPending}
+            disabled={!obraId || generateToken.isPending}
           >
             {generateToken.isPending ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -2944,23 +2944,23 @@ function MoradoresSection() {
           <Button 
             variant="outline" 
             onClick={() => setShowExcelDialog(true)}
-            disabled={!condominioId}
+            disabled={!obraId}
           >
             <FileSpreadsheet className="w-4 h-4 mr-2" />
             Importar Excel
           </Button>
           
-          <Dialog open={showMoradorDialog} onOpenChange={(open) => {
-            setShowMoradorDialog(open);
+          <Dialog open={showColaboradorDialog} onOpenChange={(open) => {
+            setShowColaboradorDialog(open);
             if (!open) {
-              setEditingMorador(null);
+              setEditingColaborador(null);
               resetForm();
             }
           }}>
             <DialogTrigger asChild>
               <Button className="btn-magazine">
                 <Plus className="w-4 h-4 mr-2" />
-                Adicionar Morador
+                Adicionar Colaborador
               </Button>
             </DialogTrigger>
           <DialogContent className="w-[92vw] max-w-md max-h-[90vh] overflow-hidden p-0">
@@ -2970,10 +2970,10 @@ function MoradoresSection() {
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                     <Users className="w-5 h-5 text-white" />
                   </div>
-                  {editingMorador ? "Editar Morador" : "Novo Morador"}
+                  {editingColaborador ? "Editar Colaborador" : "Novo Colaborador"}
                 </DialogTitle>
                 <DialogDescription className="text-indigo-100">
-                  {editingMorador ? "Atualize as informações do morador" : "Cadastre um novo morador da organização"}
+                  {editingColaborador ? "Atualize as informações do colaborador" : "Cadastre um novo colaborador da organização"}
                 </DialogDescription>
               </DialogHeader>
             </div>
@@ -2983,8 +2983,8 @@ function MoradoresSection() {
                   <Label htmlFor="nome">Nome Completo *</Label>
                   <Input
                     id="nome"
-                    value={moradorForm.nome}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, nome: e.target.value })}
+                    value={colaboradorForm.nome}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, nome: e.target.value })}
                     placeholder="Ex: João da Silva"
                   />
                 </div>
@@ -2992,8 +2992,8 @@ function MoradoresSection() {
                   <Label htmlFor="apartamento">Apartamento *</Label>
                   <Input
                     id="apartamento"
-                    value={moradorForm.apartamento}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, apartamento: e.target.value })}
+                    value={colaboradorForm.apartamento}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, apartamento: e.target.value })}
                     placeholder="Ex: 101"
                   />
                 </div>
@@ -3001,8 +3001,8 @@ function MoradoresSection() {
                   <Label htmlFor="bloco">Bloco/Torre</Label>
                   <Input
                     id="bloco"
-                    value={moradorForm.bloco}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, bloco: e.target.value })}
+                    value={colaboradorForm.bloco}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, bloco: e.target.value })}
                     placeholder="Ex: A, B, Torre 1"
                   />
                 </div>
@@ -3010,17 +3010,17 @@ function MoradoresSection() {
                   <Label htmlFor="andar">Andar</Label>
                   <Input
                     id="andar"
-                    value={moradorForm.andar}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, andar: e.target.value })}
+                    value={colaboradorForm.andar}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, andar: e.target.value })}
                     placeholder="Ex: 1º, 2º, Térreo"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tipo">Tipo</Label>
                   <Select
-                    value={moradorForm.tipo}
+                    value={colaboradorForm.tipo}
                     onValueChange={(value: "proprietario" | "inquilino" | "familiar" | "funcionario") => 
-                      setMoradorForm({ ...moradorForm, tipo: value })
+                      setColaboradorForm({ ...colaboradorForm, tipo: value })
                     }
                   >
                     <SelectTrigger>
@@ -3039,8 +3039,8 @@ function MoradoresSection() {
                   <Input
                     id="email"
                     type="email"
-                    value={moradorForm.email}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, email: e.target.value })}
+                    value={colaboradorForm.email}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, email: e.target.value })}
                     placeholder="Ex: joao@email.com"
                   />
                 </div>
@@ -3048,8 +3048,8 @@ function MoradoresSection() {
                   <Label htmlFor="telefone">Telefone Fixo</Label>
                   <Input
                     id="telefone"
-                    value={moradorForm.telefone}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, telefone: e.target.value })}
+                    value={colaboradorForm.telefone}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, telefone: e.target.value })}
                     placeholder="Ex: (11) 3333-4444"
                   />
                 </div>
@@ -3057,8 +3057,8 @@ function MoradoresSection() {
                   <Label htmlFor="celular">Celular</Label>
                   <Input
                     id="celular"
-                    value={moradorForm.celular}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, celular: e.target.value })}
+                    value={colaboradorForm.celular}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, celular: e.target.value })}
                     placeholder="Ex: (11) 99999-8888"
                   />
                 </div>
@@ -3066,8 +3066,8 @@ function MoradoresSection() {
                   <Label htmlFor="cpf">CPF</Label>
                   <Input
                     id="cpf"
-                    value={moradorForm.cpf}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, cpf: e.target.value })}
+                    value={colaboradorForm.cpf}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, cpf: e.target.value })}
                     placeholder="Ex: 123.456.789-00"
                   />
                 </div>
@@ -3075,9 +3075,9 @@ function MoradoresSection() {
                   <Label htmlFor="observacoes">Observações</Label>
                   <Textarea
                     id="observacoes"
-                    value={moradorForm.observacoes}
-                    onChange={(e) => setMoradorForm({ ...moradorForm, observacoes: e.target.value })}
-                    placeholder="Informações adicionais sobre o morador..."
+                    value={colaboradorForm.observacoes}
+                    onChange={(e) => setColaboradorForm({ ...colaboradorForm, observacoes: e.target.value })}
+                    placeholder="Informações adicionais sobre o colaborador..."
                     rows={3}
                   />
                 </div>
@@ -3085,8 +3085,8 @@ function MoradoresSection() {
             </div>
             <div className="flex justify-end gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-900 border-t">
               <Button variant="outline" onClick={() => {
-                setShowMoradorDialog(false);
-                setEditingMorador(null);
+                setShowColaboradorDialog(false);
+                setEditingColaborador(null);
                 resetForm();
               }}>
                 Cancelar
@@ -3094,13 +3094,13 @@ function MoradoresSection() {
               <Button 
                 className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white" 
                 onClick={handleSubmit}
-                disabled={createMorador.isPending || updateMorador.isPending}
+                disabled={createColaborador.isPending || updateColaborador.isPending}
               >
-                {(createMorador.isPending || updateMorador.isPending) && (
+                {(createColaborador.isPending || updateColaborador.isPending) && (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 )}
                 <Save className="w-4 h-4 mr-2" />
-                {editingMorador ? "Salvar Alterações" : "Cadastrar Morador"}
+                {editingColaborador ? "Salvar Alterações" : "Cadastrar Colaborador"}
               </Button>
             </div>
           </DialogContent>
@@ -3117,7 +3117,7 @@ function MoradoresSection() {
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                   <FileSpreadsheet className="w-5 h-5 text-white" />
                 </div>
-                Importar Moradores via Excel
+                Importar Colaboradores via Excel
               </DialogTitle>
               <DialogDescription className="text-emerald-100">
                 Faça upload de um arquivo CSV ou Excel com os dados da equipa
@@ -3171,7 +3171,7 @@ function MoradoresSection() {
             {excelData.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium">{excelData.length} moradores encontrados</h4>
+                  <h4 className="font-medium">{excelData.length} colaboradores encontrados</h4>
                   <Button variant="ghost" size="sm" onClick={() => setExcelData([])}>
                     <X className="w-4 h-4 mr-1" />
                     Limpar
@@ -3199,7 +3199,7 @@ function MoradoresSection() {
                       {excelData.length > 10 && (
                         <tr className="border-t bg-muted">
                           <td colSpan={4} className="p-2 text-center text-muted-foreground">
-                            ... e mais {excelData.length - 10} moradores
+                            ... e mais {excelData.length - 10} colaboradores
                           </td>
                         </tr>
                       )}
@@ -3222,7 +3222,7 @@ function MoradoresSection() {
                 ) : (
                   <Check className="w-4 h-4 mr-2" />
                 )}
-                Cadastrar {excelData.length} Moradores
+                Cadastrar {excelData.length} Colaboradores
               </Button>
             </div>
           </div>
@@ -3257,8 +3257,8 @@ function MoradoresSection() {
                       className="w-full h-full"
                     />
                   </div>
-                  <p className="text-sm font-medium text-foreground mb-1">{condominioData?.nome}</p>
-                  <p className="text-xs text-muted-foreground">Cadastro de Moradores</p>
+                  <p className="text-sm font-medium text-foreground mb-1">{obraData?.nome}</p>
+                  <p className="text-xs text-muted-foreground">Cadastro de Colaboradores</p>
                 </div>
 
                 {/* Link */}
@@ -3287,7 +3287,7 @@ function MoradoresSection() {
                         <!DOCTYPE html>
                         <html>
                         <head>
-                          <title>Cadastro de Moradores - ${condominioData?.nome}</title>
+                          <title>Cadastro de Colaboradores - ${obraData?.nome}</title>
                           <style>
                             @page { size: A4; margin: 0; }
                             body { 
@@ -3370,8 +3370,8 @@ function MoradoresSection() {
                         </head>
                         <body>
                           <div class="container">
-                            <div class="logo">${condominioData?.nome}</div>
-                            <div class="subtitle">Cadastro de Moradores</div>
+                            <div class="logo">${obraData?.nome}</div>
+                            <div class="subtitle">Cadastro de Colaboradores</div>
                             
                             <div class="qr-container">
                               <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cadastroUrl)}" alt="QR Code" />
@@ -3394,7 +3394,7 @@ function MoradoresSection() {
                             <div class="url">${cadastroUrl}</div>
                             
                             <div class="footer">
-                              Powered by App Manutenção
+                              Powered by AppObras
                             </div>
                           </div>
                         </body>
@@ -3420,7 +3420,7 @@ function MoradoresSection() {
       </Dialog>
 
       {/* Barra de busca e ações em massa */}
-      {condominioId && moradores && moradores.length > 0 && (
+      {obraId && colaboradores && colaboradores.length > 0 && (
         <div className="space-y-3">
           <div className="flex gap-4 flex-wrap">
             <div className="relative flex-1 max-w-md">
@@ -3433,7 +3433,7 @@ function MoradoresSection() {
               <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             </div>
             <div className="text-sm text-muted-foreground flex items-center">
-              {filteredMoradores?.length || 0} morador(es) encontrado(s)
+              {filteredColaboradores?.length || 0} colaborador(es) encontrado(s)
             </div>
           </div>
           
@@ -3442,12 +3442,12 @@ function MoradoresSection() {
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={selectedMoradores.length === filteredMoradores?.length && filteredMoradores.length > 0}
+                checked={selectedColaboradores.length === filteredColaboradores?.length && filteredColaboradores.length > 0}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setSelectedMoradores(filteredMoradores?.map(m => m.id) || []);
+                    setSelectedColaboradores(filteredColaboradores?.map(m => m.id) || []);
                   } else {
-                    setSelectedMoradores([]);
+                    setSelectedColaboradores([]);
                   }
                 }}
                 className="w-4 h-4 rounded border-gray-300"
@@ -3455,17 +3455,17 @@ function MoradoresSection() {
               <span className="text-sm font-medium">Selecionar Todos</span>
             </div>
             
-            {selectedMoradores.length > 0 && (
+            {selectedColaboradores.length > 0 && (
               <>
                 <span className="text-sm text-muted-foreground">
-                  {selectedMoradores.length} selecionado(s)
+                  {selectedColaboradores.length} selecionado(s)
                 </span>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
                     className="text-red-600 border-red-200 hover:bg-red-50"
-                    onClick={() => bloquearEmMassa.mutate({ moradorIds: selectedMoradores })}
+                    onClick={() => bloquearEmMassa.mutate({ colaboradorIds: selectedColaboradores })}
                     disabled={bloquearEmMassa.isPending}
                   >
                     <Ban className="w-4 h-4 mr-1" />
@@ -3475,7 +3475,7 @@ function MoradoresSection() {
                     size="sm"
                     variant="outline"
                     className="text-green-600 border-green-200 hover:bg-green-50"
-                    onClick={() => desbloquearEmMassa.mutate({ moradorIds: selectedMoradores })}
+                    onClick={() => desbloquearEmMassa.mutate({ colaboradorIds: selectedColaboradores })}
                     disabled={desbloquearEmMassa.isPending}
                   >
                     <CheckCircle className="w-4 h-4 mr-1" />
@@ -3488,7 +3488,7 @@ function MoradoresSection() {
         </div>
       )}
 
-      {!condominioId ? (
+      {!obraId ? (
         <Card>
           <CardContent className="p-12 text-center">
             <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -3496,9 +3496,9 @@ function MoradoresSection() {
               Cadastre uma organização primeiro
             </h3>
             <p className="text-muted-foreground mb-4">
-              Você precisa cadastrar uma organização antes de adicionar moradores
+              Você precisa cadastrar uma organização antes de adicionar colaboradores
             </p>
-            <Link href="/dashboard/condominio">
+            <Link href="/dashboard/obra">
               <Button className="btn-magazine">
                 <Building2 className="w-4 h-4 mr-2" />
                 Ir para Organização
@@ -3510,25 +3510,25 @@ function MoradoresSection() {
         <Card>
           <CardContent className="p-12 text-center">
             <Loader2 className="w-12 h-12 text-primary mx-auto mb-4 animate-spin" />
-            <p className="text-muted-foreground">Carregando moradores...</p>
+            <p className="text-muted-foreground">Carregando colaboradores...</p>
           </CardContent>
         </Card>
-      ) : filteredMoradores && filteredMoradores.length > 0 ? (
+      ) : filteredColaboradores && filteredColaboradores.length > 0 ? (
         <div className="space-y-6">
-          {Object.entries(moradoresPorBloco || {}).sort().map(([bloco, moradoresDoBloco]) => (
+          {Object.entries(colaboradoresPorBloco || {}).sort().map(([bloco, colaboradoresDoBloco]) => (
             <div key={bloco}>
               <h2 className="font-serif text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-primary" />
                 {bloco}
-                <span className="text-sm font-normal text-muted-foreground">({moradoresDoBloco?.length || 0} moradores)</span>
+                <span className="text-sm font-normal text-muted-foreground">({colaboradoresDoBloco?.length || 0} colaboradores)</span>
               </h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {moradoresDoBloco?.map((morador) => {
-                  const tipoBadge = getTipoBadge(morador.tipo || "proprietario");
-                  const isSelected = selectedMoradores.includes(morador.id);
-                  const isBloqueado = (morador as any).bloqueadoVotacao;
+                {colaboradoresDoBloco?.map((colaborador) => {
+                  const tipoBadge = getTipoBadge(colaborador.tipo || "proprietario");
+                  const isSelected = selectedColaboradores.includes(colaborador.id);
+                  const isBloqueado = (colaborador as any).bloqueadoVotacao;
                   return (
-                    <Card key={morador.id} className={cn(
+                    <Card key={colaborador.id} className={cn(
                       "overflow-hidden hover:shadow-md transition-shadow",
                       isBloqueado && "border-red-200 bg-red-50/30"
                     )}>
@@ -3541,22 +3541,22 @@ function MoradoresSection() {
                               checked={isSelected}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setSelectedMoradores([...selectedMoradores, morador.id]);
+                                  setSelectedColaboradores([...selectedColaboradores, colaborador.id]);
                                 } else {
-                                  setSelectedMoradores(selectedMoradores.filter(id => id !== morador.id));
+                                  setSelectedColaboradores(selectedColaboradores.filter(id => id !== colaborador.id));
                                 }
                               }}
                               className="w-4 h-4 rounded border-gray-300"
                             />
                             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                               <span className="text-sm font-semibold text-primary">
-                                {morador.nome.charAt(0).toUpperCase()}
+                                {colaborador.nome.charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
-                              <h3 className="font-semibold text-foreground">{morador.nome}</h3>
+                              <h3 className="font-semibold text-foreground">{colaborador.nome}</h3>
                               <p className="text-sm text-muted-foreground">
-                                Apt. {morador.apartamento}{morador.andar ? ` - ${morador.andar}` : ""}
+                                Apt. {colaborador.apartamento}{colaborador.andar ? ` - ${colaborador.andar}` : ""}
                               </p>
                             </div>
                           </div>
@@ -3571,9 +3571,9 @@ function MoradoresSection() {
                               )}
                               onClick={() => {
                                 if (isBloqueado) {
-                                  desbloquearVotacao.mutate({ moradorId: morador.id });
+                                  desbloquearVotacao.mutate({ colaboradorId: colaborador.id });
                                 } else {
-                                  bloquearVotacao.mutate({ moradorId: morador.id });
+                                  bloquearVotacao.mutate({ colaboradorId: colaborador.id });
                                 }
                               }}
                               title={isBloqueado ? "Liberar para votação" : "Bloquear para votação"}
@@ -3584,7 +3584,7 @@ function MoradoresSection() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => handleEdit(morador)}
+                              onClick={() => handleEdit(colaborador)}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -3592,7 +3592,7 @@ function MoradoresSection() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => handleDelete(morador.id)}
+                              onClick={() => handleDelete(colaborador.id)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -3612,22 +3612,22 @@ function MoradoresSection() {
                           )}
                         </div>
                         <div className="space-y-1 text-sm">
-                          {morador.email && (
+                          {colaborador.email && (
                             <p className="text-muted-foreground flex items-center gap-2">
                               <span className="w-4">@</span>
-                              {morador.email}
+                              {colaborador.email}
                             </p>
                           )}
-                          {morador.celular && (
+                          {colaborador.celular && (
                             <p className="text-muted-foreground flex items-center gap-2">
                               <Phone className="w-4 h-4" />
-                              {morador.celular}
+                              {colaborador.celular}
                             </p>
                           )}
-                          {morador.telefone && !morador.celular && (
+                          {colaborador.telefone && !colaborador.celular && (
                             <p className="text-muted-foreground flex items-center gap-2">
                               <Phone className="w-4 h-4" />
-                              {morador.telefone}
+                              {colaborador.telefone}
                             </p>
                           )}
                         </div>
@@ -3644,15 +3644,15 @@ function MoradoresSection() {
           <CardContent className="p-12 text-center">
             <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
-              {searchQuery ? "Nenhum morador encontrado" : "Nenhum morador cadastrado"}
+              {searchQuery ? "Nenhum colaborador encontrado" : "Nenhum colaborador cadastrado"}
             </h3>
             <p className="text-muted-foreground mb-4">
               {searchQuery ? "Tente uma busca diferente" : "Adicione a equipa da sua organização"}
             </p>
             {!searchQuery && (
-              <Button className="btn-magazine" onClick={() => setShowMoradorDialog(true)}>
+              <Button className="btn-magazine" onClick={() => setShowColaboradorDialog(true)}>
                 <Plus className="w-4 h-4 mr-2" />
-                Adicionar Primeiro Morador
+                Adicionar Primeiro Colaborador
               </Button>
             )}
           </CardContent>
@@ -3679,23 +3679,23 @@ function FuncionariosSection() {
     telefone: "",
     email: "",
     fotoUrl: "",
-    tipoFuncionario: "auxiliar" as "zelador" | "porteiro" | "supervisor" | "gerente" | "auxiliar" | "sindico_externo",
+    tipoFuncionario: "auxiliar" as "zelador" | "porteiro" | "supervisor" | "gerente" | "auxiliar" | "engenheiro_externo",
   });
-  const [selectedCondominios, setSelectedCondominios] = useState<number[]>([]);
+  const [selectedObras, setSelectedObras] = useState<number[]>([]);
   const [selectedApps, setSelectedApps] = useState<number[]>([]);
 
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominios?.[0]?.id || 0 },
-    { enabled: !!condominios?.[0]?.id }
+    { obraId: obras?.[0]?.id || 0 },
+    { enabled: !!obras?.[0]?.id }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
   // Buscar apps disponíveis para vincular ao funcionário
-  const condominioIdAtual = condominios?.[0]?.id || 0;
+  const obraIdAtual = obras?.[0]?.id || 0;
   const { data: appsDisponiveis } = trpc.apps.list.useQuery(
-    { condominioId: condominioIdAtual },
-    { enabled: !!condominioIdAtual }
+    { obraId: obraIdAtual },
+    { enabled: !!obraIdAtual }
   );
 
   const { data: funcionarios, isLoading, refetch } = trpc.funcionario.list.useQuery(
@@ -3776,7 +3776,7 @@ function FuncionariosSection() {
       fotoUrl: "",
       tipoFuncionario: "auxiliar",
     });
-    setSelectedCondominios([]);
+    setSelectedObras([]);
     setSelectedApps([]);
   };
 
@@ -3804,7 +3804,7 @@ function FuncionariosSection() {
         email: formData.email || undefined,
         fotoUrl: formData.fotoUrl || undefined,
         tipoFuncionario: formData.tipoFuncionario,
-        condominiosIds: selectedCondominios.length > 0 ? selectedCondominios : undefined,
+        obrasIds: selectedObras.length > 0 ? selectedObras : undefined,
         appsIds: selectedApps.length > 0 ? selectedApps : undefined,
       });
     } else {
@@ -3817,7 +3817,7 @@ function FuncionariosSection() {
         email: formData.email || undefined,
         fotoUrl: formData.fotoUrl || undefined,
         tipoFuncionario: formData.tipoFuncionario,
-        condominiosIds: selectedCondominios.length > 0 ? selectedCondominios : undefined,
+        obrasIds: selectedObras.length > 0 ? selectedObras : undefined,
         appsIds: selectedApps.length > 0 ? selectedApps : undefined,
       });
     }
@@ -3834,8 +3834,8 @@ function FuncionariosSection() {
       fotoUrl: funcionario.fotoUrl || "",
       tipoFuncionario: funcionario.tipoFuncionario || "auxiliar",
     });
-    // TODO: Carregar condomínios e apps vinculados ao editar
-    setSelectedCondominios([]);
+    // TODO: Carregar obras e apps vinculados ao editar
+    setSelectedObras([]);
     setSelectedApps([]);
     setShowDialog(true);
   };
@@ -3846,7 +3846,7 @@ function FuncionariosSection() {
     }
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -3862,7 +3862,7 @@ function FuncionariosSection() {
             <p className="text-muted-foreground mb-4">
               Você precisa cadastrar uma organização antes de adicionar funcionários
             </p>
-            <Link href="/dashboard/condominio">
+            <Link href="/dashboard/obra">
               <Button className="btn-magazine">
                 <Building2 className="w-4 h-4 mr-2" />
                 Ir para Organização
@@ -3941,7 +3941,7 @@ function FuncionariosSection() {
                   id="departamento"
                   value={formData.departamento}
                   onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
-                  placeholder="Ex: Portaria, Limpeza, Manutenção"
+                  placeholder="Ex: Portaria, Limpeza, Obra"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -3980,30 +3980,30 @@ function FuncionariosSection() {
                   <option value="zelador">Zelador</option>
                   <option value="supervisor">Supervisor de Rota</option>
                   <option value="gerente">Gerente de Organização</option>
-                  <option value="sindico_externo">Síndico Externo</option>
+                  <option value="engenheiro_externo">Engenheiro Externo</option>
                 </select>
                 <p className="text-xs text-muted-foreground mt-1">
                   {formData.tipoFuncionario === "supervisor" && "Supervisor pode acessar múltiplas organizações"}
-                  {formData.tipoFuncionario === "gerente" && "Gerente tem acesso parcial definido pelo síndico"}
-                  {formData.tipoFuncionario === "sindico_externo" && "Síndico externo com acesso total aa organização"}
+                  {formData.tipoFuncionario === "gerente" && "Gerente tem acesso parcial definido pelo engenheiro"}
+                  {formData.tipoFuncionario === "engenheiro_externo" && "Engenheiro externo com acesso total aa organização"}
                 </p>
               </div>
               
-              {/* Seleção de Condomínios (para supervisores) */}
-              {formData.tipoFuncionario === "supervisor" && condominios && condominios.length > 1 && (
+              {/* Seleção de Obras (para supervisores) */}
+              {formData.tipoFuncionario === "supervisor" && obras && obras.length > 1 && (
                 <div>
                   <Label>Organizações que pode acessar</Label>
                   <div className="mt-2 space-y-2 max-h-32 overflow-y-auto border rounded-md p-2">
-                    {condominios.map((cond) => (
+                    {obras.map((cond) => (
                       <label key={cond.id} className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={selectedCondominios.includes(cond.id)}
+                          checked={selectedObras.includes(cond.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setSelectedCondominios([...selectedCondominios, cond.id]);
+                              setSelectedObras([...selectedObras, cond.id]);
                             } else {
-                              setSelectedCondominios(selectedCondominios.filter(id => id !== cond.id));
+                              setSelectedObras(selectedObras.filter(id => id !== cond.id));
                             }
                           }}
                           className="rounded border-gray-300"
@@ -4147,7 +4147,7 @@ function FuncionariosSection() {
                     { key: "vistorias", label: "Vistorias" },
                     { key: "antes_depois", label: "Antes e Depois" },
                     { key: "funcionarios", label: "Funcionários" },
-                    { key: "moradores", label: "Moradores" },
+                    { key: "colaboradores", label: "Colaboradores" },
                     { key: "avisos", label: "Avisos" },
                     { key: "comunicados", label: "Comunicados" },
                     { key: "eventos", label: "Eventos" },
@@ -4346,13 +4346,13 @@ function AvisosSection() {
     tipo: "informativo" as "informativo" | "importante" | "urgente",
   });
 
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
   // Buscar revistas da organização para associar avisos
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id;
   
@@ -4371,9 +4371,9 @@ function AvisosSection() {
       refetch();
       
       // Enviar notificação para todos a equipa
-      if (condominioId) {
+      if (obraId) {
         notifyAll.mutate({
-          condominioId,
+          obraId,
           tipo: "aviso",
           titulo: `Novo aviso: ${avisoForm.titulo}`,
           mensagem: avisoForm.conteudo || undefined,
@@ -4513,7 +4513,7 @@ function AvisosSection() {
                   id="titulo"
                   value={avisoForm.titulo}
                   onChange={(e) => setAvisoForm({ ...avisoForm, titulo: e.target.value })}
-                  placeholder="Ex: Manutenção da Piscina"
+                  placeholder="Ex: Obra da Piscina"
                 />
               </div>
               <div className="space-y-2">
@@ -4569,7 +4569,7 @@ function AvisosSection() {
         </Dialog>
       </div>
 
-      {!condominioId ? (
+      {!obraId ? (
         <Card>
           <CardContent className="p-12 text-center">
             <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -4579,7 +4579,7 @@ function AvisosSection() {
             <p className="text-muted-foreground mb-4">
               Você precisa cadastrar uma organização antes de criar avisos
             </p>
-            <Link href="/dashboard/condominio">
+            <Link href="/dashboard/obra">
               <Button className="btn-magazine">
                 <Building2 className="w-4 h-4 mr-2" />
                 Ir para Organização
@@ -4699,12 +4699,12 @@ function EventosSection() {
     lembreteAntecedencia: 1,
   });
 
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id;
   
@@ -4723,9 +4723,9 @@ function EventosSection() {
       refetch();
       
       // Enviar notificação para todos a equipa
-      if (condominioId) {
+      if (obraId) {
         notifyAll.mutate({
-          condominioId,
+          obraId,
           tipo: "evento",
           titulo: `Novo evento: ${eventoForm.titulo}`,
           mensagem: eventoForm.descricao || `Local: ${eventoForm.local}`,
@@ -4987,7 +4987,7 @@ function EventosSection() {
                   <Label className="text-amber-800 dark:text-amber-200 font-medium">Lembrete Automático</Label>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Notificar moradores</span>
+                  <span className="text-sm text-muted-foreground">Notificar colaboradores</span>
                   <select
                     value={eventoForm.lembreteAntecedencia}
                     onChange={(e) => setEventoForm({ ...eventoForm, lembreteAntecedencia: Number(e.target.value) })}
@@ -5003,7 +5003,7 @@ function EventosSection() {
                   <span className="text-sm text-muted-foreground">do evento</span>
                 </div>
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                  Os moradores receberão uma notificação de lembrete sobre este evento.
+                  Os colaboradores receberão uma notificação de lembrete sobre este evento.
                 </p>
               </div>
               
@@ -5140,11 +5140,11 @@ function EventosSection() {
 }
 
 function VotacoesSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id || 0;
 
@@ -5252,7 +5252,7 @@ function VotacoesSection() {
     encerrada: "bg-gray-100 text-gray-800",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -5487,12 +5487,12 @@ function VotacoesSection() {
 }
 
 function ClassificadosSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: classificados, refetch } = trpc.classificado.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const createClassificado = trpc.classificado.create.useMutation({
     onSuccess: () => {
@@ -5532,7 +5532,7 @@ function ClassificadosSection() {
       return;
     }
     createClassificado.mutate({
-      condominioId,
+      obraId,
       titulo,
       descricao: descricao || undefined,
       preco: preco || undefined,
@@ -5552,7 +5552,7 @@ function ClassificadosSection() {
     servico: "bg-green-100 text-green-800",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -5683,12 +5683,12 @@ function ClassificadosSection() {
 }
 
 function CaronasSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: caronas, refetch } = trpc.carona.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const createCarona = trpc.carona.create.useMutation({
     onSuccess: () => {
@@ -5728,7 +5728,7 @@ function CaronasSection() {
       return;
     }
     createCarona.mutate({
-      condominioId,
+      obraId,
       tipo,
       origem,
       destino,
@@ -5748,7 +5748,7 @@ function CaronasSection() {
     procura: "bg-blue-100 text-blue-800",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -5770,7 +5770,7 @@ function CaronasSection() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-serif font-bold text-foreground">Caronas</h1>
-          <p className="text-muted-foreground">Ofereça ou procure caronas entre moradores</p>
+          <p className="text-muted-foreground">Ofereça ou procure caronas entre colaboradores</p>
         </div>
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
@@ -5879,12 +5879,12 @@ function CaronasSection() {
 }
 
 function AchadosSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: achados, refetch } = trpc.achadoPerdido.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const createAchado = trpc.achadoPerdido.create.useMutation({
     onSuccess: () => {
@@ -5935,7 +5935,7 @@ function AchadosSection() {
       return;
     }
     const result = await createAchado.mutateAsync({
-      condominioId,
+      obraId,
       tipo,
       titulo,
       descricao: descricao || undefined,
@@ -5966,7 +5966,7 @@ function AchadosSection() {
     perdido: "bg-red-100 text-red-800",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -6165,12 +6165,12 @@ function AchadoGallery({ achadoId, imagemPrincipal }: { achadoId: number; imagem
 }
 
 function PublicidadeSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: anunciantesData, refetch: refetchAnunciantes } = trpc.anunciante.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const createAnunciante = trpc.anunciante.create.useMutation({
@@ -6303,7 +6303,7 @@ function PublicidadeSection() {
       });
     } else {
       createAnunciante.mutate({
-        condominioId,
+        obraId,
         nome,
         descricao: descricao || undefined,
         categoria,
@@ -6356,7 +6356,7 @@ function PublicidadeSection() {
     outros: "bg-gray-100 text-gray-800",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -6641,20 +6641,20 @@ function PublicidadeSection() {
 
 // Relatórios Section
 function RelatoriosSection() {
-  const [selectedCondominio, setSelectedCondominio] = useState<number | null>(null);
+  const [selectedObra, setSelectedObra] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("bloqueados");
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
 
   // Buscar relatório de bloqueados
-  const { data: relatorioBloqueados, isLoading: loadingBloqueados } = trpc.morador.relatorioBloqueados.useQuery(
-    { condominioId: selectedCondominio! },
-    { enabled: !!selectedCondominio }
+  const { data: relatorioBloqueados, isLoading: loadingBloqueados } = trpc.colaborador.relatorioBloqueados.useQuery(
+    { obraId: selectedObra! },
+    { enabled: !!selectedObra }
   );
 
   // Buscar relatório geral
-  const { data: relatorioGeral, isLoading: loadingGeral } = trpc.morador.relatorioGeral.useQuery(
-    { condominioId: selectedCondominio! },
-    { enabled: !!selectedCondominio }
+  const { data: relatorioGeral, isLoading: loadingGeral } = trpc.colaborador.relatorioGeral.useQuery(
+    { obraId: selectedObra! },
+    { enabled: !!selectedObra }
   );
 
   const handlePrint = () => {
@@ -6676,20 +6676,20 @@ function RelatoriosSection() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Relatórios de Moradores</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Relatórios de Colaboradores</h1>
           <p className="text-gray-500">Gere relatórios detalhados da equipa da organização</p>
         </div>
         
         <div className="flex items-center gap-3">
           <Select
-            value={selectedCondominio?.toString() || ""}
-            onValueChange={(value) => setSelectedCondominio(Number(value))}
+            value={selectedObra?.toString() || ""}
+            onValueChange={(value) => setSelectedObra(Number(value))}
           >
             <SelectTrigger className="w-[250px]">
               <SelectValue placeholder="Selecione uma organização" />
             </SelectTrigger>
             <SelectContent>
-              {condominios?.map((cond) => (
+              {obras?.map((cond) => (
                 <SelectItem key={cond.id} value={cond.id.toString()}>
                   {cond.nome}
                 </SelectItem>
@@ -6697,7 +6697,7 @@ function RelatoriosSection() {
             </SelectContent>
           </Select>
           
-          {selectedCondominio && (
+          {selectedObra && (
             <Button onClick={handlePrint} variant="outline">
               <FileDown className="w-4 h-4 mr-2" />
               Imprimir
@@ -6706,7 +6706,7 @@ function RelatoriosSection() {
         </div>
       </div>
 
-      {!selectedCondominio ? (
+      {!selectedObra ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Building2 className="w-12 h-12 text-gray-300 mb-4" />
@@ -6725,7 +6725,7 @@ function RelatoriosSection() {
               className="flex items-center gap-2"
             >
               <Ban className="w-4 h-4" />
-              Moradores Bloqueados
+              Colaboradores Bloqueados
             </Button>
             <Button
               variant={activeTab === "geral" ? "default" : "outline"}
@@ -6756,10 +6756,10 @@ function RelatoriosSection() {
                         <div>
                           <CardTitle className="flex items-center gap-2 text-red-700">
                             <Ban className="w-5 h-5" />
-                            Relatório de Moradores Bloqueados para Votação
+                            Relatório de Colaboradores Bloqueados para Votação
                           </CardTitle>
                           <CardDescription className="mt-1">
-                            {relatorioBloqueados.condominio?.nome}
+                            {relatorioBloqueados.obra?.nome}
                           </CardDescription>
                         </div>
                         <div className="text-right text-sm text-gray-500">
@@ -6778,29 +6778,29 @@ function RelatoriosSection() {
                         </div>
                         <div className="bg-white rounded-lg p-4 border">
                           <p className="text-sm text-gray-500">Organização</p>
-                          <p className="text-lg font-semibold">{relatorioBloqueados.condominio?.nome}</p>
+                          <p className="text-lg font-semibold">{relatorioBloqueados.obra?.nome}</p>
                         </div>
                         <div className="bg-white rounded-lg p-4 border">
                           <p className="text-sm text-gray-500">Endereço</p>
-                          <p className="text-sm">{relatorioBloqueados.condominio?.endereco || "Não informado"}</p>
+                          <p className="text-sm">{relatorioBloqueados.obra?.endereco || "Não informado"}</p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
                   {/* Lista de Bloqueados */}
-                  {relatorioBloqueados.moradores.length === 0 ? (
+                  {relatorioBloqueados.colaboradores.length === 0 ? (
                     <Card>
                       <CardContent className="py-12 text-center">
                         <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                        <p className="text-gray-600 font-medium">Nenhum morador bloqueado</p>
+                        <p className="text-gray-600 font-medium">Nenhum colaborador bloqueado</p>
                         <p className="text-gray-400 text-sm">Todos a equipa estão liberados para votação</p>
                       </CardContent>
                     </Card>
                   ) : (
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-lg">Lista de Moradores Bloqueados</CardTitle>
+                        <CardTitle className="text-lg">Lista de Colaboradores Bloqueados</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="overflow-x-auto">
@@ -6817,31 +6817,31 @@ function RelatoriosSection() {
                               </tr>
                             </thead>
                             <tbody>
-                              {relatorioBloqueados.moradores.map((morador: any, index: number) => (
-                                <tr key={morador.id} className="border-b hover:bg-gray-50">
+                              {relatorioBloqueados.colaboradores.map((colaborador: any, index: number) => (
+                                <tr key={colaborador.id} className="border-b hover:bg-gray-50">
                                   <td className="p-3 text-gray-500">{index + 1}</td>
-                                  <td className="p-3 font-medium">{morador.nome}</td>
+                                  <td className="p-3 font-medium">{colaborador.nome}</td>
                                   <td className="p-3">
-                                    {morador.bloco && `Bloco ${morador.bloco} - `}
-                                    Apt {morador.apartamento}
+                                    {colaborador.bloco && `Bloco ${colaborador.bloco} - `}
+                                    Apt {colaborador.apartamento}
                                   </td>
                                   <td className="p-3">
                                     <span className="px-2 py-1 bg-gray-100 rounded text-xs capitalize">
-                                      {morador.tipo || "Morador"}
+                                      {colaborador.tipo || "Colaborador"}
                                     </span>
                                   </td>
                                   <td className="p-3">
-                                    {morador.telefone ? (
+                                    {colaborador.telefone ? (
                                       <span className="flex items-center gap-1">
                                         <Phone className="w-3 h-3" />
-                                        {morador.telefone}
+                                        {colaborador.telefone}
                                       </span>
                                     ) : (
                                       <span className="text-gray-400">-</span>
                                     )}
                                   </td>
                                   <td className="p-3">
-                                    {morador.email || <span className="text-gray-400">-</span>}
+                                    {colaborador.email || <span className="text-gray-400">-</span>}
                                   </td>
                                   <td className="p-3">
                                     <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs w-fit">
@@ -6881,10 +6881,10 @@ function RelatoriosSection() {
                         <div>
                           <CardTitle className="flex items-center gap-2 text-blue-700">
                             <Users className="w-5 h-5" />
-                            Relatório Geral de Moradores
+                            Relatório Geral de Colaboradores
                           </CardTitle>
                           <CardDescription className="mt-1">
-                            {relatorioGeral.condominio?.nome}
+                            {relatorioGeral.obra?.nome}
                           </CardDescription>
                         </div>
                         <div className="text-right text-sm text-gray-500">
@@ -6898,8 +6898,8 @@ function RelatoriosSection() {
                     <CardContent>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-white rounded-lg p-4 border">
-                          <p className="text-sm text-gray-500">Total de Moradores</p>
-                          <p className="text-3xl font-bold text-blue-600">{relatorioGeral.totalMoradores}</p>
+                          <p className="text-sm text-gray-500">Total de Colaboradores</p>
+                          <p className="text-3xl font-bold text-blue-600">{relatorioGeral.totalColaboradores}</p>
                         </div>
                         <div className="bg-white rounded-lg p-4 border">
                           <p className="text-sm text-gray-500">Liberados</p>
@@ -6912,8 +6912,8 @@ function RelatoriosSection() {
                         <div className="bg-white rounded-lg p-4 border">
                           <p className="text-sm text-gray-500">% Bloqueados</p>
                           <p className="text-3xl font-bold text-orange-600">
-                            {relatorioGeral.totalMoradores > 0 
-                              ? Math.round((relatorioGeral.totalBloqueados / relatorioGeral.totalMoradores) * 100)
+                            {relatorioGeral.totalColaboradores > 0 
+                              ? Math.round((relatorioGeral.totalBloqueados / relatorioGeral.totalColaboradores) * 100)
                               : 0}%
                           </p>
                         </div>
@@ -6924,16 +6924,16 @@ function RelatoriosSection() {
                   {/* Lista Geral */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Lista Completa de Moradores</CardTitle>
+                      <CardTitle className="text-lg">Lista Completa de Colaboradores</CardTitle>
                       <CardDescription>
-                        Moradores bloqueados estão destacados em vermelho
+                        Colaboradores bloqueados estão destacados em vermelho
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {relatorioGeral.moradores.length === 0 ? (
+                      {relatorioGeral.colaboradores.length === 0 ? (
                         <div className="py-12 text-center">
                           <Home className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                          <p className="text-gray-500">Nenhum morador cadastrado</p>
+                          <p className="text-gray-500">Nenhum colaborador cadastrado</p>
                         </div>
                       ) : (
                         <div className="overflow-x-auto">
@@ -6951,35 +6951,35 @@ function RelatoriosSection() {
                               </tr>
                             </thead>
                             <tbody>
-                              {relatorioGeral.moradores.map((morador: any, index: number) => (
+                              {relatorioGeral.colaboradores.map((colaborador: any, index: number) => (
                                 <tr 
-                                  key={morador.id} 
-                                  className={`border-b ${morador.bloqueadoVotacao ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'}`}
+                                  key={colaborador.id} 
+                                  className={`border-b ${colaborador.bloqueadoVotacao ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'}`}
                                 >
                                   <td className="p-3 text-gray-500">{index + 1}</td>
-                                  <td className="p-3 font-medium">{morador.nome}</td>
-                                  <td className="p-3">{morador.bloco || "-"}</td>
-                                  <td className="p-3">{morador.apartamento}</td>
+                                  <td className="p-3 font-medium">{colaborador.nome}</td>
+                                  <td className="p-3">{colaborador.bloco || "-"}</td>
+                                  <td className="p-3">{colaborador.apartamento}</td>
                                   <td className="p-3">
                                     <span className="px-2 py-1 bg-gray-100 rounded text-xs capitalize">
-                                      {morador.tipo || "Morador"}
+                                      {colaborador.tipo || "Colaborador"}
                                     </span>
                                   </td>
                                   <td className="p-3">
-                                    {morador.telefone ? (
+                                    {colaborador.telefone ? (
                                       <span className="flex items-center gap-1">
                                         <Phone className="w-3 h-3" />
-                                        {morador.telefone}
+                                        {colaborador.telefone}
                                       </span>
                                     ) : (
                                       <span className="text-gray-400">-</span>
                                     )}
                                   </td>
                                   <td className="p-3">
-                                    {morador.email || <span className="text-gray-400">-</span>}
+                                    {colaborador.email || <span className="text-gray-400">-</span>}
                                   </td>
                                   <td className="p-3">
-                                    {morador.bloqueadoVotacao ? (
+                                    {colaborador.bloqueadoVotacao ? (
                                       <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs w-fit">
                                         <Ban className="w-3 h-3" />
                                         Bloqueado
@@ -7246,10 +7246,10 @@ function ConfiguracoesSection() {
 
 // Realizações Section
 function RealizacoesSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominios?.[0]?.id || 0 },
-    { enabled: !!condominios?.[0]?.id }
+    { obraId: obras?.[0]?.id || 0 },
+    { enabled: !!obras?.[0]?.id }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
@@ -7316,7 +7316,7 @@ function RealizacoesSection() {
     setShowGalleryDialog(true);
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -7500,14 +7500,14 @@ function RealizacaoGallery({ realizacaoId, imagemPrincipal }: { realizacaoId: nu
 
 // Antes e Depois Section
 function AntesDepoisSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominios?.[0]?.id || 0 },
-    { enabled: !!condominios?.[0]?.id }
+    { obraId: obras?.[0]?.id || 0 },
+    { enabled: !!obras?.[0]?.id }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
-  const { data: obras, refetch } = trpc.antesDepois.list.useQuery(
+  const { data: registrosAntesDepois, refetch } = trpc.antesDepois.list.useQuery(
     { revistaId },
     { enabled: !!revistaId }
   );
@@ -7619,7 +7619,7 @@ function AntesDepoisSection() {
     });
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -7661,7 +7661,7 @@ function AntesDepoisSection() {
                   Antes e Depois
                 </DialogTitle>
                 <DialogDescription className="text-teal-100">
-                  Adicione fotos mostrando a transformação (jardinagem, manutenção, limpeza, etc.)
+                  Adicione fotos mostrando a transformação (jardinagem, obra, limpeza, etc.)
                 </DialogDescription>
               </DialogHeader>
             </div>
@@ -7721,7 +7721,7 @@ function AntesDepoisSection() {
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <ImageEditSection
                   label="Editar Imagem com Anotações"
-                  logoUrl={condominios?.[0]?.logoUrl || undefined}
+                  logoUrl={obras?.[0]?.logoUrl || undefined}
                   onSaveEditedImage={(editedImage) => {
                     // Se não tem foto ANTES, coloca lá. Se não, coloca em DEPOIS
                     if (!fotoAntesUrl) {
@@ -7818,10 +7818,10 @@ function AntesDepoisSection() {
 
 // Melhorias Section
 function MelhoriasSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominios?.[0]?.id || 0 },
-    { enabled: !!condominios?.[0]?.id }
+    { obraId: obras?.[0]?.id || 0 },
+    { enabled: !!obras?.[0]?.id }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
@@ -7902,7 +7902,7 @@ function MelhoriasSection() {
     concluida: "Concluída",
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -8091,10 +8091,10 @@ function MelhoriaGallery({ melhoriaId, imagemPrincipal }: { melhoriaId: number; 
 
 // Aquisições Section
 function AquisicoesSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominios?.[0]?.id || 0 },
-    { enabled: !!condominios?.[0]?.id }
+    { obraId: obras?.[0]?.id || 0 },
+    { enabled: !!obras?.[0]?.id }
   );
   const revistaId = revistas?.[0]?.id || 0;
   
@@ -8163,7 +8163,7 @@ function AquisicoesSection() {
     setShowGalleryDialog(true);
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -8340,12 +8340,12 @@ function AquisicaoGallery({ aquisicaoId, imagemPrincipal }: { aquisicaoId: numbe
 
 // Vagas de Estacionamento Section
 function VagasEstacionamentoSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: vagas, refetch } = trpc.vagaEstacionamento.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const createVaga = trpc.vagaEstacionamento.create.useMutation({
     onSuccess: () => {
@@ -8387,7 +8387,7 @@ function VagasEstacionamentoSection() {
       return;
     }
     createVaga.mutate({
-      condominioId,
+      obraId,
       numero,
       apartamento: apartamento || undefined,
       bloco: bloco || undefined,
@@ -8572,16 +8572,16 @@ function VagasEstacionamentoSection() {
 
 // Moderação de Classificados Section
 function ModeracaoSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: pendentes, refetch } = trpc.moderacao.listPendentes.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const { data: stats } = trpc.moderacao.stats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   const aprovar = trpc.moderacao.aprovar.useMutation({
     onSuccess: () => {
@@ -8712,11 +8712,11 @@ function ModeracaoSection() {
 
 // ==================== COMUNICADOS SECTION ====================
 function ComunicadosSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id || 0;
 
@@ -8848,7 +8848,7 @@ function ComunicadosSection() {
     return '📎';
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>
@@ -8900,7 +8900,7 @@ function ComunicadosSection() {
                   id="titulo"
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
-                  placeholder="Ex: Comunicado sobre manutenção"
+                  placeholder="Ex: Comunicado sobre obra"
                 />
               </div>
               <div>
@@ -9084,12 +9084,12 @@ function ComunicadosSection() {
 
 // ==================== GALERIA DE FOTOS ====================
 function GaleriaSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
   
   const { data: albuns, refetch: refetchAlbuns } = trpc.album.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
   
   const createAlbum = trpc.album.create.useMutation({
@@ -9174,7 +9174,7 @@ function GaleriaSection() {
     }
     
     const data = {
-      condominioId,
+      obraId,
       titulo: formData.titulo,
       descricao: formData.descricao || undefined,
       categoria: formData.categoria,
@@ -9253,7 +9253,7 @@ function GaleriaSection() {
     filterCategoria === "todas" || album.categoria === filterCategoria
   ) || [];
   
-  if (!condominioId) {
+  if (!obraId) {
     return (
       <div className="text-center py-12">
         <Image className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -10185,12 +10185,12 @@ function DestaquesSection() {
 
 // Destaques Preview Section para a Visão Geral
 function DestaquesPreviewSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
   const { data: destaques, isLoading } = trpc.destaque.listAtivos.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
 
   if (isLoading) {
@@ -10336,21 +10336,21 @@ function DestaquesPreviewSection() {
 
 // Páginas 100% Personalizadas Section - Wrapper
 function PaginasCustomWrapper() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
-  return <PaginasCustomSection condominioId={condominioId} />;
+  return <PaginasCustomSection obraId={obraId} />;
 }
 
 // Páginas 100% Personalizadas Preview Section para a Visão Geral
 function PaginasCustomPreviewSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   const [, navigate] = useLocation();
   
   const { data: paginas, isLoading } = trpc.paginaCustom.listAtivos.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
 
   if (isLoading) {
@@ -10471,17 +10471,17 @@ function PaginasCustomPreviewSection() {
 
 // Vencimentos Preview Card para a Visão Geral
 function VencimentosPreviewCard() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   const [, navigate] = useLocation();
 
   const { data: stats, isLoading: statsLoading } = trpc.vencimentos.stats.useQuery(
-    { condominioId: condominioId || 0 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0 },
+    { enabled: !!obraId }
   );
   const { data: proximos, isLoading: proximosLoading } = trpc.vencimentos.proximos.useQuery(
-    { condominioId: condominioId || 0, dias: 7, limite: 5 },
-    { enabled: !!condominioId }
+    { obraId: obraId || 0, dias: 7, limite: 5 },
+    { enabled: !!obraId }
   );
 
   const isLoading = statsLoading || proximosLoading;
@@ -10599,10 +10599,10 @@ function VencimentosPreviewCard() {
 }
 
 // Vencimentos Section
-function VencimentosSection({ condominioId }: { condominioId: number }) {
+function VencimentosSection({ obraId }: { obraId: number }) {
   const [, setLocation] = useLocation();
-  const { data: stats } = trpc.vencimentos.stats.useQuery({ condominioId });
-  const { data: proximos } = trpc.vencimentos.proximos.useQuery({ condominioId, dias: 30, limite: 10 });
+  const { data: stats } = trpc.vencimentos.stats.useQuery({ obraId });
+  const { data: proximos } = trpc.vencimentos.proximos.useQuery({ obraId, dias: 30, limite: 10 });
 
   return (
     <div className="space-y-6">
@@ -10739,8 +10739,8 @@ function VencimentosSection({ condominioId }: { condominioId: number }) {
 
 // Assembleia Online Section
 function AssembleiaOnlineSection() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominio = condominios?.[0];
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obra = obras?.[0];
   
   return (
     <div className="space-y-6">
@@ -10751,9 +10751,9 @@ function AssembleiaOnlineSection() {
       
       <div className="max-w-2xl">
         <AssembleiaOnlineCard 
-          condominioId={condominio?.id}
-          linkAssembleia={(condominio as any)?.assembleiaLink || ""}
-          dataAssembleia={(condominio as any)?.assembleiaData}
+          obraId={obra?.id}
+          linkAssembleia={(obra as any)?.assembleiaLink || ""}
+          dataAssembleia={(obra as any)?.assembleiaData}
         />
       </div>
     </div>
@@ -10763,12 +10763,12 @@ function AssembleiaOnlineSection() {
 
 // Componente de Configuração de Cabeçalho e Rodapé
 function CabecalhoRodapeConfig() {
-  const { data: condominios, refetch: refetchCondominios } = trpc.condominio.list.useQuery();
-  const condominio = condominios?.[0];
+  const { data: obras, refetch: refetchObras } = trpc.obra.list.useQuery();
+  const obra = obras?.[0];
   
-  const updateCondominio = trpc.condominio.update.useMutation({
+  const updateObra = trpc.obra.update.useMutation({
     onSuccess: () => {
-      refetchCondominios();
+      refetchObras();
       toast.success("Configurações salvas com sucesso!");
     },
     onError: () => {
@@ -10777,22 +10777,22 @@ function CabecalhoRodapeConfig() {
   });
 
   const [cabecalhoLogoUrl, setCabecalhoLogoUrl] = useState("");
-  const [cabecalhoNomeCondominio, setCabecalhoNomeCondominio] = useState("");
-  const [cabecalhoNomeSindico, setCabecalhoNomeSindico] = useState("");
+  const [cabecalhoNomeObra, setCabecalhoNomeObra] = useState("");
+  const [cabecalhoNomeEngenheiro, setCabecalhoNomeEngenheiro] = useState("");
   const [rodapeTexto, setRodapeTexto] = useState("");
   const [rodapeContato, setRodapeContato] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
   // Carregar dados existentes
   useEffect(() => {
-    if (condominio) {
-      setCabecalhoLogoUrl((condominio as any).cabecalhoLogoUrl || "");
-      setCabecalhoNomeCondominio((condominio as any).cabecalhoNomeCondominio || "");
-      setCabecalhoNomeSindico((condominio as any).cabecalhoNomeSindico || "");
-      setRodapeTexto((condominio as any).rodapeTexto || "");
-      setRodapeContato((condominio as any).rodapeContato || "");
+    if (obra) {
+      setCabecalhoLogoUrl((obra as any).cabecalhoLogoUrl || "");
+      setCabecalhoNomeObra((obra as any).cabecalhoNomeObra || "");
+      setCabecalhoNomeEngenheiro((obra as any).cabecalhoNomeEngenheiro || "");
+      setRodapeTexto((obra as any).rodapeTexto || "");
+      setRodapeContato((obra as any).rodapeContato || "");
     }
-  }, [condominio]);
+  }, [obra]);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -10823,16 +10823,16 @@ function CabecalhoRodapeConfig() {
   };
 
   const handleSave = () => {
-    if (!condominio) {
+    if (!obra) {
       toast.error("Nenhuma organização encontrado");
       return;
     }
     
-    updateCondominio.mutate({
-      id: condominio.id,
+    updateObra.mutate({
+      id: obra.id,
       cabecalhoLogoUrl: cabecalhoLogoUrl || null,
-      cabecalhoNomeCondominio: cabecalhoNomeCondominio || null,
-      cabecalhoNomeSindico: cabecalhoNomeSindico || null,
+      cabecalhoNomeObra: cabecalhoNomeObra || null,
+      cabecalhoNomeEngenheiro: cabecalhoNomeEngenheiro || null,
       rodapeTexto: rodapeTexto || null,
       rodapeContato: rodapeContato || null,
     });
@@ -10840,13 +10840,13 @@ function CabecalhoRodapeConfig() {
 
   const handleClear = () => {
     setCabecalhoLogoUrl("");
-    setCabecalhoNomeCondominio("");
-    setCabecalhoNomeSindico("");
+    setCabecalhoNomeObra("");
+    setCabecalhoNomeEngenheiro("");
     setRodapeTexto("");
     setRodapeContato("");
   };
 
-  if (!condominio) {
+  if (!obra) {
     return (
       <div className="text-center py-8 text-muted-foreground">
         <p>Crie uma organização primeiro para configurar o cabeçalho e rodapé.</p>
@@ -10864,14 +10864,14 @@ function CabecalhoRodapeConfig() {
             <img src={cabecalhoLogoUrl} alt="Logo" className="w-12 h-12 object-contain" />
           )}
           <div className="flex-1">
-            {cabecalhoNomeCondominio && (
-              <h3 className="font-bold text-lg">{cabecalhoNomeCondominio}</h3>
+            {cabecalhoNomeObra && (
+              <h3 className="font-bold text-lg">{cabecalhoNomeObra}</h3>
             )}
-            {cabecalhoNomeSindico && (
-              <p className="text-sm text-muted-foreground">Síndico: {cabecalhoNomeSindico}</p>
+            {cabecalhoNomeEngenheiro && (
+              <p className="text-sm text-muted-foreground">Engenheiro: {cabecalhoNomeEngenheiro}</p>
             )}
           </div>
-          {!cabecalhoLogoUrl && !cabecalhoNomeCondominio && !cabecalhoNomeSindico && (
+          {!cabecalhoLogoUrl && !cabecalhoNomeObra && !cabecalhoNomeEngenheiro && (
             <p className="text-muted-foreground text-sm italic">Preencha os campos abaixo para ver a pré-visualização</p>
           )}
         </div>
@@ -10908,8 +10908,8 @@ function CabecalhoRodapeConfig() {
         <div className="space-y-2">
           <Label>Nome da Organização</Label>
           <Input
-            value={cabecalhoNomeCondominio}
-            onChange={(e) => setCabecalhoNomeCondominio(e.target.value)}
+            value={cabecalhoNomeObra}
+            onChange={(e) => setCabecalhoNomeObra(e.target.value)}
             placeholder="Ex: Organização Residencial Jardins"
           />
           <p className="text-xs text-muted-foreground">Aparece no cabeçalho dos relatórios</p>
@@ -10918,8 +10918,8 @@ function CabecalhoRodapeConfig() {
         <div className="space-y-2">
           <Label>Nome do Gestor</Label>
           <Input
-            value={cabecalhoNomeSindico}
-            onChange={(e) => setCabecalhoNomeSindico(e.target.value)}
+            value={cabecalhoNomeEngenheiro}
+            onChange={(e) => setCabecalhoNomeEngenheiro(e.target.value)}
             placeholder="Ex: João da Silva"
           />
           <p className="text-xs text-muted-foreground">Aparece abaixo do nome da organização</p>
@@ -10960,7 +10960,7 @@ function CabecalhoRodapeConfig() {
           <Input
             value={rodapeContato}
             onChange={(e) => setRodapeContato(e.target.value)}
-            placeholder="Ex: contato@condominio.com | (11) 99999-9999"
+            placeholder="Ex: contato@obra.com | (11) 99999-9999"
           />
           <p className="text-xs text-muted-foreground">Informações de contato</p>
         </div>
@@ -10968,8 +10968,8 @@ function CabecalhoRodapeConfig() {
 
       {/* Botões de Ação */}
       <div className="flex gap-2 pt-4">
-        <Button onClick={handleSave} disabled={updateCondominio.isPending}>
-          {updateCondominio.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+        <Button onClick={handleSave} disabled={updateObra.isPending}>
+          {updateObra.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Salvar Configurações
         </Button>
         <Button variant="outline" onClick={handleClear}>
@@ -10996,10 +10996,10 @@ function SemOrganizacaoMessage() {
           Nenhuma organização cadastrada
         </h2>
         <p className="text-gray-500 mb-6">
-          Para utilizar esta funcionalidade, você precisa primeiro cadastrar uma organização ou local de manutenção.
+          Para utilizar esta funcionalidade, você precisa primeiro cadastrar uma organização ou local de obra.
         </p>
         <Button 
-          onClick={() => navigate("/dashboard/condominio")}
+          onClick={() => navigate("/dashboard/obra")}
           className="bg-orange-500 hover:bg-orange-600"
         >
           <Plus className="w-4 h-4 mr-2" />

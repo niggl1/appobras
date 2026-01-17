@@ -45,8 +45,8 @@ import {
 
 export default function HistoricoInfracoesPage() {
   const [, navigate] = useLocation();
-  const [condominioId, setCondominioId] = useState<number | null>(null);
-  const [condominio, setCondominio] = useState<any>(null);
+  const [obraId, setObraId] = useState<number | null>(null);
+  const [obra, setObra] = useState<any>(null);
   
   // Filtros
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,22 +68,22 @@ export default function HistoricoInfracoesPage() {
   const [showRelatorioModal, setShowRelatorioModal] = useState(false);
   const [relatorioDataInicio, setRelatorioDataInicio] = useState("");
   const [relatorioDataFim, setRelatorioDataFim] = useState("");
-  const [relatorioMoradorId, setRelatorioMoradorId] = useState<number | null>(null);
+  const [relatorioColaboradorId, setRelatorioColaboradorId] = useState<number | null>(null);
   const [relatorioStatus, setRelatorioStatus] = useState<string>("all");
   const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
 
   // Queries
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
   const { data: notificacoes, isLoading, refetch } = trpc.notificacoesInfracao.list.useQuery(
     { 
-      condominioId: condominioId!,
+      obraId: obraId!,
       status: statusFilter !== "all" ? statusFilter as any : undefined,
     },
-    { enabled: !!condominioId }
+    { enabled: !!obraId }
   );
   const { data: stats } = trpc.notificacoesInfracao.countByStatus.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   const { data: respostas, refetch: refetchRespostas } = trpc.respostasInfracao.list.useQuery(
     { notificacaoId: selectedNotificacao?.notificacao?.id || 0 },
@@ -91,9 +91,9 @@ export default function HistoricoInfracoesPage() {
   );
   
   // Query para equipa do relatório
-  const { data: moradoresRelatorio } = trpc.relatorioInfracoes.listarMoradores.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+  const { data: colaboradoresRelatorio } = trpc.relatorioInfracoes.listarColaboradores.useQuery(
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   
   // Mutation para gerar relatório
@@ -138,7 +138,7 @@ export default function HistoricoInfracoesPage() {
     },
   });
 
-  const enviarRespostaMutation = trpc.respostasInfracao.createSindico.useMutation({
+  const enviarRespostaMutation = trpc.respostasInfracao.createEngenheiro.useMutation({
     onSuccess: () => {
       toast.success("Resposta enviada com sucesso!");
       setResposta("");
@@ -153,19 +153,19 @@ export default function HistoricoInfracoesPage() {
 
   // Selecionar primeira organização
   useEffect(() => {
-    if (condominios && condominios.length > 0 && !condominioId) {
-      setCondominioId(condominios[0].id);
-      setCondominio(condominios[0]);
+    if (obras && obras.length > 0 && !obraId) {
+      setObraId(obras[0].id);
+      setObra(obras[0]);
     }
-  }, [condominios, condominioId]);
+  }, [obras, obraId]);
 
   // Filtrar notificações por busca
   const filteredNotificacoes = notificacoes?.filter(item => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
     return (
-      item.morador?.nome?.toLowerCase().includes(term) ||
-      item.morador?.apartamento?.toLowerCase().includes(term) ||
+      item.colaborador?.nome?.toLowerCase().includes(term) ||
+      item.colaborador?.apartamento?.toLowerCase().includes(term) ||
       item.notificacao.titulo.toLowerCase().includes(term)
     );
   });
@@ -231,7 +231,7 @@ export default function HistoricoInfracoesPage() {
               <FileDown className="h-4 w-4 mr-2" />
               Gerar Relatório PDF
             </Button>
-            <Button onClick={() => navigate("/dashboard/notificar-morador")}>
+            <Button onClick={() => navigate("/dashboard/notificar-colaborador")}>
               <Plus className="h-4 w-4 mr-2" />
               Nova Notificação
             </Button>
@@ -358,17 +358,17 @@ export default function HistoricoInfracoesPage() {
                           <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
                               <User className="h-3 w-3" />
-                              {item.morador?.nome}
+                              {item.colaborador?.nome}
                             </span>
-                            {item.morador?.bloco && (
+                            {item.colaborador?.bloco && (
                               <span className="flex items-center gap-1">
                                 <Building2 className="h-3 w-3" />
-                                Bloco {item.morador.bloco}
+                                Bloco {item.colaborador.bloco}
                               </span>
                             )}
                             <span className="flex items-center gap-1">
                               <Home className="h-3 w-3" />
-                              Apto {item.morador?.apartamento}
+                              Apto {item.colaborador?.apartamento}
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
@@ -428,7 +428,7 @@ export default function HistoricoInfracoesPage() {
                 </p>
                 <Button 
                   className="mt-4"
-                  onClick={() => navigate("/dashboard/notificar-morador")}
+                  onClick={() => navigate("/dashboard/notificar-colaborador")}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Nova Notificação
@@ -458,22 +458,22 @@ export default function HistoricoInfracoesPage() {
           <div className="p-6 overflow-y-auto max-h-[70vh]">
           {selectedNotificacao && (
             <div className="space-y-6 pt-4">
-              {/* Dados do Morador */}
+              {/* Dados do Colaborador */}
               <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
                 <h4 className="font-medium mb-2 flex items-center gap-2">
                   <User className="h-4 w-4" />
-                  Morador
+                  Colaborador
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-gray-500">Nome:</span>
-                    <p className="font-medium">{selectedNotificacao.morador?.nome}</p>
+                    <p className="font-medium">{selectedNotificacao.colaborador?.nome}</p>
                   </div>
                   <div>
                     <span className="text-gray-500">Unidade:</span>
                     <p className="font-medium">
-                      {selectedNotificacao.morador?.bloco ? `Bloco ${selectedNotificacao.morador.bloco} - ` : ""}
-                      Apto {selectedNotificacao.morador?.apartamento}
+                      {selectedNotificacao.colaborador?.bloco ? `Bloco ${selectedNotificacao.colaborador.bloco} - ` : ""}
+                      Apto {selectedNotificacao.colaborador?.apartamento}
                     </p>
                   </div>
                 </div>
@@ -530,7 +530,7 @@ export default function HistoricoInfracoesPage() {
                       <div
                         key={resp.id}
                         className={`p-3 rounded-lg ${
-                          resp.autorTipo === 'sindico'
+                          resp.autorTipo === 'engenheiro'
                             ? 'bg-blue-50 dark:bg-blue-950 ml-4'
                             : 'bg-gray-100 dark:bg-gray-800 mr-4'
                         }`}
@@ -538,7 +538,7 @@ export default function HistoricoInfracoesPage() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xs font-medium">{resp.autorNome}</span>
                           <Badge variant="outline" className="text-xs">
-                            {resp.autorTipo === 'sindico' ? 'Administração' : 'Morador'}
+                            {resp.autorTipo === 'engenheiro' ? 'Administração' : 'Colaborador'}
                           </Badge>
                           <span className="text-xs text-gray-400 ml-auto">
                             {formatDate(resp.createdAt)}
@@ -606,7 +606,7 @@ export default function HistoricoInfracoesPage() {
                 Responder Notificação
               </DialogTitle>
               <DialogDescription className="text-blue-100">
-                Envie uma resposta para o morador
+                Envie uma resposta para o colaborador
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -639,24 +639,24 @@ export default function HistoricoInfracoesPage() {
       </Dialog>
 
       {/* Modal de Envio Multicanal */}
-      {selectedNotificacao && condominio && (
+      {selectedNotificacao && obra && (
         <EnvioMulticanalModal
           open={showEnvioModal}
           onOpenChange={setShowEnvioModal}
           destinatario={{
-            nome: selectedNotificacao.morador?.nome || "",
-            whatsapp: selectedNotificacao.morador?.celular,
-            email: selectedNotificacao.morador?.email,
-            bloco: selectedNotificacao.morador?.bloco,
-            apartamento: selectedNotificacao.morador?.apartamento || "",
+            nome: selectedNotificacao.colaborador?.nome || "",
+            whatsapp: selectedNotificacao.colaborador?.celular,
+            email: selectedNotificacao.colaborador?.email,
+            bloco: selectedNotificacao.colaborador?.bloco,
+            apartamento: selectedNotificacao.colaborador?.apartamento || "",
           }}
           notificacao={{
             titulo: selectedNotificacao.notificacao.titulo,
             descricao: selectedNotificacao.notificacao.descricao,
             linkPublico: selectedNotificacao.notificacao.linkPublico,
           }}
-          condominio={{
-            nome: condominio.nome,
+          obra={{
+            nome: obra.nome,
           }}
           onPrint={() => window.open(`/notificacao/${selectedNotificacao.notificacao.linkPublico}?print=true`, "_blank")}
         />
@@ -699,19 +699,19 @@ export default function HistoricoInfracoesPage() {
               </div>
             </div>
             
-            {/* Morador */}
+            {/* Colaborador */}
             <div className="space-y-2">
-              <Label>Filtrar por Morador</Label>
+              <Label>Filtrar por Colaborador</Label>
               <Select
-                value={relatorioMoradorId?.toString() || "all"}
-                onValueChange={(v) => setRelatorioMoradorId(v === "all" ? null : parseInt(v))}
+                value={relatorioColaboradorId?.toString() || "all"}
+                onValueChange={(v) => setRelatorioColaboradorId(v === "all" ? null : parseInt(v))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos a equipa" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos a equipa</SelectItem>
-                  {moradoresRelatorio?.map((m) => (
+                  {colaboradoresRelatorio?.map((m) => (
                     <SelectItem key={m.id} value={m.id.toString()}>
                       {m.nome} - {m.bloco ? `Bloco ${m.bloco}, ` : ""}Apto {m.apartamento}
                     </SelectItem>
@@ -748,7 +748,7 @@ export default function HistoricoInfracoesPage() {
                   setShowRelatorioModal(false);
                   setRelatorioDataInicio("");
                   setRelatorioDataFim("");
-                  setRelatorioMoradorId(null);
+                  setRelatorioColaboradorId(null);
                   setRelatorioStatus("all");
                 }}
               >
@@ -756,13 +756,13 @@ export default function HistoricoInfracoesPage() {
               </Button>
               <Button
                 onClick={() => {
-                  if (!condominioId) return;
+                  if (!obraId) return;
                   setGerandoRelatorio(true);
                   gerarRelatorioMutation.mutate({
-                    condominioId,
+                    obraId,
                     dataInicio: relatorioDataInicio || undefined,
                     dataFim: relatorioDataFim || undefined,
-                    moradorId: relatorioMoradorId || undefined,
+                    colaboradorId: relatorioColaboradorId || undefined,
                     status: relatorioStatus !== "all" ? relatorioStatus as any : undefined,
                   });
                 }}

@@ -92,7 +92,7 @@ const statusConfig = {
 };
 
 export default function HistoricoTarefasSimples() {
-  const [condominioId, setCondominioId] = useState<number | null>(null);
+  const [obraId, setObraId] = useState<number | null>(null);
   const [filtroTipo, setFiltroTipo] = useState<TipoTarefa | "todos">("todos");
   const [filtroStatus, setFiltroStatus] = useState<StatusTarefa | "todos">("todos");
   const [busca, setBusca] = useState("");
@@ -104,45 +104,45 @@ export default function HistoricoTarefasSimples() {
   const utils = trpc.useUtils();
 
   // Buscar organizações do usuário
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  const { data: obras } = trpc.obra.list.useQuery();
 
-  // Selecionar primeiro condomínio automaticamente
+  // Selecionar primeiro obra automaticamente
   useMemo(() => {
-    if (condominios && condominios.length > 0 && !condominioId) {
-      setCondominioId(condominios[0].id);
+    if (obras && obras.length > 0 && !obraId) {
+      setObraId(obras[0].id);
     }
-  }, [condominios, condominioId]);
+  }, [obras, obraId]);
 
   // Buscar tarefas simples
   const { data: tarefas, isLoading } = trpc.tarefasSimples.listar.useQuery(
     {
-      condominioId: condominioId!,
+      obraId: obraId!,
       tipo: filtroTipo !== "todos" ? (filtroTipo as any) : undefined,
       status: filtroStatus !== "todos" ? filtroStatus : undefined,
       limite: 100,
     },
-    { enabled: !!condominioId }
+    { enabled: !!obraId }
   );
 
   // Mutations
   const enviarMutation = trpc.tarefasSimples.enviar.useMutation({
     onSuccess: () => {
       toast.success("Tarefa enviada com sucesso!");
-      utils.tarefasSimples.listar.invalidate({ condominioId: condominioId! });
+      utils.tarefasSimples.listar.invalidate({ obraId: obraId! });
     },
   });
 
   const concluirMutation = trpc.tarefasSimples.concluir.useMutation({
     onSuccess: () => {
       toast.success("Tarefa concluída com sucesso!");
-      utils.tarefasSimples.listar.invalidate({ condominioId: condominioId! });
+      utils.tarefasSimples.listar.invalidate({ obraId: obraId! });
     },
   });
 
   const deletarMutation = trpc.tarefasSimples.deletar.useMutation({
     onSuccess: () => {
       toast.success("Tarefa removida com sucesso!");
-      utils.tarefasSimples.listar.invalidate({ condominioId: condominioId! });
+      utils.tarefasSimples.listar.invalidate({ obraId: obraId! });
     },
   });
 
@@ -209,16 +209,16 @@ export default function HistoricoTarefasSimples() {
               </div>
 
               {/* Seletor de Organização */}
-              {condominios && condominios.length > 1 && (
+              {obras && obras.length > 1 && (
                 <Select
-                  value={condominioId?.toString()}
-                  onValueChange={(v) => setCondominioId(Number(v))}
+                  value={obraId?.toString()}
+                  onValueChange={(v) => setObraId(Number(v))}
                 >
                   <SelectTrigger className="w-[200px] bg-white/20 border-white/30 text-white backdrop-blur-sm">
                     <SelectValue placeholder="Selecione a organização" />
                   </SelectTrigger>
                   <SelectContent>
-                    {condominios.map((c) => (
+                    {obras.map((c) => (
                       <SelectItem key={c.id} value={c.id.toString()}>
                         {c.nome}
                       </SelectItem>
@@ -378,7 +378,7 @@ export default function HistoricoTarefasSimples() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => utils.tarefasSimples.listar.invalidate({ condominioId: condominioId! })}
+                onClick={() => utils.tarefasSimples.listar.invalidate({ obraId: obraId! })}
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
@@ -568,14 +568,14 @@ export default function HistoricoTarefasSimples() {
         )}
 
         {/* Modal Nova Tarefa */}
-        {condominioId && (
+        {obraId && (
           <TarefasSimplesModal
             open={modalNovaAberto}
             onOpenChange={setModalNovaAberto}
-            condominioId={condominioId}
+            obraId={obraId}
             tipoInicial={tipoModalNova}
             onSuccess={() => {
-              utils.tarefasSimples.listar.invalidate({ condominioId });
+              utils.tarefasSimples.listar.invalidate({ obraId });
             }}
           />
         )}

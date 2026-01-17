@@ -74,8 +74,8 @@ const initialFormData: DestaqueFormData = {
 };
 
 export default function Destaques() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioAtivo = condominios?.[0] || null;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraAtivo = obras?.[0] || null;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -89,8 +89,8 @@ export default function Destaques() {
   const utils = trpc.useUtils();
 
   const { data: destaques, isLoading } = trpc.destaque.list.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const createMutation = trpc.destaque.create.useMutation({
@@ -178,13 +178,13 @@ export default function Destaques() {
       return;
     }
 
-    if (!condominioAtivo?.id) {
+    if (!obraAtivo?.id) {
       toast.error("Selecione uma organização");
       return;
     }
 
     const payload = {
-      condominioId: condominioAtivo.id,
+      obraId: obraAtivo.id,
       titulo: formData.titulo,
       subtitulo: formData.subtitulo || undefined,
       descricao: formData.descricao || undefined,
@@ -300,7 +300,7 @@ export default function Destaques() {
     }));
   };
 
-  if (!condominioAtivo) {
+  if (!obraAtivo) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-muted-foreground">Selecione uma organização para gerenciar os destaques.</p>

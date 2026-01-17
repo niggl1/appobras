@@ -87,9 +87,9 @@ const iconMap: Record<string, React.ElementType> = {
   classificados: ShoppingBag,
   caronas: Truck,
   achados_perdidos: HelpCircle,
-  moradores: Users,
+  colaboradores: Users,
   funcionarios: Briefcase,
-  notificar_morador: Bell,
+  notificar_colaborador: Bell,
   documentos: FileText,
   regimento: BookOpen,
   regras_normas: FileCheck,
@@ -106,7 +106,7 @@ const iconMap: Record<string, React.ElementType> = {
   publicidade: Sparkles,
   parceiros: HeartHandshake,
   personalizado: Zap,
-  mensagem_sindico: MessageSquare,
+  mensagem_engenheiro: MessageSquare,
   destaques: Lightbulb,
   novidades: Newspaper,
   wifi: Wifi,
@@ -134,9 +134,9 @@ const moduleRouteMap: Record<string, string> = {
   classificados: "/dashboard/classificados",
   caronas: "/dashboard/caronas",
   achados_perdidos: "/dashboard/achados",
-  moradores: "/dashboard/moradores",
+  colaboradores: "/dashboard/colaboradores",
   funcionarios: "/dashboard/funcionarios",
-  notificar_morador: "/dashboard/notificar-morador",
+  notificar_colaborador: "/dashboard/notificar-colaborador",
   documentos: "/dashboard/documentos",
   regimento: "/dashboard/regras",
   regras_normas: "/dashboard/regras",
@@ -145,19 +145,19 @@ const moduleRouteMap: Record<string, string> = {
   albuns: "/dashboard/galeria",
   vagas: "/dashboard/vagas",
   estacionamento: "/dashboard/vagas",
-  areas_comuns: "/dashboard/condominio",
+  areas_comuns: "/dashboard/obra",
   reservas: "/dashboard/reservas",
-  sobre: "/dashboard/condominio",
-  contatos: "/dashboard/condominio",
-  localizacao: "/dashboard/condominio",
+  sobre: "/dashboard/obra",
+  contatos: "/dashboard/obra",
+  localizacao: "/dashboard/obra",
   publicidade: "/dashboard/publicidade",
   parceiros: "/dashboard/publicidade",
   personalizado: "/dashboard/personalizado",
-  mensagem_sindico: "/dashboard/condominio",
+  mensagem_engenheiro: "/dashboard/obra",
   destaques: "/dashboard/destaques",
   novidades: "/dashboard/avisos",
-  wifi: "/dashboard/condominio",
-  portaria: "/dashboard/condominio",
+  wifi: "/dashboard/obra",
+  portaria: "/dashboard/obra",
 };
 
 // Mapeamento de cores de fundo
@@ -222,7 +222,7 @@ export default function AppViewer() {
 
   const appUrl = typeof window !== 'undefined' ? window.location.href : '';
   const appName = appData?.nome || 'App';
-  const condominioName = appData?.condominio?.nome || 'Condomínio';
+  const obraName = appData?.obra?.nome || 'Obra';
 
   const handleCopyLink = async () => {
     try {
@@ -236,13 +236,13 @@ export default function AppViewer() {
   };
 
   const handleShareWhatsApp = () => {
-    const message = encodeURIComponent(`Olá! Confira o app "${appName}" do ${condominioName}:\n\n${appUrl}`);
+    const message = encodeURIComponent(`Olá! Confira o app "${appName}" do ${obraName}:\n\n${appUrl}`);
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };
 
   const handleShareEmail = () => {
-    const subject = encodeURIComponent(`App ${appName} - ${condominioName}`);
-    const body = encodeURIComponent(`Olá!\n\nConfira o app "${appName}" do ${condominioName}:\n\n${appUrl}\n\nAtenciosamente.`);
+    const subject = encodeURIComponent(`App ${appName} - ${obraName}`);
+    const body = encodeURIComponent(`Olá!\n\nConfira o app "${appName}" do ${obraName}:\n\n${appUrl}\n\nAtenciosamente.`);
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
   };
 
@@ -320,7 +320,7 @@ export default function AppViewer() {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-foreground">{appData.nome}</h1>
-                <p className="text-xs text-muted-foreground">{appData.condominio?.nome}</p>
+                <p className="text-xs text-muted-foreground">{appData.obra?.nome}</p>
               </div>
             </div>
             
@@ -445,8 +445,8 @@ export default function AppViewer() {
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 pt-10 text-white">
                   <p className="text-xs uppercase tracking-wider opacity-80">Edição {currentEdition}</p>
                   <h2 className="text-xl font-bold mt-1">{appData.nome}</h2>
-                  {appData.condominio?.nome && (
-                    <p className="text-sm opacity-80 mt-1">{appData.condominio.nome}</p>
+                  {appData.obra?.nome && (
+                    <p className="text-sm opacity-80 mt-1">{appData.obra.nome}</p>
                   )}
                 </div>
 

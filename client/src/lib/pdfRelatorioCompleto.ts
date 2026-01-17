@@ -123,7 +123,7 @@ export async function gerarRelatorioProfissional(
     doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
     
     // Texto do rodapé
-    const rodapeTexto = config.rodapeTexto || "App Manutenção - Sistema Universal de Manutenção";
+    const rodapeTexto = config.rodapeTexto || "AppObras - Sistema Universal de Manutenção";
     doc.text(rodapeTexto, margin, pageHeight - 12);
     
     if (config.rodapeContato) {

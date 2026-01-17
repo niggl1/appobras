@@ -578,8 +578,8 @@ export default function MagazineViewer() {
       <header className="bg-black/30 backdrop-blur-lg border-b border-white/10 py-3 px-4">
         <div className="container flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo-appsindico.png" alt="App Síndico" className="w-8 h-8 object-contain" />
-            <img src="/logo-appsindico-texto.png" alt="App Síndico" className="h-5 object-contain hidden sm:inline" />
+            <img src="/logo-appengenheiro.png" alt="App Engenheiro" className="w-8 h-8 object-contain" />
+            <img src="/logo-appengenheiro-texto.png" alt="App Engenheiro" className="h-5 object-contain hidden sm:inline" />
           </Link>
 
           <div className="flex items-center gap-2">
@@ -1031,7 +1031,7 @@ function getPageTitle(page: any): string {
       return "Ocorrências";
     case "checklists":
       return "Checklists";
-    case "mensagem_sindico":
+    case "mensagem_engenheiro":
       return "Mensagem do Gestor";
     case "avisos":
       return "Avisos";
@@ -1078,8 +1078,8 @@ function PageContent({ page, onItemClick, onNavigateToSection }: { page: any; on
       return <OcorrenciasPage content={page.content} onItemClick={onItemClick} />;
     case "checklists":
       return <ChecklistsPage content={page.content} onItemClick={onItemClick} />;
-    case "mensagem_sindico":
-      return <MensagemSindicoPage content={page.content} />;
+    case "mensagem_engenheiro":
+      return <MensagemEngenheiroPage content={page.content} />;
     case "avisos":
       return <AvisosPage content={page.content} />;
     case "eventos":
@@ -1131,12 +1131,12 @@ function CoverPage({ content }: { content: any }) {
       )}
       
       <div className="relative z-10">
-        {/* Logo do condomínio ou ícone padrão */}
+        {/* Logo do obra ou ícone padrão */}
         {content.logoUrl ? (
           <div className="w-24 h-24 rounded-2xl overflow-hidden mb-6 mx-auto shadow-lg border-2 border-white/20">
             <img 
               src={content.logoUrl} 
-              alt="Logo do Condomínio" 
+              alt="Logo do Obra" 
               className="w-full h-full object-cover"
             />
           </div>
@@ -1176,30 +1176,30 @@ function CoverPage({ content }: { content: any }) {
           "text-sm mt-8",
           hasBackgroundImage ? "text-white/70" : "text-muted-foreground"
         )}>
-          App Síndico
+          App Engenheiro
         </p>
       </div>
     </div>
   );
 }
 
-function MensagemSindicoPage({ content }: { content: any }) {
+function MensagemEngenheiroPage({ content }: { content: any }) {
   return (
     <div className="h-full flex flex-col p-8">
       <div className="text-center mb-6">
         <h2 className="font-serif text-2xl font-bold text-foreground">
-          {content.titulo || "Mensagem do Síndico"}
+          {content.titulo || "Mensagem do Engenheiro"}
         </h2>
         <div className="section-divider mt-3" />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center">
-        {/* Foto do Síndico */}
+        {/* Foto do Engenheiro */}
         {content.foto ? (
           <div className="w-28 h-28 rounded-full overflow-hidden mb-4 ring-4 ring-primary/20 shadow-lg">
             <img
               src={content.foto}
-              alt={content.nome || "Síndico"}
+              alt={content.nome || "Engenheiro"}
               className="w-full h-full object-cover"
             />
           </div>
@@ -1210,9 +1210,9 @@ function MensagemSindicoPage({ content }: { content: any }) {
         )}
         
         <h3 className="font-serif text-xl font-semibold text-foreground">
-          {content.nome || "Síndico"}
+          {content.nome || "Engenheiro"}
         </h3>
-        <p className="text-sm text-muted-foreground mb-6">{content.cargo || "Síndico"}</p>
+        <p className="text-sm text-muted-foreground mb-6">{content.cargo || "Engenheiro"}</p>
 
         <blockquote className="text-center italic text-muted-foreground leading-relaxed max-w-md px-4">
           "{content.mensagem}"
@@ -1903,7 +1903,7 @@ function BackCoverPage({ content }: { content: any }) {
       <p className="text-muted-foreground mb-8">{content.mensagem}</p>
       <div className="section-divider" />
       <p className="text-sm text-muted-foreground mt-8">
-        Criado com App Síndico
+        Criado com App Engenheiro
       </p>
     </div>
   );
@@ -1938,7 +1938,7 @@ function GaleriaPage({ content }: { content: any }) {
       <div className="text-center mb-4">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-purple-100 text-violet-800 text-sm font-medium mb-2">
           <Image className="w-4 h-4" />
-          Memórias do Condomínio
+          Memórias do Obra
         </div>
         <h2 className="font-serif text-xl font-bold text-foreground">
           {content.titulo}
@@ -2182,7 +2182,7 @@ function PersonalizadoPage({ content }: { content: any }) {
       {!content.descricao && (!content.imagens || content.imagens.length === 0) && (
         <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
           <Sparkles className="w-12 h-12 mb-4 opacity-50" />
-          <p>Esta página pode ser personalizada pelo síndico</p>
+          <p>Esta página pode ser personalizada pelo engenheiro</p>
           <p className="text-sm">Adicione título, descrição, imagens, links e muito mais!</p>
         </div>
       )}

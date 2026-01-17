@@ -33,11 +33,11 @@ import { toast } from "sonner";
 import VotacaoForm from "@/components/forms/VotacaoForm";
 
 export default function VotacoesPage() {
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   const { data: revistas } = trpc.revista.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   const revistaId = revistas?.[0]?.id || 0;
 
@@ -99,7 +99,7 @@ export default function VotacoesPage() {
     setShowDetailDialog(true);
   };
 
-  if (!condominios?.length) {
+  if (!obras?.length) {
     return (
       <div className="space-y-6">
         <div>

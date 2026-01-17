@@ -335,7 +335,7 @@ export function ItemCompartilhadoPage() {
             <ComentariosSection
               itemId={item.id}
               itemTipo={tipo as "vistoria" | "manutencao" | "ocorrencia" | "checklist"}
-              condominioId={item.condominioId}
+              obraId={item.obraId}
               editavel={editavel}
             />
           </CardContent>
@@ -344,7 +344,7 @@ export function ItemCompartilhadoPage() {
 
       {/* Footer */}
       <div className="text-center py-8 text-sm text-muted-foreground">
-        <p>Compartilhado via App Manutenção</p>
+        <p>Compartilhado via AppObras</p>
       </div>
     </div>
   );

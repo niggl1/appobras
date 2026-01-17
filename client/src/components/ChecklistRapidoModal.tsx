@@ -27,7 +27,7 @@ import { toast } from "sonner";
 interface ChecklistRapidoModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  condominioId: number;
+  obraId: number;
   onSuccess?: () => void;
 }
 
@@ -59,7 +59,7 @@ interface ChecklistRapido {
 export function ChecklistRapidoModal({
   open,
   onOpenChange,
-  condominioId,
+  obraId,
   onSuccess,
 }: ChecklistRapidoModalProps) {
   const [checklists, setChecklists] = useState<ChecklistRapido[]>([]);

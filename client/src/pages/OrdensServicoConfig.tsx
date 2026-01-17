@@ -101,7 +101,7 @@ const corOptions = [
 
 export default function OrdensServicoConfig() {
   const [, navigate] = useLocation();
-  const { condominioAtivo } = useCondominioAtivo();
+  const { obraAtivo } = useCondominioAtivo();
   const [activeTab, setActiveTab] = useState("categorias");
   
   // Modal states
@@ -119,28 +119,28 @@ export default function OrdensServicoConfig() {
 
   // Queries
   const { data: categorias, refetch: refetchCategorias } = trpc.ordensServico.getCategorias.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: prioridades, refetch: refetchPrioridades } = trpc.ordensServico.getPrioridades.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: statusList, refetch: refetchStatus } = trpc.ordensServico.getStatus.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: setores, refetch: refetchSetores } = trpc.ordensServico.getSetores.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: configuracoes, refetch: refetchConfiguracoes } = trpc.ordensServico.getConfiguracoes.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   // Mutations
@@ -266,7 +266,7 @@ export default function OrdensServicoConfig() {
     return found?.icon || Circle;
   };
 
-  if (!condominioAtivo) {
+  if (!obraAtivo) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-gray-500">Selecione uma organização para continuar</p>
@@ -612,7 +612,7 @@ export default function OrdensServicoConfig() {
                       checked={configuracoes?.habilitarOrcamentos || false}
                       onCheckedChange={(checked) => {
                         updateConfiguracoes.mutate({
-                          condominioId: condominioAtivo.id,
+                          obraId: obraAtivo.id,
                           habilitarOrcamentos: checked,
                         });
                       }}
@@ -628,7 +628,7 @@ export default function OrdensServicoConfig() {
                       checked={configuracoes?.habilitarAprovacaoOrcamento || false}
                       onCheckedChange={(checked) => {
                         updateConfiguracoes.mutate({
-                          condominioId: condominioAtivo.id,
+                          obraId: obraAtivo.id,
                           habilitarAprovacaoOrcamento: checked,
                         });
                       }}
@@ -644,7 +644,7 @@ export default function OrdensServicoConfig() {
                       checked={configuracoes?.habilitarGestaoFinanceira || false}
                       onCheckedChange={(checked) => {
                         updateConfiguracoes.mutate({
-                          condominioId: condominioAtivo.id,
+                          obraId: obraAtivo.id,
                           habilitarGestaoFinanceira: checked,
                         });
                       }}
@@ -660,7 +660,7 @@ export default function OrdensServicoConfig() {
                       checked={configuracoes?.habilitarRelatoriosGastos || false}
                       onCheckedChange={(checked) => {
                         updateConfiguracoes.mutate({
-                          condominioId: condominioAtivo.id,
+                          obraId: obraAtivo.id,
                           habilitarRelatoriosGastos: checked,
                         });
                       }}
@@ -676,7 +676,7 @@ export default function OrdensServicoConfig() {
                       checked={configuracoes?.habilitarVinculoManutencao || false}
                       onCheckedChange={(checked) => {
                         updateConfiguracoes.mutate({
-                          condominioId: condominioAtivo.id,
+                          obraId: obraAtivo.id,
                           habilitarVinculoManutencao: checked,
                         });
                       }}
@@ -765,7 +765,7 @@ export default function OrdensServicoConfig() {
                       return;
                     }
                     createCategoria.mutate({
-                      condominioId: condominioAtivo.id,
+                      obraId: obraAtivo.id,
                       nome: novaCategoria.nome,
                       icone: novaCategoria.icone,
                       cor: novaCategoria.cor,
@@ -867,7 +867,7 @@ export default function OrdensServicoConfig() {
                       return;
                     }
                     createPrioridade.mutate({
-                      condominioId: condominioAtivo.id,
+                      obraId: obraAtivo.id,
                       nome: novaPrioridade.nome,
                       icone: novaPrioridade.icone,
                       cor: novaPrioridade.cor,
@@ -968,7 +968,7 @@ export default function OrdensServicoConfig() {
                       return;
                     }
                     createStatus.mutate({
-                      condominioId: condominioAtivo.id,
+                      obraId: obraAtivo.id,
                       nome: novoStatus.nome,
                       icone: novoStatus.icone,
                       cor: novoStatus.cor,
@@ -1028,7 +1028,7 @@ export default function OrdensServicoConfig() {
                       return;
                     }
                     createSetor.mutate({
-                      condominioId: condominioAtivo.id,
+                      obraId: obraAtivo.id,
                       nome: novoSetor.nome,
                       descricao: novoSetor.descricao || undefined,
                     });

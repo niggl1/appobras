@@ -8,11 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Building2, Mail, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 
-export default function MoradorRecuperarSenha() {
+export default function ColaboradorRecuperarSenha() {
   const [email, setEmail] = useState("");
   const [enviado, setEnviado] = useState(false);
 
-  const solicitarRecuperacao = (trpc.morador as any).solicitarRecuperacaoSenha.useMutation({
+  const solicitarRecuperacao = (trpc.colaborador as any).solicitarRecuperacaoSenha.useMutation({
     onSuccess: (data: any) => {
       setEnviado(true);
       toast.success("Solicitação enviada!");
@@ -62,7 +62,7 @@ export default function MoradorRecuperarSenha() {
               >
                 Tentar outro e-mail
               </Button>
-              <Link href="/morador/login">
+              <Link href="/colaborador/login">
                 <Button variant="ghost" className="w-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao login
@@ -121,7 +121,7 @@ export default function MoradorRecuperarSenha() {
             </Button>
 
             <div className="text-center">
-              <Link href="/morador/login">
+              <Link href="/colaborador/login">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao login

@@ -7,16 +7,16 @@ import { Zap, Loader2, Settings } from "lucide-react";
 import { iconMap, CORES_FUNCOES_RAPIDAS } from "./QuickFunctionsEditor";
 
 interface FuncoesRapidasGridProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function FuncoesRapidasGrid({ condominioId }: FuncoesRapidasGridProps) {
+export default function FuncoesRapidasGrid({ obraId }: FuncoesRapidasGridProps) {
   const [, setLocation] = useLocation();
   
   // Query para buscar funções rápidas
   const { data: funcoesRapidas, isLoading } = trpc.funcoesRapidas.listar.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
 
   if (isLoading) {

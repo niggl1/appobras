@@ -163,7 +163,7 @@ export default function MembroLoginPage() {
 
         {/* Rodapé */}
         <p className="text-center text-sm text-gray-400 mt-6">
-          App Manutenção © {new Date().getFullYear()}
+          AppObras © {new Date().getFullYear()}
         </p>
       </div>
     </div>

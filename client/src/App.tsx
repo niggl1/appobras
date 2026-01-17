@@ -55,7 +55,6 @@ import RelatorioBuilder from "./pages/RelatorioBuilder";
 import OrdensServico from "@/pages/OrdensServico";
 import OrdemServicoDetalhe from "@/pages/OrdemServicoDetalhe";
 import OrdensServicoConfig from "@/pages/OrdensServicoConfig";
-// CriarProjeto removido - sistema focado em manutenção
 import AppViewer from "./pages/AppViewer";
 import AppView from "./pages/AppView";
 import HistoricoTarefasSimples from "./pages/HistoricoTarefasSimples";
@@ -64,6 +63,19 @@ import TimelinePage from "./pages/TimelinePage";
 import GestorRedefinirSenha from "./pages/GestorRedefinirSenha";
 import RelatoriosManutencaoPage from "./pages/RelatoriosManutencaoPage";
 import WhatsAppButton from "./components/WhatsAppButton";
+
+// Novas páginas do AppObras
+import OrcamentosPage from "./pages/OrcamentosPage";
+import MaoDeObraPage from "./pages/MaoDeObraPage";
+import FornecedoresPage from "./pages/FornecedoresPage";
+import DiarioObraPage from "./pages/DiarioObraPage";
+import MedicoesPage from "./pages/MedicoesPage";
+import DashboardObras from "./pages/DashboardObras";
+import GaleriaPage from "./pages/GaleriaPage";
+import MapaObrasPage from "./pages/MapaObrasPage";
+
+// Componentes Mobile
+import { MobileHeader, MobileBottomNav } from "./components/MobileNav";
 
 function Router() {
   return (
@@ -105,11 +117,11 @@ function Router() {
       {/* Public notification response */}
       <Route path="/notificacao/:token" component={NotificacaoPublicaPage} />
       
-      {/* Portal do Morador */}
-      <Route path="/morador/login" component={MoradorLogin} />
-      <Route path="/morador/recuperar-senha" component={MoradorRecuperarSenha} />
-      <Route path="/morador/redefinir-senha/:token" component={MoradorRedefinirSenha} />
-      <Route path="/morador" component={MoradorDashboard} />
+      {/* Portal do Colaborador */}
+      <Route path="/colaborador/login" component={MoradorLogin} />
+      <Route path="/colaborador/recuperar-senha" component={MoradorRecuperarSenha} />
+      <Route path="/colaborador/redefinir-senha/:token" component={MoradorRedefinirSenha} />
+      <Route path="/colaborador" component={MoradorDashboard} />
       
       {/* Portal do Membro da Equipe */}
       <Route path="/equipe/login" component={MembroLogin} />
@@ -128,7 +140,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard/notificacoes" component={Notificacoes} />
       <Route path="/dashboard/vencimentos">{() => { window.location.href = '/dashboard/agenda-vencimentos'; return null; }}</Route>
-      <Route path="/dashboard/notificar-morador" component={NotificarMoradorPage} />
+      <Route path="/dashboard/notificar-colaborador" component={NotificarMoradorPage} />
       <Route path="/dashboard/historico-infracoes" component={HistoricoInfracoesPage} />
       <Route path="/admin/funcoes" component={AdminFuncoes} />
       <Route path="/admin/usuarios" component={AdminUsuarios} />
@@ -136,17 +148,26 @@ function Router() {
       <Route path="/dashboard/historico-acessos" component={HistoricoAcessosPage} />
       <Route path="/dashboard/apps/novo" component={AppBuilder} />
       <Route path="/dashboard/relatorios/novo" component={RelatorioBuilder} />
-      {/* Rota de ordens-servico agora usa o Dashboard.tsx */}
       <Route path="/dashboard/ordens-servico/configuracoes" component={OrdensServicoConfig} />
       <Route path="/dashboard/ordens-servico/nova" component={OrdemServicoDetalhe} />
       <Route path="/dashboard/ordens-servico/:id" component={OrdemServicoDetalhe} />
-      {/* Rota criar-projeto removida - sistema focado em manutenção */}
       <Route path="/dashboard/funcoes-simples" component={HistoricoTarefasSimples} />
-      <Route path="/dashboard/relatorios-manutencao" component={RelatoriosManutencaoPage} />
+      <Route path="/dashboard/relatorios-obra" component={RelatoriosManutencaoPage} />
       <Route path="/dashboard/compartilhamentos" component={CompartilhamentosPage} />
       <Route path="/dashboard/revistas/nova">{() => { window.location.href = '/dashboard/revistas'; return null; }}</Route>
+      
+      {/* Novas rotas do AppObras */}
+      <Route path="/dashboard/orcamentos" component={OrcamentosPage} />
+      <Route path="/dashboard/mao-de-obra" component={MaoDeObraPage} />
+      <Route path="/dashboard/fornecedores" component={FornecedoresPage} />
+      <Route path="/dashboard/diario-obra" component={DiarioObraPage} />
+      <Route path="/dashboard/medicoes" component={MedicoesPage} />
+      <Route path="/dashboard/dashboard-obras" component={DashboardObras} />
+      <Route path="/dashboard/galeria" component={GaleriaPage} />
+      <Route path="/dashboard/mapa-obras" component={MapaObrasPage} />
+      
       <Route path="/dashboard/:section" component={Dashboard} />
-      <Route path="/condominio/:id" component={CondominioManager} />
+      <Route path="/obra/:id" component={CondominioManager} />
       <Route path="/revista/editor/:id" component={RevistaEditor} />
       
       {/* Fallback */}
@@ -162,7 +183,17 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          {/* Header Mobile - visível apenas em telas pequenas */}
+          <MobileHeader />
+          
+          {/* Conteúdo principal com padding para header e bottom nav em mobile */}
+          <main className="md:pt-0 pt-14 pb-16 md:pb-0">
+            <Router />
+          </main>
+          
+          {/* Navegação inferior mobile */}
+          <MobileBottomNav />
+          
           <WhatsAppButton />
         </TooltipProvider>
       </ThemeProvider>

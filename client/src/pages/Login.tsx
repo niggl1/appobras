@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, Eye, EyeOff, AlertTriangle } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, AlertTriangle, HardHat } from "lucide-react";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -47,18 +47,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
+          <Link href="/" className="inline-flex flex-col items-center gap-2">
             <img 
-              src="/logo-login.png" 
-              alt="App Manutenção" 
-              className="h-24 mx-auto"
+              src="/logo-appobras.png" 
+              alt="AppObras" 
+              className="h-24 w-24 mx-auto"
             />
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-gray-900">App</span>
+              <span className="text-2xl font-bold text-amber-500">Obras</span>
+            </div>
           </Link>
-          <p className="text-muted-foreground mt-2">Acesse sua conta</p>
+          <p className="text-muted-foreground mt-2">Sistema de Gestão de Obras e Construções</p>
         </div>
 
         {/* Alerta de Bloqueio */}
@@ -72,9 +76,12 @@ export default function Login() {
           </Alert>
         )}
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border-0 border-t-4 border-t-amber-500">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-center">Entrar</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+              <HardHat className="h-6 w-6 text-amber-500" />
+              Entrar
+            </CardTitle>
             <CardDescription className="text-center">
               Digite seu email e senha para acessar o painel
             </CardDescription>
@@ -92,7 +99,7 @@ export default function Login() {
                     placeholder="seu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 focus:ring-amber-500 focus:border-amber-500"
                     disabled={loginMutation.isPending}
                   />
                 </div>
@@ -103,7 +110,7 @@ export default function Login() {
                   <Label htmlFor="senha">Senha</Label>
                   <Link 
                     href="/recuperar-senha" 
-                    className="text-sm text-primary hover:underline"
+                    className="text-sm text-amber-600 hover:text-amber-700 hover:underline"
                   >
                     Esqueci minha senha
                   </Link>
@@ -116,7 +123,7 @@ export default function Login() {
                     placeholder="••••••••"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 focus:ring-amber-500 focus:border-amber-500"
                     disabled={loginMutation.isPending}
                   />
                   <button
@@ -133,7 +140,7 @@ export default function Login() {
             <CardFooter className="flex flex-col gap-4">
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold" 
                 size="lg"
                 disabled={loginMutation.isPending}
               >
@@ -149,7 +156,7 @@ export default function Login() {
 
               <div className="text-center text-sm text-muted-foreground">
                 Não tem uma conta?{" "}
-                <Link href="/registar" className="text-primary hover:underline font-medium">
+                <Link href="/registar" className="text-amber-600 hover:text-amber-700 hover:underline font-medium">
                   Criar conta
                 </Link>
               </div>

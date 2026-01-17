@@ -51,7 +51,7 @@ export default function FuncionarioRecuperarSenha() {
                   Se o email <strong>{email}</strong> estiver cadastrado, o administrador receberá uma notificação com o link de recuperação.
                 </p>
                 <p className="text-sm text-slate-500">
-                  Entre em contacto com o síndico ou administrador da organização para receber o link de recuperação de senha.
+                  Entre em contacto com o engenheiro ou administrador da organização para receber o link de recuperação de senha.
                 </p>
                 <div className="pt-4">
                   <Button

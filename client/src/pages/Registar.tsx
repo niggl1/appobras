@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, Eye, EyeOff, User, CheckCircle, Building2, Users } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, User, CheckCircle, Building2, Users, HardHat } from "lucide-react";
 
 export default function Registar() {
   const [, setLocation] = useLocation();
@@ -17,7 +17,7 @@ export default function Registar() {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [tipoConta, setTipoConta] = useState<"sindico" | "administradora">("sindico");
+  const [tipoConta, setTipoConta] = useState<"engenheiro" | "construtora">("engenheiro");
 
   const registarMutation = trpc.auth.registar.useMutation({
     onSuccess: (data) => {
@@ -62,23 +62,30 @@ export default function Registar() {
   const senhasCoicidem = senha === confirmarSenha && confirmarSenha.length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
+          <Link href="/" className="inline-flex flex-col items-center gap-2">
             <img 
-              src="/logo-appsindico-horizontal.png" 
-              alt="App Manutenção" 
-              className="h-16 mx-auto"
+              src="/logo-appobras.png" 
+              alt="AppObras" 
+              className="h-20 w-20 mx-auto"
             />
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-gray-900">App</span>
+              <span className="text-2xl font-bold text-amber-500">Obras</span>
+            </div>
           </Link>
           <p className="text-muted-foreground mt-2">Crie sua conta</p>
         </div>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border-0 border-t-4 border-t-amber-500">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-center">Criar Conta</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+              <HardHat className="h-6 w-6 text-amber-500" />
+              Criar Conta
+            </CardTitle>
             <CardDescription className="text-center">
               Preencha os dados abaixo para começar
             </CardDescription>
@@ -91,40 +98,40 @@ export default function Registar() {
                 <Label>Tipo de Conta</Label>
                 <RadioGroup
                   value={tipoConta}
-                  onValueChange={(value) => setTipoConta(value as "sindico" | "administradora")}
+                  onValueChange={(value) => setTipoConta(value as "engenheiro" | "construtora")}
                   className="grid grid-cols-2 gap-3"
                 >
                   <div>
                     <RadioGroupItem
-                      value="sindico"
-                      id="sindico"
+                      value="engenheiro"
+                      id="engenheiro"
                       className="peer sr-only"
                     />
                     <Label
-                      htmlFor="sindico"
-                      className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                      htmlFor="engenheiro"
+                      className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-amber-50 hover:border-amber-300 peer-data-[state=checked]:border-amber-500 peer-data-[state=checked]:bg-amber-50 cursor-pointer transition-all"
                     >
-                      <Building2 className="h-6 w-6 mb-2" />
-                      <span className="font-medium">Síndico</span>
+                      <Building2 className="h-6 w-6 mb-2 text-amber-600" />
+                      <span className="font-medium">Engenheiro</span>
                       <span className="text-xs text-muted-foreground text-center mt-1">
-                        Gerir 1 condomínio
+                        Gerir 1 obra
                       </span>
                     </Label>
                   </div>
                   <div>
                     <RadioGroupItem
-                      value="administradora"
-                      id="administradora"
+                      value="construtora"
+                      id="construtora"
                       className="peer sr-only"
                     />
                     <Label
-                      htmlFor="administradora"
-                      className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+                      htmlFor="construtora"
+                      className="flex flex-col items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-amber-50 hover:border-amber-300 peer-data-[state=checked]:border-amber-500 peer-data-[state=checked]:bg-amber-50 cursor-pointer transition-all"
                     >
-                      <Users className="h-6 w-6 mb-2" />
-                      <span className="font-medium">Administradora</span>
+                      <Users className="h-6 w-6 mb-2 text-amber-600" />
+                      <span className="font-medium">Construtora</span>
                       <span className="text-xs text-muted-foreground text-center mt-1">
-                        Gerir vários condomínios
+                        Gerir várias obras
                       </span>
                     </Label>
                   </div>
@@ -133,14 +140,14 @@ export default function Registar() {
 
               <div className="space-y-2">
                 <Label htmlFor="nome">
-                  {tipoConta === "administradora" ? "Nome da Empresa" : "Nome Completo"}
+                  {tipoConta === "construtora" ? "Nome da Empresa" : "Nome Completo"}
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="nome"
                     type="text"
-                    placeholder={tipoConta === "administradora" ? "Nome da administradora" : "Seu nome completo"}
+                    placeholder={tipoConta === "construtora" ? "Nome da construtora" : "Seu nome completo"}
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     className="pl-10"
@@ -248,7 +255,7 @@ export default function Registar() {
             <CardFooter className="flex flex-col gap-4">
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold" 
                 size="lg"
                 disabled={registarMutation.isPending || !emailValido || !emailsCoicidem || !senhaValida || !senhasCoicidem}
               >
@@ -264,7 +271,7 @@ export default function Registar() {
 
               <div className="text-center text-sm text-muted-foreground">
                 Já tem uma conta?{" "}
-                <Link href="/login" className="text-primary hover:underline font-medium">
+                <Link href="/login" className="text-amber-600 hover:text-amber-700 hover:underline font-medium">
                   Entrar
                 </Link>
               </div>

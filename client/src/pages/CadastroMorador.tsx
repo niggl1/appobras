@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Building2, User, Mail, Phone, Home, CheckCircle2, Loader2, Lock, Eye, EyeOff } from "lucide-react";
 
-export default function CadastroMorador() {
+export default function CadastroColaborador() {
   const params = useParams<{ token: string }>();
   const token = params.token;
   
@@ -34,13 +34,13 @@ export default function CadastroMorador() {
 
   // Buscar informações da organização pelo token
   // @ts-ignore - Método existe no backend
-  const { data: condominio, isLoading: condominioLoading, error: condominioError } = (trpc.condominio as any).getByToken.useQuery(
+  const { data: obra, isLoading: obraLoading, error: obraError } = (trpc.obra as any).getByToken.useQuery(
     { token: token || "" },
     { enabled: !!token }
   );
 
   // @ts-ignore - Método existe no backend
-  const createMorador = (trpc.morador as any).createPublic.useMutation({
+  const createColaborador = (trpc.colaborador as any).createPublic.useMutation({
     onSuccess: () => {
       setIsSubmitted(true);
       toast.success("Cadastro realizado com sucesso!");
@@ -82,7 +82,7 @@ export default function CadastroMorador() {
       return;
     }
 
-    createMorador.mutate({
+    createColaborador.mutate({
       token,
       nome: form.nome,
       email: form.email,
@@ -98,7 +98,7 @@ export default function CadastroMorador() {
     });
   };
 
-  if (condominioLoading) {
+  if (obraLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -111,7 +111,7 @@ export default function CadastroMorador() {
     );
   }
 
-  if (condominioError || !condominio) {
+  if (obraError || !obra) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -157,10 +157,10 @@ export default function CadastroMorador() {
       <div className="max-w-2xl mx-auto">
         {/* Header com logo da organização */}
         <div className="text-center mb-8">
-          {condominio.logoUrl ? (
+          {obra.logoUrl ? (
             <img 
-              src={condominio.logoUrl} 
-              alt={condominio.nome}
+              src={obra.logoUrl} 
+              alt={obra.nome}
               className="w-24 h-24 object-contain mx-auto mb-4 rounded-xl shadow-md"
             />
           ) : (
@@ -168,8 +168,8 @@ export default function CadastroMorador() {
               <Building2 className="w-12 h-12 text-white" />
             </div>
           )}
-          <h1 className="text-2xl font-bold text-foreground">{condominio.nome}</h1>
-          <p className="text-muted-foreground">Cadastro de Morador</p>
+          <h1 className="text-2xl font-bold text-foreground">{obra.nome}</h1>
+          <p className="text-muted-foreground">Cadastro de Colaborador</p>
         </div>
 
         <Card className="shadow-lg">
@@ -179,7 +179,7 @@ export default function CadastroMorador() {
               Formulário de Cadastro
             </CardTitle>
             <CardDescription className="text-blue-100">
-              Preencha seus dados para se cadastrar como morador
+              Preencha seus dados para se cadastrar como colaborador
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
@@ -214,7 +214,7 @@ export default function CadastroMorador() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="tipo">Tipo de Morador *</Label>
+                    <Label htmlFor="tipo">Tipo de Colaborador *</Label>
                     <Select
                       value={form.tipo}
                       onValueChange={(value: any) => setForm({ ...form, tipo: value })}
@@ -250,7 +250,7 @@ export default function CadastroMorador() {
                       placeholder="seu@email.com"
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Será usado para acessar o Portal do Morador</p>
+                    <p className="text-xs text-muted-foreground">Será usado para acessar o Portal do Colaborador</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -326,15 +326,15 @@ export default function CadastroMorador() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Esta senha será usada para acessar o Portal do Morador onde você pode criar classificados e caronas.
+                  Esta senha será usada para acessar o Portal do Colaborador onde você pode criar classificados e caronas.
                 </p>
               </div>
 
-              {/* Endereço no Condomínio */}
+              {/* Endereço no Obra */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
                   <Home className="w-4 h-4 text-amber-500" />
-                  Endereço no Condomínio
+                  Endereço no Obra
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -387,9 +387,9 @@ export default function CadastroMorador() {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-6 text-lg"
-                disabled={createMorador.isPending}
+                disabled={createColaborador.isPending}
               >
-                {createMorador.isPending ? (
+                {createColaborador.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Enviando...
@@ -411,7 +411,7 @@ export default function CadastroMorador() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>Powered by <span className="font-semibold text-blue-600">App Manutenção</span></p>
+          <p>Powered by <span className="font-semibold text-blue-600">AppObras</span></p>
         </div>
       </div>
     </div>

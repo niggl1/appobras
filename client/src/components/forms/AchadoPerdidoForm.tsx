@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import { Loader2, MapPin, FileText, Image as ImageIcon, Heart } from "lucide-react";
 
 interface AchadoPerdidoFormProps {
-  condominioId: number;
+  obraId: number;
   onSuccess: () => void;
 }
 
-export function AchadoPerdidoForm({ condominioId, onSuccess }: AchadoPerdidoFormProps) {
+export function AchadoPerdidoForm({ obraId, onSuccess }: AchadoPerdidoFormProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [localEncontrado, setLocalEncontrado] = useState("");
@@ -54,7 +54,7 @@ export function AchadoPerdidoForm({ condominioId, onSuccess }: AchadoPerdidoForm
     }
     setIsSubmitting(true);
     createAchado.mutate({
-      condominioId,
+      obraId,
       tipo: "achado",
       titulo,
       descricao,

@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { useMoradorAuth } from "./MoradorLogin";
+import { useColaboradorAuth } from "./MoradorLogin";
 import { 
   Building2, 
   LogOut, 
@@ -41,9 +41,9 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-export default function MoradorDashboard() {
+export default function ColaboradorDashboard() {
   const [, navigate] = useLocation();
-  const { token, morador, condominio, isLoading, isLoggedIn, logout } = useMoradorAuth();
+  const { token, colaborador, obra, isLoading, isLoggedIn, logout } = useColaboradorAuth();
   const [activeTab, setActiveTab] = useState("inicio");
   
   // Estados para criação de classificado
@@ -71,18 +71,18 @@ export default function MoradorDashboard() {
   const [dialogCaronaAberto, setDialogCaronaAberto] = useState(false);
   
   // Queries
-  const { data: meusClassificados, refetch: refetchClassificados } = trpc.classificado.listByMorador.useQuery(
-    { moradorId: morador?.id || 0 },
-    { enabled: !!morador?.id }
+  const { data: meusClassificados, refetch: refetchClassificados } = trpc.classificado.listByColaborador.useQuery(
+    { colaboradorId: colaborador?.id || 0 },
+    { enabled: !!colaborador?.id }
   );
   
-  const { data: minhasCaronas, refetch: refetchCaronas } = trpc.carona.listByMorador.useQuery(
-    { moradorId: morador?.id || 0 },
-    { enabled: !!morador?.id }
+  const { data: minhasCaronas, refetch: refetchCaronas } = trpc.carona.listByColaborador.useQuery(
+    { colaboradorId: colaborador?.id || 0 },
+    { enabled: !!colaborador?.id }
   );
   
   // Mutations
-  const criarClassificadoMutation = trpc.classificado.createByMorador.useMutation({
+  const criarClassificadoMutation = trpc.classificado.createByColaborador.useMutation({
     onSuccess: () => {
       toast.success("Classificado criado com sucesso!");
       setDialogClassificadoAberto(false);
@@ -101,7 +101,7 @@ export default function MoradorDashboard() {
     },
   });
   
-  const excluirClassificadoMutation = trpc.classificado.deleteByMorador.useMutation({
+  const excluirClassificadoMutation = trpc.classificado.deleteByColaborador.useMutation({
     onSuccess: () => {
       toast.success("Classificado excluído!");
       refetchClassificados();
@@ -111,7 +111,7 @@ export default function MoradorDashboard() {
     },
   });
   
-  const criarCaronaMutation = trpc.carona.createByMorador.useMutation({
+  const criarCaronaMutation = trpc.carona.createByColaborador.useMutation({
     onSuccess: () => {
       toast.success("Carona publicada com sucesso!");
       setDialogCaronaAberto(false);
@@ -132,7 +132,7 @@ export default function MoradorDashboard() {
     },
   });
   
-  const excluirCaronaMutation = trpc.carona.deleteByMorador.useMutation({
+  const excluirCaronaMutation = trpc.carona.deleteByColaborador.useMutation({
     onSuccess: () => {
       toast.success("Carona excluída!");
       refetchCaronas();
@@ -142,17 +142,17 @@ export default function MoradorDashboard() {
     },
   });
   
-  const logoutMutation = trpc.morador.logout.useMutation({
+  const logoutMutation = trpc.colaborador.logout.useMutation({
     onSuccess: () => {
       logout();
-      navigate("/morador/login");
+      navigate("/colaborador/login");
     },
   });
   
   // Redirecionar se não estiver logado
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
-      navigate("/morador/login");
+      navigate("/colaborador/login");
     }
   }, [isLoading, isLoggedIn, navigate]);
   
@@ -164,7 +164,7 @@ export default function MoradorDashboard() {
   
   const handleCriarClassificado = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !morador) return;
+    if (!token || !colaborador) return;
     
     if (!novoClassificado.titulo.trim()) {
       toast.error("Preencha o título");
@@ -177,14 +177,14 @@ export default function MoradorDashboard() {
       descricao: novoClassificado.descricao || undefined,
       preco: novoClassificado.preco ? parseFloat(novoClassificado.preco) : undefined,
       categoria: novoClassificado.categoria,
-      contato: novoClassificado.contato || morador.email || undefined,
+      contato: novoClassificado.contato || colaborador.email || undefined,
       imagemUrl: novoClassificado.imagemUrl || undefined,
     });
   };
   
   const handleCriarCarona = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !morador) return;
+    if (!token || !colaborador) return;
     
     if (!novaCarona.origem.trim() || !novaCarona.destino.trim()) {
       toast.error("Preencha origem e destino");
@@ -200,7 +200,7 @@ export default function MoradorDashboard() {
       vagas: parseInt(novaCarona.vagas) || 1,
       tipo: novaCarona.tipo,
       observacoes: novaCarona.observacoes || undefined,
-      contato: novaCarona.contato || morador.email || undefined,
+      contato: novaCarona.contato || colaborador.email || undefined,
     });
   };
   
@@ -215,7 +215,7 @@ export default function MoradorDashboard() {
     );
   }
   
-  if (!morador || !condominio) {
+  if (!colaborador || !obra) {
     return null;
   }
   
@@ -226,23 +226,23 @@ export default function MoradorDashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {condominio.logoUrl ? (
-                <img src={condominio.logoUrl} alt={condominio.nome} className="w-10 h-10 rounded-full object-cover" />
+              {obra.logoUrl ? (
+                <img src={obra.logoUrl} alt={obra.nome} className="w-10 h-10 rounded-full object-cover" />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-emerald-600" />
                 </div>
               )}
               <div>
-                <h1 className="font-semibold text-gray-900">{condominio.nome}</h1>
-                <p className="text-sm text-gray-500">Portal do Morador</p>
+                <h1 className="font-semibold text-gray-900">{obra.nome}</h1>
+                <p className="text-sm text-gray-500">Portal do Colaborador</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
-                <p className="font-medium text-gray-900">{morador.nome}</p>
+                <p className="font-medium text-gray-900">{colaborador.nome}</p>
                 <p className="text-sm text-gray-500">
-                  {morador.bloco ? `Bloco ${morador.bloco} - ` : ""}Apt {morador.apartamento}
+                  {colaborador.bloco ? `Bloco ${colaborador.bloco} - ` : ""}Apt {colaborador.apartamento}
                 </p>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -283,9 +283,9 @@ export default function MoradorDashboard() {
                       <User className="w-8 h-8" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold">Olá, {morador.nome?.split(" ")[0]}!</h2>
+                      <h2 className="text-2xl font-bold">Olá, {colaborador.nome?.split(" ")[0]}!</h2>
                       <p className="text-emerald-100">
-                        Bem-vindo ao portal do morador do {condominio.nome}
+                        Bem-vindo ao portal do colaborador do {obra.nome}
                       </p>
                     </div>
                   </div>
@@ -303,12 +303,12 @@ export default function MoradorDashboard() {
                 <CardContent className="space-y-3">
                   <div className="flex items-center gap-2 text-sm">
                     <Home className="w-4 h-4 text-gray-400" />
-                    <span>{morador.bloco ? `Bloco ${morador.bloco} - ` : ""}Apt {morador.apartamento}</span>
+                    <span>{colaborador.bloco ? `Bloco ${colaborador.bloco} - ` : ""}Apt {colaborador.apartamento}</span>
                   </div>
-                  {morador.email && (
+                  {colaborador.email && (
                     <div className="flex items-center gap-2 text-sm">
                       <Mail className="w-4 h-4 text-gray-400" />
-                      <span>{morador.email}</span>
+                      <span>{colaborador.email}</span>
                     </div>
                   )}
                 </CardContent>
@@ -583,7 +583,7 @@ export default function MoradorDashboard() {
                       <Label htmlFor="origem">Origem *</Label>
                       <Input
                         id="origem"
-                        placeholder="Ex: Condomínio"
+                        placeholder="Ex: Obra"
                         value={novaCarona.origem}
                         onChange={(e) => setNovaCarona({...novaCarona, origem: e.target.value})}
                       />

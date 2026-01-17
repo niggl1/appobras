@@ -166,7 +166,7 @@ export default function CompartilhadoPage() {
             {/* Mensagem informativa */}
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 text-center">
-                Para ver todos os detalhes deste item, aceda ao App Manutenção com as suas credenciais.
+                Para ver todos os detalhes deste item, aceda ao AppObras com as suas credenciais.
               </p>
             </div>
           </CardContent>
@@ -174,7 +174,7 @@ export default function CompartilhadoPage() {
           {/* Footer */}
           <div className="border-t px-6 py-4 bg-gray-50">
             <p className="text-xs text-gray-500 text-center">
-              App Manutenção - Sistema de Gestão de Manutenção
+              AppObras - Sistema de Gestão de Manutenção
             </p>
           </div>
         </Card>

@@ -18,12 +18,12 @@ import { ptBR } from "date-fns/locale";
 
 export default function AssembleiaPublica() {
   const { id } = useParams<{ id: string }>();
-  const condominioId = parseInt(id || "0");
+  const obraId = parseInt(id || "0");
 
   // @ts-ignore - TypeScript não reconhece o método ainda
-  const { data: assembleia, isLoading, error } = trpc.condominio.getAssembleiaLink.useQuery(
-    { id: condominioId },
-    { enabled: condominioId > 0 }
+  const { data: assembleia, isLoading, error } = trpc.obra.getAssembleiaLink.useQuery(
+    { id: obraId },
+    { enabled: obraId > 0 }
   );
 
   const handleAcessarAssembleia = () => {
@@ -73,7 +73,7 @@ export default function AssembleiaPublica() {
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Assembleia ainda não agendada</h2>
             <p className="text-gray-600 mb-4">
-              O síndico ainda não configurou o link da assembleia online. Por favor, aguarde ou entre em contato com a administração.
+              O engenheiro ainda não configurou o link da assembleia online. Por favor, aguarde ou entre em contato com a administração.
             </p>
             <Badge variant="outline" className="text-amber-700 border-amber-300 bg-amber-50">
               {assembleia.nome}
@@ -188,7 +188,7 @@ export default function AssembleiaPublica() {
         {/* Footer */}
         <div className="bg-gray-50 px-8 py-4 border-t text-center">
           <p className="text-xs text-gray-500">
-            Powered by <span className="font-semibold text-purple-600">App Manutenção</span>
+            Powered by <span className="font-semibold text-purple-600">AppObras</span>
           </p>
         </div>
       </Card>

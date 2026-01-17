@@ -37,8 +37,8 @@ const features = [
   },
   {
     icon: Users,
-    title: "Gestão de Moradores",
-    description: "Cadastro completo de moradores com informações de contato, unidade e histórico."
+    title: "Gestão de Colaboradores",
+    description: "Cadastro completo de colaboradores com informações de contato, unidade e histórico."
   },
   {
     icon: Shield,
@@ -108,7 +108,7 @@ export default function LandingApp() {
                 <span className="text-sm font-medium">Layout Grid</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
-                Seu Condomínio na
+                Seu Obra na
                 <span className="text-blue-600"> Palma da Mão</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -166,7 +166,7 @@ export default function LandingApp() {
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
-              Tudo que seu Condomínio Precisa
+              Tudo que seu Obra Precisa
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Funcionalidades completas para uma gestão moderna e eficiente
@@ -217,7 +217,7 @@ export default function LandingApp() {
                 <h3 className="text-2xl font-bold text-white mb-2">Acesso Universal</h3>
                 <p className="text-blue-100">
                   Funciona em qualquer navegador, sem necessidade de instalar aplicativos. 
-                  Moradores acessam de smartphones, tablets ou computadores.
+                  Colaboradores acessam de smartphones, tablets ou computadores.
                 </p>
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function LandingApp() {
       <section className="py-20 bg-gray-50">
         <div className="container text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">
-            Pronto para Modernizar seu Condomínio?
+            Pronto para Modernizar seu Obra?
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Crie seu app condominial em minutos e transforme a comunicação com a equipa.

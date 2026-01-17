@@ -62,7 +62,7 @@ import {
 } from "@/components/ui/form-modal";
 
 interface OcorrenciasPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
 const categoriaLabels: Record<string, string> = {
@@ -76,7 +76,7 @@ const categoriaLabels: Record<string, string> = {
   outros: "Outros",
 };
 
-export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) {
+export default function OcorrenciasPage({ obraId }: OcorrenciasPageProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showOcorrenciaRapida, setShowOcorrenciaRapida] = useState(false);
@@ -108,23 +108,23 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
   const utils = trpc.useUtils();
   
   // Buscar dados da organização para obter o logo
-  const { data: condominio } = trpc.condominio.get.useQuery(
-    { id: condominioId },
-    { enabled: !!condominioId }
+  const { data: obra } = trpc.obra.get.useQuery(
+    { id: obraId },
+    { enabled: !!obraId }
   );
   
   const { data: ocorrencias = [], isLoading } = trpc.ocorrencia.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: stats } = trpc.ocorrencia.getStats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: searchResults = [] } = trpc.ocorrencia.searchByProtocolo.useQuery(
-    { protocolo: searchProtocolo, condominioId },
+    { protocolo: searchProtocolo, obraId },
     { enabled: !!searchProtocolo && searchProtocolo.length >= 3 }
   );
   
@@ -278,7 +278,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
       toast.error("Título é obrigatório");
       return;
     }
-    createMutation.mutate({ ...formData, condominioId });
+    createMutation.mutate({ ...formData, obraId });
   };
 
   const handleStatusChange = (ocorrenciaId: number, newStatus: string) => {
@@ -505,7 +505,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Título *"
                   value={formData.titulo}
                   onChange={(v) => setFormData({ ...formData, titulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="titulo_ocorrencia"
                   placeholder="Ex: Barulho excessivo no Bloco B"
                 />
@@ -513,7 +513,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Subtítulo"
                   value={formData.subtitulo}
                   onChange={(v) => setFormData({ ...formData, subtitulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="subtitulo_ocorrencia"
                   placeholder="Descrição breve da ocorrência"
                 />
@@ -640,7 +640,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Responsável pelo atendimento"
                   value={formData.responsavelNome}
                   onChange={(v) => setFormData({ ...formData, responsavelNome: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="responsavel"
                   placeholder="Nome do responsável"
                 />
@@ -654,7 +654,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Localização"
                   value={formData.localizacao}
                   onChange={(v) => setFormData({ ...formData, localizacao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="localizacao"
                   placeholder="Ex: Bloco B - Apto 302"
                 />
@@ -677,7 +677,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Descrição"
                   value={formData.descricao}
                   onChange={(v) => setFormData({ ...formData, descricao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="descricao_ocorrencia"
                   placeholder="Descreva a ocorrência em detalhes..."
                   multiline
@@ -687,7 +687,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
                   label="Observações"
                   value={formData.observacoes}
                   onChange={(v) => setFormData({ ...formData, observacoes: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="observacoes_ocorrencia"
                   placeholder="Observações adicionais..."
                   multiline
@@ -708,7 +708,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <ImageEditSection
                   label="Editar Imagem com Anotações"
-                  logoUrl={condominio?.logoUrl || undefined}
+                  logoUrl={obra?.logoUrl || undefined}
                   onSaveEditedImage={(editedImage) => {
                     setImagens(prev => [...prev, editedImage]);
                     toast.success("Imagem editada adicionada à galeria!");
@@ -926,12 +926,12 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
         itemId={selectedOcorrencia?.id || 0}
         itemTitulo={selectedOcorrencia?.titulo || ""}
         itemProtocolo={selectedOcorrencia?.protocolo || ""}
-        condominioId={condominioId}
+        obraId={obraId}
       />
 
       {/* Modal de Compartilhar com Equipe */}
       <CompartilharComEquipe
-        condominioId={condominioId}
+        obraId={obraId}
         tipo="ocorrencia"
         itemId={selectedOcorrencia?.id || 0}
         itemTitulo={selectedOcorrencia?.titulo || ""}
@@ -944,7 +944,7 @@ export default function OcorrenciasPage({ condominioId }: OcorrenciasPageProps) 
       <TarefasSimplesModal
         open={showOcorrenciaRapida}
         onOpenChange={setShowOcorrenciaRapida}
-        condominioId={condominioId}
+        obraId={obraId}
         tipoInicial="ocorrencia"
         onSuccess={() => {
           utils.ocorrencia.list.invalidate();

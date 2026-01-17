@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 export default function HistoricoAcessosPage() {
-  const [condominioId, setCondominioId] = useState<number | null>(null);
+  const [obraId, setObraId] = useState<number | null>(null);
   const [funcionarioId, setFuncionarioId] = useState<number | null>(null);
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
@@ -45,16 +45,16 @@ export default function HistoricoAcessosPage() {
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
 
-  // Buscar condomínios do usuário
-  const { data: condominios } = trpc.condominio.list.useQuery();
+  // Buscar obras do usuário
+  const { data: obras } = trpc.obra.list.useQuery();
   
   // Selecionar primeira organização automaticamente
-  const condominioSelecionado = condominioId || condominios?.[0]?.id;
+  const obraSelecionado = obraId || obras?.[0]?.id;
 
   // Buscar funcionários da organização
   const { data: funcionariosData } = trpc.funcionario.list.useQuery(
-    { condominioId: condominioSelecionado! },
-    { enabled: !!condominioSelecionado }
+    { obraId: obraSelecionado! },
+    { enabled: !!obraSelecionado }
   );
 
   // Calcular datas de filtro
@@ -69,22 +69,22 @@ export default function HistoricoAcessosPage() {
   // Buscar histórico de acessos
   const { data: historicoData, isLoading } = trpc.funcionario.listarAcessos.useQuery(
     { 
-      condominioId: condominioSelecionado,
+      obraId: obraSelecionado,
       funcionarioId: funcionarioId || undefined,
       limite,
       pagina,
       dataInicio: getDataInicio(),
     },
-    { enabled: !!condominioSelecionado }
+    { enabled: !!obraSelecionado }
   );
 
   // Buscar estatísticas
   const { data: estatisticas } = trpc.funcionario.estatisticasAcessos.useQuery(
     { 
-      condominioId: condominioSelecionado!,
+      obraId: obraSelecionado!,
       dias: parseInt(filtroPeriodo) || 30,
     },
-    { enabled: !!condominioSelecionado }
+    { enabled: !!obraSelecionado }
   );
 
   const acessos = historicoData?.acessos || [];
@@ -386,16 +386,16 @@ export default function HistoricoAcessosPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              {/* Seletor de Condomínio */}
+              {/* Seletor de Obra */}
               <Select 
-                value={condominioSelecionado?.toString() || ""} 
-                onValueChange={(v) => setCondominioId(parseInt(v))}
+                value={obraSelecionado?.toString() || ""} 
+                onValueChange={(v) => setObraId(parseInt(v))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a organização" />
                 </SelectTrigger>
                 <SelectContent>
-                  {condominios?.map((c) => (
+                  {obras?.map((c) => (
                     <SelectItem key={c.id} value={c.id.toString()}>
                       {c.nome}
                     </SelectItem>

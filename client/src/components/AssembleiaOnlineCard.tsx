@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
 
 interface AssembleiaOnlineCardProps {
-  condominioId?: number;
+  obraId?: number;
   linkAssembleia?: string;
   dataAssembleia?: Date | null;
   onLinkChange?: (link: string) => void;
@@ -36,7 +36,7 @@ interface AssembleiaOnlineCardProps {
 }
 
 export default function AssembleiaOnlineCard({ 
-  condominioId,
+  obraId,
   linkAssembleia = "", 
   dataAssembleia,
   onLinkChange,
@@ -50,7 +50,7 @@ export default function AssembleiaOnlineCard({
   const [isSaved, setIsSaved] = useState(!!linkAssembleia);
 
   // @ts-ignore - TypeScript não reconhece o método ainda
-  const saveAssembleiaLink = trpc.condominio.saveAssembleiaLink.useMutation({
+  const saveAssembleiaLink = trpc.obra.saveAssembleiaLink.useMutation({
     onSuccess: () => {
       toast.success("Link da assembleia salvo com sucesso!");
       setIsSaved(true);
@@ -116,8 +116,8 @@ export default function AssembleiaOnlineCard({
   };
 
   const handleSaveLink = () => {
-    if (!condominioId) {
-      toast.error("Condomínio não identificado");
+    if (!obraId) {
+      toast.error("Obra não identificado");
       return;
     }
     if (!link) {
@@ -125,7 +125,7 @@ export default function AssembleiaOnlineCard({
       return;
     }
     saveAssembleiaLink.mutate({
-      id: condominioId,
+      id: obraId,
       assembleiaLink: link,
       assembleiaData: date?.toISOString(),
     });
@@ -256,7 +256,7 @@ export default function AssembleiaOnlineCard({
         )}
 
         {/* Botão Salvar Link */}
-        {!readOnly && condominioId && (
+        {!readOnly && obraId && (
           <Button
             onClick={handleSaveLink}
             disabled={!link || saveAssembleiaLink.isPending}
@@ -280,7 +280,7 @@ export default function AssembleiaOnlineCard({
             ) : (
               <>
                 <Save className="w-5 h-5 mr-2" />
-                Salvar Link para Moradores
+                Salvar Link para Colaboradores
               </>
             )}
           </Button>
@@ -305,21 +305,21 @@ export default function AssembleiaOnlineCard({
               <h4 className="font-semibold text-purple-900 mb-2">Limites de Assembleias</h4>
               <div className="space-y-1.5 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-purple-700">Síndicos</span>
+                  <span className="text-purple-700">Engenheiros</span>
                   <Badge variant="outline" className="bg-white border-purple-200 text-purple-700">
                     <Clock className="w-3 h-3 mr-1" />
                     1 por mês
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-purple-700">Condomínios</span>
+                  <span className="text-purple-700">Obras</span>
                   <Badge variant="outline" className="bg-white border-purple-200 text-purple-700">
                     <Clock className="w-3 h-3 mr-1" />
                     2 por mês
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-purple-700">Administradoras</span>
+                  <span className="text-purple-700">Construtoras</span>
                   <Badge variant="outline" className="bg-white border-purple-200 text-purple-700">
                     <Clock className="w-3 h-3 mr-1" />
                     3 por mês

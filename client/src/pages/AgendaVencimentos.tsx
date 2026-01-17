@@ -123,13 +123,13 @@ function getStatusBadge(diasRestantes: number, vencido: boolean) {
 
 function VencimentoForm({ 
   tipo, 
-  condominioId, 
+  obraId, 
   vencimento, 
   onSuccess, 
   onCancel 
 }: { 
   tipo: TipoVencimento;
-  condominioId: number;
+  obraId: number;
   vencimento?: any;
   onSuccess: () => void;
   onCancel: () => void;
@@ -251,7 +251,7 @@ function VencimentoForm({
     if (vencimento) {
       updateMutation.mutate({ id: vencimento.id, ...data });
     } else {
-      createMutation.mutate({ condominioId, tipo, ...data });
+      createMutation.mutate({ obraId, tipo, ...data });
     }
   };
 
@@ -448,12 +448,12 @@ function VencimentoForm({
   );
 }
 
-function VencimentosList({ tipo, condominioId }: { tipo: TipoVencimento; condominioId: number }) {
+function VencimentosList({ tipo, obraId }: { tipo: TipoVencimento; obraId: number }) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [viewingId, setViewingId] = useState<number | null>(null);
 
-  const { data: vencimentos, isLoading } = trpc.vencimentos.list.useQuery({ condominioId, tipo });
+  const { data: vencimentos, isLoading } = trpc.vencimentos.list.useQuery({ obraId, tipo });
   const { data: vencimentoDetalhes } = trpc.vencimentos.get.useQuery(
     { id: viewingId! },
     { enabled: !!viewingId }
@@ -488,7 +488,7 @@ function VencimentosList({ tipo, condominioId }: { tipo: TipoVencimento; condomi
   };
 
   const handleEnviarNotificacao = (vencimentoId: number) => {
-    enviarNotificacaoMutation.mutate({ vencimentoId, condominioId });
+    enviarNotificacaoMutation.mutate({ vencimentoId, obraId });
   };
 
   const Icon = tipoIcons[tipo];
@@ -532,7 +532,7 @@ function VencimentosList({ tipo, condominioId }: { tipo: TipoVencimento; condomi
             <div className="p-6 overflow-y-auto max-h-[70vh]">
             <VencimentoForm
               tipo={tipo}
-              condominioId={condominioId}
+              obraId={obraId}
               onSuccess={() => setIsCreating(false)}
               onCancel={() => setIsCreating(false)}
             />
@@ -637,7 +637,7 @@ function VencimentosList({ tipo, condominioId }: { tipo: TipoVencimento; condomi
                         <div className="p-6 overflow-y-auto max-h-[70vh]">
                         <VencimentoForm
                           tipo={tipo}
-                          condominioId={condominioId}
+                          obraId={obraId}
                           vencimento={item}
                           onSuccess={() => setEditingId(null)}
                           onCancel={() => setEditingId(null)}
@@ -767,17 +767,17 @@ function VencimentosList({ tipo, condominioId }: { tipo: TipoVencimento; condomi
 }
 
 // Componente de Dashboard com gráficos
-function VencimentosDashboard({ condominioId }: { condominioId: number }) {
+function VencimentosDashboard({ obraId }: { obraId: number }) {
   const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear());
   const [periodoEvolucao, setPeriodoEvolucao] = useState(12);
 
-  const { data: estatisticas } = trpc.vencimentosDashboard.estatisticasGerais.useQuery({ condominioId });
-  const { data: porMes } = trpc.vencimentosDashboard.porMes.useQuery({ condominioId, ano: anoSelecionado });
-  const { data: porCategoria } = trpc.vencimentosDashboard.porCategoria.useQuery({ condominioId });
-  const { data: porStatus } = trpc.vencimentosDashboard.porStatus.useQuery({ condominioId });
-  const { data: proximos } = trpc.vencimentosDashboard.proximos.useQuery({ condominioId, dias: 30 });
-  const { data: vencidos } = trpc.vencimentosDashboard.vencidos.useQuery({ condominioId });
-  const { data: evolucao } = trpc.vencimentosDashboard.evolucao.useQuery({ condominioId, meses: periodoEvolucao });
+  const { data: estatisticas } = trpc.vencimentosDashboard.estatisticasGerais.useQuery({ obraId });
+  const { data: porMes } = trpc.vencimentosDashboard.porMes.useQuery({ obraId, ano: anoSelecionado });
+  const { data: porCategoria } = trpc.vencimentosDashboard.porCategoria.useQuery({ obraId });
+  const { data: porStatus } = trpc.vencimentosDashboard.porStatus.useQuery({ obraId });
+  const { data: proximos } = trpc.vencimentosDashboard.proximos.useQuery({ obraId, dias: 30 });
+  const { data: vencidos } = trpc.vencimentosDashboard.vencidos.useQuery({ obraId });
+  const { data: evolucao } = trpc.vencimentosDashboard.evolucao.useQuery({ obraId, meses: periodoEvolucao });
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -855,7 +855,7 @@ function VencimentosDashboard({ condominioId }: { condominioId: number }) {
           </DialogHeader>
           <VencimentoForm
             tipo="contrato"
-            condominioId={condominioId}
+            obraId={obraId}
             onSuccess={() => setShowContratoModal(false)}
             onCancel={() => setShowContratoModal(false)}
           />
@@ -875,7 +875,7 @@ function VencimentosDashboard({ condominioId }: { condominioId: number }) {
           </DialogHeader>
           <VencimentoForm
             tipo="servico"
-            condominioId={condominioId}
+            obraId={obraId}
             onSuccess={() => setShowServicoModal(false)}
             onCancel={() => setShowServicoModal(false)}
           />
@@ -895,7 +895,7 @@ function VencimentosDashboard({ condominioId }: { condominioId: number }) {
           </DialogHeader>
           <VencimentoForm
             tipo="manutencao"
-            condominioId={condominioId}
+            obraId={obraId}
             onSuccess={() => setShowManutencaoModal(false)}
             onCancel={() => setShowManutencaoModal(false)}
           />
@@ -1247,11 +1247,11 @@ function VencimentosDashboard({ condominioId }: { condominioId: number }) {
   );
 }
 
-function EmailsConfig({ condominioId }: { condominioId: number }) {
+function EmailsConfig({ obraId }: { obraId: number }) {
   const [novoEmail, setNovoEmail] = useState('');
   const [novoNome, setNovoNome] = useState('');
 
-  const { data: emails, isLoading } = trpc.vencimentoEmails.list.useQuery({ condominioId });
+  const { data: emails, isLoading } = trpc.vencimentoEmails.list.useQuery({ obraId });
   const utils = trpc.useUtils();
 
   const createMutation = trpc.vencimentoEmails.create.useMutation({
@@ -1285,7 +1285,7 @@ function EmailsConfig({ condominioId }: { condominioId: number }) {
   const handleAddEmail = (e: React.FormEvent) => {
     e.preventDefault();
     if (!novoEmail) return;
-    createMutation.mutate({ condominioId, email: novoEmail, nome: novoNome || undefined });
+    createMutation.mutate({ obraId, email: novoEmail, nome: novoNome || undefined });
   };
 
   return (
@@ -1365,10 +1365,10 @@ function EmailsConfig({ condominioId }: { condominioId: number }) {
 }
 
 // Componente de Calendário que busca todos os vencimentos
-function CalendarioVencimentosTab({ condominioId }: { condominioId: number }) {
-  const { data: contratos } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'contrato' });
-  const { data: servicos } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'servico' });
-  const { data: manutencoes } = trpc.vencimentos.list.useQuery({ condominioId, tipo: 'manutencao' });
+function CalendarioVencimentosTab({ obraId }: { obraId: number }) {
+  const { data: contratos } = trpc.vencimentos.list.useQuery({ obraId, tipo: 'contrato' });
+  const { data: servicos } = trpc.vencimentos.list.useQuery({ obraId, tipo: 'servico' });
+  const { data: manutencoes } = trpc.vencimentos.list.useQuery({ obraId, tipo: 'manutencao' });
 
   const todosVencimentos = [
     ...(contratos || []),
@@ -1397,26 +1397,26 @@ export default function AgendaVencimentos() {
   const [relatorioDataInicio, setRelatorioDataInicio] = useState('');
   const [relatorioDataFim, setRelatorioDataFim] = useState('');
   
-  // Obter condominioId do primeira organização do usuário
-  const { data: condominios, isLoading: condominiosLoading } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id || 0;
+  // Obter obraId do primeira organização do usuário
+  const { data: obras, isLoading: obrasLoading } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id || 0;
 
   // Todos os hooks devem ser chamados antes de qualquer return condicional
   const { data: stats } = trpc.vencimentos.stats.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   // Query para buscar todos os vencimentos para exportação
   const { data: todosVencimentosExport } = trpc.vencimentos.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   // Verificar alertas pendentes
   const { data: alertasPendentes, refetch: refetchAlertas } = trpc.alertasAutomaticos.verificarPendentes.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   // Mutation para processar alertas automáticos
@@ -1445,7 +1445,7 @@ export default function AgendaVencimentos() {
 
   const handleGerarRelatorio = () => {
     gerarPDFMutation.mutate({
-      condominioId,
+      obraId,
       tipo: relatorioTipo,
       status: relatorioStatus,
       dataInicio: relatorioDataInicio || undefined,
@@ -1453,7 +1453,7 @@ export default function AgendaVencimentos() {
     });
   };
 
-  if (condominiosLoading) {
+  if (obrasLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -1461,7 +1461,7 @@ export default function AgendaVencimentos() {
     );
   }
 
-  if (!condominioId) {
+  if (!obraId) {
     return (
       <div className="text-center py-20">
         <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
@@ -1479,7 +1479,7 @@ export default function AgendaVencimentos() {
             {/* Botão de Processar Alertas */}
             <Button
               variant="outline"
-              onClick={() => processarAlertasMutation.mutate({ condominioId })}
+              onClick={() => processarAlertasMutation.mutate({ obraId })}
               disabled={processarAlertasMutation.isPending}
               className={alertasPendentes && alertasPendentes.pendentes > 0 ? 'border-orange-500 text-orange-600 hover:bg-orange-50' : ''}
             >
@@ -1634,7 +1634,7 @@ export default function AgendaVencimentos() {
 
         {/* Email Config */}
         {showEmailConfig && (
-          <EmailsConfig condominioId={condominioId} />
+          <EmailsConfig obraId={obraId} />
         )}
 
         {/* Tabs */}
@@ -1672,23 +1672,23 @@ export default function AgendaVencimentos() {
           </TabsList>
 
           <TabsContent value="dashboard" className="mt-6">
-            <VencimentosDashboard condominioId={condominioId} />
+            <VencimentosDashboard obraId={obraId} />
           </TabsContent>
 
           <TabsContent value="contrato" className="mt-6">
-            <VencimentosList tipo="contrato" condominioId={condominioId} />
+            <VencimentosList tipo="contrato" obraId={obraId} />
           </TabsContent>
 
           <TabsContent value="servico" className="mt-6">
-            <VencimentosList tipo="servico" condominioId={condominioId} />
+            <VencimentosList tipo="servico" obraId={obraId} />
           </TabsContent>
 
           <TabsContent value="manutencao" className="mt-6">
-            <VencimentosList tipo="manutencao" condominioId={condominioId} />
+            <VencimentosList tipo="manutencao" obraId={obraId} />
           </TabsContent>
 
           <TabsContent value="calendario" className="mt-6">
-            <CalendarioVencimentosTab condominioId={condominioId} />
+            <CalendarioVencimentosTab obraId={obraId} />
           </TabsContent>
         </Tabs>
       </div>

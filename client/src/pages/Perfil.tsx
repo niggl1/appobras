@@ -144,8 +144,8 @@ export default function Perfil() {
   
   const getTipoContaLabel = (tipo: string | null) => {
     switch (tipo) {
-      case "sindico": return "Síndico";
-      case "administradora": return "Administradora";
+      case "engenheiro": return "Engenheiro";
+      case "construtora": return "Construtora";
       case "admin": return "Administrador";
       default: return "Usuário";
     }
@@ -153,8 +153,8 @@ export default function Perfil() {
   
   const getTipoContaIcon = (tipo: string | null) => {
     switch (tipo) {
-      case "sindico": return <Building2 className="h-4 w-4" />;
-      case "administradora": return <Users className="h-4 w-4" />;
+      case "engenheiro": return <Building2 className="h-4 w-4" />;
+      case "construtora": return <Users className="h-4 w-4" />;
       case "admin": return <Shield className="h-4 w-4" />;
       default: return <User className="h-4 w-4" />;
     }

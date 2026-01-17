@@ -1,12 +1,21 @@
 {
-  "buildCommand": "pnpm build:client",
+  "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": null,
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node@3.0.0"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://3000-ixm3fcr5wl9wf24z21xkn-197b1cb5.us2.manus.computer/api/:path*"
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -27,5 +36,8 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
 }

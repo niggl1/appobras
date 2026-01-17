@@ -91,35 +91,35 @@ export default function RevistaEditor() {
     { enabled: revistaId > 0 }
   );
 
-  // Query para organização (condomínio)
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const selectedCondominio = condominios?.[0];
-  const condominioId = selectedCondominio?.id || 0;
+  // Query para organização (obra)
+  const { data: obras } = trpc.obra.list.useQuery();
+  const selectedObra = obras?.[0];
+  const obraId = selectedObra?.id || 0;
 
   // Queries para dados de manutenção
   const { data: manutencoes, isLoading: manutencoesLoading } = trpc.manutencao.listWithDetails.useQuery(
-    { condominioId },
-    { enabled: !!selectedCondominio }
+    { obraId },
+    { enabled: !!selectedObra }
   );
 
   const { data: vistorias, isLoading: vistoriasLoading } = trpc.vistoria.listWithDetails.useQuery(
-    { condominioId },
-    { enabled: !!selectedCondominio }
+    { obraId },
+    { enabled: !!selectedObra }
   );
 
   const { data: ocorrencias, isLoading: ocorrenciasLoading } = trpc.ocorrencia.listWithDetails.useQuery(
-    { condominioId },
-    { enabled: !!selectedCondominio }
+    { obraId },
+    { enabled: !!selectedObra }
   );
 
   const { data: checklists, isLoading: checklistsLoading } = trpc.checklist.listWithDetails.useQuery(
-    { condominioId },
-    { enabled: !!selectedCondominio }
+    { obraId },
+    { enabled: !!selectedObra }
   );
 
   const { data: antesDepois, isLoading: antesDepoisLoading } = trpc.antesDepois.list.useQuery(
-    { revistaId: condominioId },
-    { enabled: !!selectedCondominio }
+    { revistaId: obraId },
+    { enabled: !!selectedObra }
   );
 
   const utils = trpc.useUtils();

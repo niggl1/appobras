@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
 interface NotificationAlertProps {
-  condominioId: number | null;
+  obraId: number | null;
   enabled?: boolean;
 }
 
-export function NotificationAlert({ condominioId, enabled = true }: NotificationAlertProps) {
+export function NotificationAlert({ obraId, enabled = true }: NotificationAlertProps) {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [lastCheckedIds, setLastCheckedIds] = useState<Set<number>>(new Set());
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -18,9 +18,9 @@ export function NotificationAlert({ condominioId, enabled = true }: Notification
 
   // Query para buscar respostas não lidas
   const { data: unreadResponses, refetch } = trpc.respostasInfracao.getUnread.useQuery(
-    { condominioId: condominioId! },
+    { obraId: obraId! },
     { 
-      enabled: enabled && !!condominioId,
+      enabled: enabled && !!obraId,
       refetchInterval: 30000, // Verificar a cada 30 segundos
       refetchIntervalInBackground: true,
     }
@@ -113,7 +113,7 @@ export function NotificationAlert({ condominioId, enabled = true }: Notification
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Nova resposta de morador
+                      Nova resposta de colaborador
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       {resposta.autorNome} respondeu à notificação
@@ -177,7 +177,7 @@ export function NotificationAlert({ condominioId, enabled = true }: Notification
   // Contador de não lidas
   const unreadCount = unreadResponses?.length || 0;
 
-  if (!enabled || !condominioId) return null;
+  if (!enabled || !obraId) return null;
 
   return (
     <div className="flex items-center gap-2">

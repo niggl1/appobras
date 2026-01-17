@@ -51,7 +51,7 @@ import {
 
 // Tipos para os logs
 type AcaoLog = "criar" | "editar" | "excluir" | "ativar" | "desativar" | "promover" | "rebaixar";
-type EntidadeLog = "usuario" | "condominio" | "vistoria" | "manutencao" | "ordem_servico" | "funcao" | "configuracao";
+type EntidadeLog = "usuario" | "obra" | "vistoria" | "manutencao" | "ordem_servico" | "funcao" | "configuracao";
 
 interface LogItem {
   id: number;
@@ -80,7 +80,7 @@ const acaoConfig: Record<AcaoLog, { icon: React.ReactNode; color: string; label:
 // Configuração de labels por entidade
 const entidadeLabels: Record<EntidadeLog, string> = {
   usuario: "Usuário",
-  condominio: "Condomínio",
+  obra: "Obra",
   vistoria: "Vistoria",
   manutencao: "Manutenção",
   ordem_servico: "Ordem de Serviço",
@@ -246,7 +246,7 @@ export default function AdminLogs() {
                 <SelectContent>
                   <SelectItem value="todas">Todas as entidades</SelectItem>
                   <SelectItem value="usuario">Usuário</SelectItem>
-                  <SelectItem value="condominio">Condomínio</SelectItem>
+                  <SelectItem value="obra">Obra</SelectItem>
                   <SelectItem value="vistoria">Vistoria</SelectItem>
                   <SelectItem value="manutencao">Manutenção</SelectItem>
                   <SelectItem value="ordem_servico">Ordem de Serviço</SelectItem>

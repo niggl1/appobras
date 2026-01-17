@@ -705,7 +705,7 @@ export default function ImageEditSection({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Stamp className="h-5 w-5 text-blue-600" />
-                  <Label className="font-medium text-blue-800">Marca d'Água (Logo do Condomínio)</Label>
+                  <Label className="font-medium text-blue-800">Marca d'Água (Logo do Obra)</Label>
                 </div>
                 <Switch
                   checked={watermarkEnabled}

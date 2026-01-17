@@ -42,7 +42,7 @@ import {
 
 interface Compartilhamento {
   id: number;
-  condominioId: number;
+  obraId: number;
   remetenteId: number | null;
   remetenteNome: string | null;
   destinatarioId: number | null;
@@ -118,14 +118,14 @@ export default function CompartilhamentosPage() {
     },
   });
 
-  // Buscar condomínio ativo do usuário
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioAtivo = condominios?.[0];
+  // Buscar obra ativo do usuário
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraAtivo = obras?.[0];
 
   // Buscar compartilhamentos
   const { data: compartilhamentosData, isLoading, refetch } = trpc.membroEquipe.listarCompartilhamentos.useQuery(
-    { condominioId: condominioAtivo?.id || 0, pagina, porPagina: 20 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0, pagina, porPagina: 20 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const compartilhamentos = compartilhamentosData?.compartilhamentos || [];
@@ -231,7 +231,7 @@ export default function CompartilhamentosPage() {
     setModalDetalhesAberto(true);
   };
 
-  if (!condominioAtivo) {
+  if (!obraAtivo) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -261,9 +261,9 @@ export default function CompartilhamentosPage() {
         <div className="flex gap-2">
           <Button
             onClick={() => {
-              if (!condominioAtivo?.id) return;
+              if (!obraAtivo?.id) return;
               setExportandoExcel(true);
-              exportarExcelMutation.mutate({ condominioId: condominioAtivo.id });
+              exportarExcelMutation.mutate({ obraId: obraAtivo.id });
             }}
             disabled={exportandoExcel || compartilhamentos.length === 0}
             className="gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0"
@@ -273,9 +273,9 @@ export default function CompartilhamentosPage() {
           </Button>
           <Button
             onClick={() => {
-              if (!condominioAtivo?.id) return;
+              if (!obraAtivo?.id) return;
               setExportandoPdf(true);
-              exportarPdfMutation.mutate({ condominioId: condominioAtivo.id });
+              exportarPdfMutation.mutate({ obraId: obraAtivo.id });
             }}
             disabled={exportandoPdf || compartilhamentos.length === 0}
             className="gap-2 bg-gradient-to-r from-red-500 to-rose-600 text-white border-0"

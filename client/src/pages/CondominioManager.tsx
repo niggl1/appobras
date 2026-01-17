@@ -28,9 +28,9 @@ import { toast } from "sonner";
 import RevistaForm from "@/components/forms/RevistaForm";
 import FuncionarioForm from "@/components/forms/FuncionarioForm";
 
-export default function CondominioManager() {
+export default function ObraManager() {
   const params = useParams<{ id: string }>();
-  const condominioId = parseInt(params.id || "0");
+  const obraId = parseInt(params.id || "0");
   const [, navigate] = useLocation();
   const { user, loading: authLoading } = useAuth();
   
@@ -38,34 +38,34 @@ export default function CondominioManager() {
   const [showRevistaForm, setShowRevistaForm] = useState(false);
   const [showFuncionarioForm, setShowFuncionarioForm] = useState(false);
 
-  const { data: condominio, isLoading: condominioLoading } = trpc.condominio.get.useQuery(
-    { id: condominioId },
-    { enabled: condominioId > 0 }
+  const { data: obra, isLoading: obraLoading } = trpc.obra.get.useQuery(
+    { id: obraId },
+    { enabled: obraId > 0 }
   );
 
   const { data: revistas, isLoading: revistasLoading } = trpc.revista.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const { data: funcionarios, isLoading: funcionariosLoading } = trpc.funcionario.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const { data: classificados } = trpc.classificado.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const { data: caronas } = trpc.carona.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const { data: achadosPerdidos } = trpc.achadoPerdido.list.useQuery(
-    { condominioId },
-    { enabled: condominioId > 0 }
+    { obraId },
+    { enabled: obraId > 0 }
   );
 
   const utils = trpc.useUtils();
@@ -73,18 +73,18 @@ export default function CondominioManager() {
   const deleteRevistaMutation = trpc.revista.delete.useMutation({
     onSuccess: () => {
       toast.success("Revista removida!");
-      utils.revista.list.invalidate({ condominioId });
+      utils.revista.list.invalidate({ obraId });
     },
   });
 
   const deleteFuncionarioMutation = trpc.funcionario.delete.useMutation({
     onSuccess: () => {
       toast.success("Funcionário removido!");
-      utils.funcionario.list.invalidate({ condominioId });
+      utils.funcionario.list.invalidate({ obraId });
     },
   });
 
-  if (authLoading || condominioLoading) {
+  if (authLoading || obraLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -95,12 +95,12 @@ export default function CondominioManager() {
     );
   }
 
-  if (!condominio) {
+  if (!obra) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Condomínio não encontrado</h2>
+          <h2 className="text-xl font-semibold mb-2">Obra não encontrado</h2>
           <Link href="/dashboard">
             <Button variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -127,15 +127,15 @@ export default function CondominioManager() {
               <div className="flex items-center gap-3">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: condominio.corPrimaria || "#4F46E5" }}
+                  style={{ backgroundColor: obra.corPrimaria || "#4F46E5" }}
                 >
                   <Building2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-serif text-xl font-bold">{condominio.nome}</h1>
+                  <h1 className="font-serif text-xl font-bold">{obra.nome}</h1>
                   <p className="text-sm text-muted-foreground">
-                    {condominio.cidade && condominio.estado
-                      ? `${condominio.cidade}, ${condominio.estado}`
+                    {obra.cidade && obra.estado
+                      ? `${obra.cidade}, ${obra.estado}`
                       : "Gestão da Organização"}
                   </p>
                 </div>
@@ -201,7 +201,7 @@ export default function CondominioManager() {
                   </div>
                   <div className="p-6 overflow-y-auto max-h-[70vh]">
                   <RevistaForm
-                    condominioId={condominioId}
+                    obraId={obraId}
                     onSuccess={(id, shareLink) => {
                       setShowRevistaForm(false);
                       navigate(`/revista/editor/${id}`);
@@ -278,7 +278,7 @@ export default function CondominioManager() {
                   <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-serif text-lg font-semibold mb-2">Nenhum projeto criado</h3>
                   <p className="text-muted-foreground mb-4">
-                    Crie seu primeiro projeto para este condomínio
+                    Crie seu primeiro projeto para este obra
                   </p>
                   <Button className="btn-magazine" onClick={() => setShowRevistaForm(true)}>
                     <Plus className="w-4 h-4 mr-2" />
@@ -319,7 +319,7 @@ export default function CondominioManager() {
                   </div>
                   <div className="p-6 overflow-y-auto max-h-[70vh]">
                   <FuncionarioForm
-                    condominioId={condominioId}
+                    obraId={obraId}
                     onSuccess={() => setShowFuncionarioForm(false)}
                     onCancel={() => setShowFuncionarioForm(false)}
                   />
@@ -381,7 +381,7 @@ export default function CondominioManager() {
 
           {/* Serviços Tab */}
           <TabsContent value="servicos" className="space-y-6">
-            <h2 className="font-serif text-2xl font-bold">Serviços para Moradores</h2>
+            <h2 className="font-serif text-2xl font-bold">Serviços para Colaboradores</h2>
             
             <div className="grid md:grid-cols-3 gap-6">
               {/* Classificados */}
@@ -471,7 +471,7 @@ export default function CondominioManager() {
               <Card>
                 <CardContent className="pt-6 text-center">
                   <div className="text-3xl font-bold text-amber-500">0</div>
-                  <p className="text-sm text-muted-foreground">Moradores</p>
+                  <p className="text-sm text-muted-foreground">Colaboradores</p>
                 </CardContent>
               </Card>
             </div>

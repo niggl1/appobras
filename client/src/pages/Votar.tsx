@@ -147,9 +147,9 @@ export default function Votar() {
     { enabled: votacaoId > 0 && !!user }
   );
   
-  // Verificar se o morador está bloqueado para votação
+  // Verificar se o colaborador está bloqueado para votação
   // @ts-ignore
-  const { data: statusBloqueio } = (trpc.morador as any).verificarBloqueioVotacao.useQuery(
+  const { data: statusBloqueio } = (trpc.colaborador as any).verificarBloqueioVotacao.useQuery(
     { votacaoId },
     { enabled: votacaoId > 0 && !!user }
   );
@@ -275,7 +275,7 @@ export default function Votar() {
               <LogIn className="h-8 w-8 mx-auto text-amber-600 mb-2" />
               <p className="text-amber-800 font-medium">Autenticação necessária</p>
               <p className="text-sm text-amber-700 mt-1">
-                Para participar desta votação, precisa fazer login com a sua conta de morador.
+                Para participar desta votação, precisa fazer login com a sua conta de colaborador.
               </p>
             </div>
             <Button 
@@ -298,7 +298,7 @@ export default function Votar() {
     );
   }
   
-  // Morador bloqueado para votação
+  // Colaborador bloqueado para votação
   if (statusBloqueio?.bloqueado) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center p-4">
@@ -309,7 +309,7 @@ export default function Votar() {
             </div>
             <CardTitle className="text-red-800">Bloqueado para Votação!</CardTitle>
             <CardDescription className="text-red-600">
-              Entre em contato com sua administradora para maiores informações.
+              Entre em contato com sua construtora para maiores informações.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -118,7 +118,7 @@ const statusIconOptions = [
 export default function OrdemServicoDetalhe() {
   const [, navigate] = useLocation();
   const params = useParams<{ id: string }>();
-  const { condominioAtivo } = useCondominioAtivo();
+  const { obraAtivo } = useCondominioAtivo();
   const [activeTab, setActiveTab] = useState("detalhes");
   const [isEditing, setIsEditing] = useState(false);
   const [showGerenciarCategorias, setShowGerenciarCategorias] = useState(false);
@@ -148,23 +148,23 @@ export default function OrdemServicoDetalhe() {
   );
 
   const { data: categorias, refetch: refetchCategorias } = trpc.ordensServico.getCategorias.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: prioridades, refetch: refetchPrioridades } = trpc.ordensServico.getPrioridades.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: statusList, refetch: refetchStatus } = trpc.ordensServico.getStatus.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: setores, refetch: refetchSetores } = trpc.ordensServico.getSetores.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   // Materiais, orcamentos, responsaveis e timeline já vêm no getById
@@ -184,8 +184,8 @@ export default function OrdemServicoDetalhe() {
   );
 
   const { data: configuracoes } = trpc.ordensServico.getConfiguracoes.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   // Query para anexos
@@ -877,13 +877,13 @@ export default function OrdemServicoDetalhe() {
                       alert('Por favor, preencha o título');
                       return;
                     }
-                    if (!condominioAtivo?.id) {
-                      alert('Nenhum condomínio selecionado');
+                    if (!obraAtivo?.id) {
+                      alert('Nenhum obra selecionado');
                       return;
                     }
                     const createOSMutation = trpc.ordensServico.create.useMutation();
                     createOSMutation.mutate({
-                      condominioId: condominioAtivo.id,
+                      obraId: obraAtivo.id,
                       titulo: editForm.titulo,
                       descricao: editForm.descricao || undefined,
                       categoriaId: editForm.categoriaId ? parseInt(editForm.categoriaId) : undefined,
@@ -2272,9 +2272,9 @@ export default function OrdemServicoDetalhe() {
               <Button
                 className="w-full bg-gradient-to-r from-amber-400 to-yellow-400 text-white"
                 onClick={() => {
-                  if (!condominioAtivo?.id || !novaCategoria.nome) return;
+                  if (!obraAtivo?.id || !novaCategoria.nome) return;
                   createCategoria.mutate({
-                    condominioId: condominioAtivo.id,
+                    obraId: obraAtivo.id,
                     nome: novaCategoria.nome,
                     cor: novaCategoria.cor,
                     icone: novaCategoria.icone,
@@ -2354,9 +2354,9 @@ export default function OrdemServicoDetalhe() {
               <Button
                 className="w-full bg-gradient-to-r from-amber-400 to-yellow-400 text-white"
                 onClick={() => {
-                  if (!condominioAtivo?.id || !novaPrioridade.nome) return;
+                  if (!obraAtivo?.id || !novaPrioridade.nome) return;
                   createPrioridade.mutate({
-                    condominioId: condominioAtivo.id,
+                    obraId: obraAtivo.id,
                     nome: novaPrioridade.nome,
                     cor: novaPrioridade.cor,
                     icone: novaPrioridade.icone,
@@ -2437,9 +2437,9 @@ export default function OrdemServicoDetalhe() {
               <Button
                 className="w-full bg-gradient-to-r from-amber-400 to-yellow-400 text-white"
                 onClick={() => {
-                  if (!condominioAtivo?.id || !novoStatus.nome) return;
+                  if (!obraAtivo?.id || !novoStatus.nome) return;
                   createStatus.mutate({
-                    condominioId: condominioAtivo.id,
+                    obraId: obraAtivo.id,
                     nome: novoStatus.nome,
                     cor: novoStatus.cor,
                     icone: novoStatus.icone,
@@ -2480,9 +2480,9 @@ export default function OrdemServicoDetalhe() {
               <Button
                 className="w-full bg-gradient-to-r from-amber-400 to-yellow-400 text-white"
                 onClick={() => {
-                  if (!condominioAtivo?.id || !novoSetor.nome) return;
+                  if (!obraAtivo?.id || !novoSetor.nome) return;
                   createSetor.mutate({
-                    condominioId: condominioAtivo.id,
+                    obraId: obraAtivo.id,
                     nome: novoSetor.nome,
                   });
                   setNovoSetor({ nome: "" });
@@ -2738,7 +2738,7 @@ export default function OrdemServicoDetalhe() {
             itemId={ordem.id}
             itemTitulo={ordem.titulo || "Ordem de Serviço"}
             itemProtocolo={ordem.protocolo || ""}
-            condominioId={ordem.condominioId || 0}
+            obraId={ordem.obraId || 0}
           />
         )}
     </div>

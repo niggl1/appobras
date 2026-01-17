@@ -137,11 +137,37 @@ import { nanoid } from "nanoid";
 import { storagePut } from "./storage";
 import { appAcessoRouter } from "./appAcesso";
 import { recuperacaoSenhaRouter } from "./recuperacaoSenha";
+import { 
+  obrasRouter, 
+  orcamentosRouter, 
+  trabalhadoresRouter, 
+  diarioRouter, 
+  fornecedoresRouter, 
+  etapasRouter, 
+  medicoesRouter, 
+  fotosRouter, 
+  ocorrenciasRouter, 
+  materiaisRouter, 
+  pagamentosRouter 
+} from "./obrasRouter";
 
 export const appRouter = router({
   system: systemRouter,
   appAcesso: appAcessoRouter,
   recuperacaoSenha: recuperacaoSenhaRouter,
+  
+  // Módulo de Obras - AppObras
+  obras: obrasRouter,
+  obraOrcamentos: orcamentosRouter,
+  obraTrabalhadores: trabalhadoresRouter,
+  obraDiario: diarioRouter,
+  obraFornecedores: fornecedoresRouter,
+  obraEtapas: etapasRouter,
+  obraMedicoes: medicoesRouter,
+  obraFotos: fotosRouter,
+  obraOcorrencias: ocorrenciasRouter,
+  obraMateriais: materiaisRouter,
+  obraPagamentos: pagamentosRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
 
 interface FuncionarioFormProps {
-  condominioId?: number;
+  obraId?: number;
   revistaId?: number;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -23,7 +23,7 @@ interface FuncionarioFormProps {
   };
 }
 
-export default function FuncionarioForm({ condominioId, revistaId, onSuccess, onCancel, initialData }: FuncionarioFormProps) {
+export default function FuncionarioForm({ obraId, revistaId, onSuccess, onCancel, initialData }: FuncionarioFormProps) {
   const [formData, setFormData] = useState({
     nome: initialData?.nome || "",
     cargo: initialData?.cargo || "",
@@ -38,8 +38,8 @@ export default function FuncionarioForm({ condominioId, revistaId, onSuccess, on
       toast.success("Funcionário cadastrado com sucesso!");
       if (revistaId) {
         utils.funcionario.list.invalidate({ revistaId });
-      } else if (condominioId) {
-        utils.funcionario.list.invalidate({ condominioId });
+      } else if (obraId) {
+        utils.funcionario.list.invalidate({ obraId });
       }
       onSuccess?.();
     },
@@ -53,8 +53,8 @@ export default function FuncionarioForm({ condominioId, revistaId, onSuccess, on
       toast.success("Funcionário atualizado com sucesso!");
       if (revistaId) {
         utils.funcionario.list.invalidate({ revistaId });
-      } else if (condominioId) {
-        utils.funcionario.list.invalidate({ condominioId });
+      } else if (obraId) {
+        utils.funcionario.list.invalidate({ obraId });
       }
       onSuccess?.();
     },
@@ -73,7 +73,7 @@ export default function FuncionarioForm({ condominioId, revistaId, onSuccess, on
     if (initialData?.id) {
       updateMutation.mutate({ id: initialData.id, ...formData });
     } else {
-      createMutation.mutate({ condominioId, revistaId, ...formData });
+      createMutation.mutate({ obraId, revistaId, ...formData });
     }
   };
 

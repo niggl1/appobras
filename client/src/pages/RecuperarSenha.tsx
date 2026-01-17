@@ -44,8 +44,8 @@ export default function RecuperarSenha() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
               <img 
-                src="/logo-appsindico-horizontal.png" 
-                alt="App Manutenção" 
+                src="/logo-appengenheiro-horizontal.png" 
+                alt="AppObras" 
                 className="h-16 mx-auto"
               />
             </Link>
@@ -102,8 +102,8 @@ export default function RecuperarSenha() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <img 
-              src="/logo-appsindico-horizontal.png" 
-              alt="App Manutenção" 
+              src="/logo-appengenheiro-horizontal.png" 
+              alt="AppObras" 
               className="h-16 mx-auto"
             />
           </Link>

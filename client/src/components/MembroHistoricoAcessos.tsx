@@ -30,7 +30,7 @@ import {
 interface MembroHistoricoAcessosProps {
   membroId: number;
   membroNome: string;
-  condominioId: number;
+  obraId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -38,7 +38,7 @@ interface MembroHistoricoAcessosProps {
 export function MembroHistoricoAcessos({ 
   membroId, 
   membroNome, 
-  condominioId, 
+  obraId, 
   open, 
   onOpenChange 
 }: MembroHistoricoAcessosProps) {

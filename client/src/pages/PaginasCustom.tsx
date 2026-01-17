@@ -27,7 +27,7 @@ import {
 
 interface PaginaCustom {
   id: number;
-  condominioId: number;
+  obraId: number;
   titulo: string;
   subtitulo: string | null;
   descricao: string | null;
@@ -43,10 +43,10 @@ interface PaginaCustom {
 }
 
 interface PaginasCustomSectionProps {
-  condominioId: number | undefined;
+  obraId: number | undefined;
 }
 
-export default function PaginasCustomSection({ condominioId }: PaginasCustomSectionProps) {
+export default function PaginasCustomSection({ obraId }: PaginasCustomSectionProps) {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPagina, setEditingPagina] = useState<PaginaCustom | null>(null);
@@ -63,8 +63,8 @@ export default function PaginasCustomSection({ condominioId }: PaginasCustomSect
   const [isUploading, setIsUploading] = useState(false);
 
   const { data: paginas, refetch } = trpc.paginaCustom.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
 
   const createMutation = trpc.paginaCustom.create.useMutation({
@@ -144,7 +144,7 @@ export default function PaginasCustomSection({ condominioId }: PaginasCustomSect
   };
 
   const handleSubmit = () => {
-    if (!condominioId) return;
+    if (!obraId) return;
 
     const data = {
       ...formData,
@@ -154,7 +154,7 @@ export default function PaginasCustomSection({ condominioId }: PaginasCustomSect
     if (editingPagina) {
       updateMutation.mutate({ id: editingPagina.id, ...data });
     } else {
-      createMutation.mutate({ condominioId, ...data });
+      createMutation.mutate({ obraId, ...data });
     }
   };
 
@@ -217,7 +217,7 @@ export default function PaginasCustomSection({ condominioId }: PaginasCustomSect
     setImagens(prev => prev.filter((_, i) => i !== index));
   };
 
-  if (!condominioId) {
+  if (!obraId) {
     return (
       <div className="text-center py-12">
         <Sparkles className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />

@@ -9,7 +9,7 @@ interface FavoriteButtonProps {
   tipoItem: string;
   itemId?: number;
   cardSecaoId?: string;
-  condominioId?: number;
+  obraId?: number;
   size?: "sm" | "default" | "lg" | "icon";
   variant?: "default" | "ghost" | "outline";
   className?: string;
@@ -20,7 +20,7 @@ export default function FavoriteButton({
   tipoItem,
   itemId,
   cardSecaoId,
-  condominioId,
+  obraId,
   size = "icon",
   variant = "ghost",
   className,
@@ -52,7 +52,7 @@ export default function FavoriteButton({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleFavorite.mutate({ tipoItem, itemId, cardSecaoId, condominioId });
+    toggleFavorite.mutate({ tipoItem, itemId, cardSecaoId, obraId });
   };
 
   const isLoading = checking || toggleFavorite.isPending;

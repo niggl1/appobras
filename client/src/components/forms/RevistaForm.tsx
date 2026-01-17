@@ -10,7 +10,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface RevistaFormProps {
-  condominioId: number;
+  obraId: number;
   onSuccess?: (id: number, shareLink: string) => void;
   initialData?: {
     id?: number;
@@ -28,7 +28,7 @@ const templates = [
   { id: "corporate", name: "Corporativo", description: "Profissional para clientes e gestão" },
 ];
 
-export default function RevistaForm({ condominioId, onSuccess, initialData }: RevistaFormProps) {
+export default function RevistaForm({ obraId, onSuccess, initialData }: RevistaFormProps) {
   const [formData, setFormData] = useState({
     titulo: initialData?.titulo || "",
     subtitulo: initialData?.subtitulo || "Informativo Mensal",
@@ -41,7 +41,7 @@ export default function RevistaForm({ condominioId, onSuccess, initialData }: Re
   const createMutation = trpc.revista.create.useMutation({
     onSuccess: (data) => {
       toast.success("Projeto criado com sucesso!");
-      utils.revista.list.invalidate({ condominioId });
+      utils.revista.list.invalidate({ obraId });
       onSuccess?.(data.id, data.shareLink);
     },
     onError: (error) => {
@@ -52,7 +52,7 @@ export default function RevistaForm({ condominioId, onSuccess, initialData }: Re
   const updateMutation = trpc.revista.update.useMutation({
     onSuccess: () => {
       toast.success("Projeto atualizado com sucesso!");
-      utils.revista.list.invalidate({ condominioId });
+      utils.revista.list.invalidate({ obraId });
     },
     onError: (error) => {
       toast.error("Erro ao atualizar projeto: " + error.message);
@@ -69,7 +69,7 @@ export default function RevistaForm({ condominioId, onSuccess, initialData }: Re
     if (initialData?.id) {
       updateMutation.mutate({ id: initialData.id, ...formData });
     } else {
-      createMutation.mutate({ condominioId, ...formData });
+      createMutation.mutate({ obraId, ...formData });
     }
   };
 

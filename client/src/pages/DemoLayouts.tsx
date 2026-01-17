@@ -32,7 +32,7 @@ const demoContent = [
     description: "Comunicados da administração para todos a equipa",
     icon: Megaphone,
     color: "from-amber-500 to-orange-600",
-    content: "A reunião de condomínio será realizada no dia 15 de janeiro às 19h no salão de festas. Pauta: aprovação de orçamento anual e eleição de síndico."
+    content: "A reunião de obra será realizada no dia 15 de janeiro às 19h no salão de festas. Pauta: aprovação de orçamento anual e eleição de engenheiro."
   },
   { 
     id: 2, 
@@ -92,7 +92,7 @@ const demoContent = [
   },
   { 
     id: 9, 
-    title: "Sobre o Condomínio", 
+    title: "Sobre o Obra", 
     description: "Informações gerais",
     icon: Building2,
     color: "from-indigo-500 to-purple-600",

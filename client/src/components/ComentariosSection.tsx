@@ -29,7 +29,7 @@ import { pt } from "date-fns/locale";
 interface ComentariosSectionProps {
   itemId: number;
   itemTipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist";
-  condominioId: number;
+  obraId: number;
   editavel?: boolean;
   autorPadrao?: {
     nome: string;
@@ -49,7 +49,7 @@ interface Anexo {
 export function ComentariosSection({ 
   itemId, 
   itemTipo, 
-  condominioId, 
+  obraId, 
   editavel = true,
   autorPadrao 
 }: ComentariosSectionProps) {
@@ -151,7 +151,7 @@ export function ComentariosSection({
     criarComentario.mutate({
       itemId,
       itemTipo,
-      condominioId,
+      obraId,
       autorNome,
       autorWhatsapp: autorWhatsapp || undefined,
       autorEmail: autorEmail || undefined,

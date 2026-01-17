@@ -42,7 +42,7 @@ const tourSteps = [
     id: 1,
     title: "Bem-vindo à Demonstração!",
     description:
-      "Esta é uma demonstração interativa da App Manutenção. Navegue pelas páginas para ver todos os recursos disponíveis.",
+      "Esta é uma demonstração interativa da AppObras. Navegue pelas páginas para ver todos os recursos disponíveis.",
     position: "center",
     highlight: null,
   },
@@ -77,14 +77,14 @@ const demoPages = [
   },
   {
     id: 2,
-    type: "mensagem_sindico",
+    type: "mensagem_engenheiro",
     content: {
       nome: "João Silva",
-      cargo: "Síndico",
+      cargo: "Engenheiro",
       titulo: "Mensagem do Gestor",
       mensagem:
         "Prezada equipa, é com grande satisfação que apresentamos mais uma edição da nossa revista digital. Neste mês, temos muitas novidades e melhorias para compartilhar com vocês! Agradeço a todos pela colaboração e participação ativa na vida do nossa organização.",
-      imagem: "/demo-images/sindico.jpg",
+      imagem: "/demo-images/engenheiro.jpg",
     },
   },
   {
@@ -132,7 +132,7 @@ const demoPages = [
           local: "Área de Lazer",
         },
         {
-          titulo: "Reunião de Condomínio",
+          titulo: "Reunião de Obra",
           data: "15/01/2025",
           horario: "19h30",
           local: "Salão de Reuniões",
@@ -268,7 +268,7 @@ const demoPages = [
     id: 12,
     type: "publicidade",
     content: {
-      titulo: "Parceiros do Condomínio",
+      titulo: "Parceiros do Obra",
       imagem: "/demo-images/publicidade.jpg",
       anuncios: [
         {
@@ -303,7 +303,7 @@ const demoPages = [
         },
         {
           titulo: "Aulas de Inglês",
-          descricao: "Professora certificada. Moradora Bloco C",
+          descricao: "Professora certificada. Colaboradora Bloco C",
           preco: "R$ 80/hora",
         },
       ],
@@ -381,8 +381,8 @@ export default function Demo() {
       <header className="bg-black/30 backdrop-blur-lg border-b border-white/10 py-3 px-4">
         <div className="container flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-white">
-            <img src="/logo-manutencao.png" alt="App Manutenção" className="w-8 h-8 object-contain" />
-            <img src="/logo-manutencao.png" alt="App Manutenção" className="h-5 object-contain" />
+            <img src="/logo-appobras.png" alt="AppObras" className="w-8 h-8 object-contain" />
+            <img src="/logo-appobras.png" alt="AppObras" className="h-5 object-contain" />
           </Link>
 
           <div className="flex items-center gap-2">
@@ -568,7 +568,7 @@ export default function Demo() {
 function getPageTitle(type: string): string {
   const titles: Record<string, string> = {
     cover: "Capa",
-    mensagem_sindico: "Mensagem do Gestor",
+    mensagem_engenheiro: "Mensagem do Gestor",
     avisos: "Avisos",
     eventos: "Eventos",
     manutencoes: "Manutenções",
@@ -589,8 +589,8 @@ function DemoPageContent({ page }: { page: typeof demoPages[0] }) {
   switch (page.type) {
     case "cover":
       return <CoverPage content={page.content} />;
-    case "mensagem_sindico":
-      return <MensagemSindicoPage content={page.content} />;
+    case "mensagem_engenheiro":
+      return <MensagemEngenheiroPage content={page.content} />;
     case "avisos":
       return <AvisosPage content={page.content} />;
     case "eventos":
@@ -647,7 +647,7 @@ function CoverPage({ content }: { content: any }) {
   );
 }
 
-function MensagemSindicoPage({ content }: { content: any }) {
+function MensagemEngenheiroPage({ content }: { content: any }) {
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-slate-50 to-white">
       <div className="bg-blue-600 text-white p-4 text-center">

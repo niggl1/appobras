@@ -71,27 +71,27 @@ const CATEGORIA_NAMES: Record<string, string> = {
 };
 
 export default function AdminFuncoesPage() {
-  const [selectedCondominio, setSelectedCondominio] = useState<number | null>(null);
+  const [selectedObra, setSelectedObra] = useState<number | null>(null);
   const [localFuncoes, setLocalFuncoes] = useState<Record<string, boolean>>({});
   const [hasChanges, setHasChanges] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
 
-  // Buscar condomínios
-  const { data: condominios, isLoading: loadingCondominios } = trpc.condominio.list.useQuery();
+  // Buscar obras
+  const { data: obras, isLoading: loadingObras } = trpc.obra.list.useQuery();
   
   // Buscar funções disponíveis
-  const { data: funcoesDisponiveis } = trpc.funcoesCondominio.listarDisponiveis.useQuery();
+  const { data: funcoesDisponiveis } = trpc.funcoesObra.listarDisponiveis.useQuery();
   
   // Buscar funções da organização selecionado
-  const { data: funcoesCondominio, isLoading: loadingFuncoes, refetch: refetchFuncoes } = 
-    trpc.funcoesCondominio.listar.useQuery(
-      { condominioId: selectedCondominio! },
-      { enabled: !!selectedCondominio }
+  const { data: funcoesObra, isLoading: loadingFuncoes, refetch: refetchFuncoes } = 
+    trpc.funcoesObra.listar.useQuery(
+      { obraId: selectedObra! },
+      { enabled: !!selectedObra }
     );
 
   // Mutation para atualizar múltiplas funções
-  const atualizarMultiplas = trpc.funcoesCondominio.atualizarMultiplas.useMutation({
+  const atualizarMultiplas = trpc.funcoesObra.atualizarMultiplas.useMutation({
     onSuccess: () => {
       toast.success("Funções atualizadas com sucesso!");
       setHasChanges(false);
@@ -103,7 +103,7 @@ export default function AdminFuncoesPage() {
   });
 
   // Mutation para inicializar funções
-  const inicializar = trpc.funcoesCondominio.inicializar.useMutation({
+  const inicializar = trpc.funcoesObra.inicializar.useMutation({
     onSuccess: (data) => {
       if (data.initialized) {
         toast.success(`${data.count} funções inicializadas!`);
@@ -118,9 +118,9 @@ export default function AdminFuncoesPage() {
   });
 
   // Quando seleciona uma organização, carregar estado das funções
-  const handleSelectCondominio = (value: string) => {
+  const handleSelectObra = (value: string) => {
     const id = parseInt(value);
-    setSelectedCondominio(id);
+    setSelectedObra(id);
     setLocalFuncoes({});
     setHasChanges(false);
   };
@@ -132,7 +132,7 @@ export default function AdminFuncoesPage() {
       return localFuncoes[funcaoId];
     }
     // Se há registro no banco, usar ele
-    const registro = funcoesCondominio?.find(f => f.funcaoId === funcaoId);
+    const registro = funcoesObra?.find(f => f.funcaoId === funcaoId);
     if (registro) {
       return registro.habilitada;
     }
@@ -148,7 +148,7 @@ export default function AdminFuncoesPage() {
 
   // Salvar alterações
   const handleSave = () => {
-    if (!selectedCondominio || !funcoesDisponiveis) return;
+    if (!selectedObra || !funcoesDisponiveis) return;
     
     const funcoes = funcoesDisponiveis.map(f => ({
       funcaoId: f.id,
@@ -156,7 +156,7 @@ export default function AdminFuncoesPage() {
     }));
     
     atualizarMultiplas.mutate({
-      condominioId: selectedCondominio,
+      obraId: selectedObra,
       funcoes,
     });
   };
@@ -212,12 +212,12 @@ export default function AdminFuncoesPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Seletor de Condomínio */}
+        {/* Seletor de Obra */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5" />
-              Selecionar Condomínio
+              Selecionar Obra
             </CardTitle>
             <CardDescription>
               Escolha a organização para gerenciar as funções habilitadas
@@ -256,13 +256,13 @@ export default function AdminFuncoesPage() {
                 {/* Resultados da busca em tempo real */}
                 {showResults && searchTerm && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                    {loadingCondominios ? (
+                    {loadingObras ? (
                       <div className="p-4 text-center">
                         <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                       </div>
                     ) : (
                       <>
-                        {condominios
+                        {obras
                           ?.filter((cond) => {
                             const searchLower = searchTerm.toLowerCase();
                             const nomeMatch = cond.nome.toLowerCase().includes(searchLower);
@@ -282,14 +282,14 @@ export default function AdminFuncoesPage() {
                                 key={cond.id}
                                 type="button"
                                 onClick={() => {
-                                  setSelectedCondominio(cond.id);
+                                  setSelectedObra(cond.id);
                                   setSearchTerm(cond.nome);
                                   setShowResults(false);
                                   setLocalFuncoes({});
                                   setHasChanges(false);
                                 }}
                                 className={`w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex flex-col gap-1 transition-colors ${
-                                  selectedCondominio === cond.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''
+                                  selectedObra === cond.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''
                                 }`}
                               >
                                 <div className="flex items-center gap-3">
@@ -307,7 +307,7 @@ export default function AdminFuncoesPage() {
                                       nome
                                     )}
                                   </span>
-                                  {selectedCondominio === cond.id && (
+                                  {selectedObra === cond.id && (
                                     <CheckCircle className="w-4 h-4 text-primary ml-auto" />
                                   )}
                                 </div>
@@ -328,7 +328,7 @@ export default function AdminFuncoesPage() {
                               </button>
                             );
                           })}
-                        {condominios?.filter((cond) => {
+                        {obras?.filter((cond) => {
                           const searchLower = searchTerm.toLowerCase();
                           const nomeMatch = cond.nome.toLowerCase().includes(searchLower);
                           const codigoMatch = cond.codigo?.toLowerCase().includes(searchLower) || false;
@@ -339,7 +339,7 @@ export default function AdminFuncoesPage() {
                             Nenhuma organização encontrado para "{searchTerm}"
                           </div>
                         )}
-                        {condominios && condominios.filter((cond) => {
+                        {obras && obras.filter((cond) => {
                           const searchLower = searchTerm.toLowerCase();
                           const nomeMatch = cond.nome.toLowerCase().includes(searchLower);
                           const codigoMatch = cond.codigo?.toLowerCase().includes(searchLower) || false;
@@ -347,13 +347,13 @@ export default function AdminFuncoesPage() {
                           return nomeMatch || codigoMatch || cnpjMatch;
                         }).length > 0 && (
                           <div className="px-4 py-2 bg-slate-50 text-xs text-muted-foreground border-t">
-                            {condominios.filter((cond) => {
+                            {obras.filter((cond) => {
                               const searchLower = searchTerm.toLowerCase();
                               const nomeMatch = cond.nome.toLowerCase().includes(searchLower);
                               const codigoMatch = cond.codigo?.toLowerCase().includes(searchLower) || false;
                               const cnpjMatch = cond.cnpj?.replace(/[^\d]/g, '').includes(searchTerm.replace(/[^\d]/g, '')) || false;
                               return nomeMatch || codigoMatch || cnpjMatch;
-                            }).length} condomínio(s) encontrado(s)
+                            }).length} obra(s) encontrado(s)
                           </div>
                         )}
                       </>
@@ -362,17 +362,17 @@ export default function AdminFuncoesPage() {
                 )}
               </div>
               
-              {/* Condomínio selecionado */}
-              {selectedCondominio && (
+              {/* Obra selecionado */}
+              {selectedObra && (
                 <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <Building2 className="w-5 h-5 text-primary" />
                   <span className="font-medium text-sm">
-                    {condominios?.find(c => c.id === selectedCondominio)?.nome}
+                    {obras?.find(c => c.id === selectedObra)?.nome}
                   </span>
                   <button
                     type="button"
                     onClick={() => {
-                      setSelectedCondominio(null);
+                      setSelectedObra(null);
                       setSearchTerm("");
                       setLocalFuncoes({});
                       setHasChanges(false);
@@ -386,10 +386,10 @@ export default function AdminFuncoesPage() {
 
               <div className="flex items-center gap-4">
 
-                {selectedCondominio && (
+                {selectedObra && (
                   <Button
                     variant="outline"
-                    onClick={() => inicializar.mutate({ condominioId: selectedCondominio })}
+                    onClick={() => inicializar.mutate({ obraId: selectedObra })}
                     disabled={inicializar.isPending}
                   >
                     {inicializar.isPending ? (
@@ -406,7 +406,7 @@ export default function AdminFuncoesPage() {
         </Card>
 
         {/* Lista de Funções */}
-        {selectedCondominio && (
+        {selectedObra && (
           <>
             {/* Barra de ações */}
             <div className="flex items-center justify-between mb-6">
@@ -488,12 +488,12 @@ export default function AdminFuncoesPage() {
           </>
         )}
 
-        {!selectedCondominio && (
+        {!selectedObra && (
           <Card>
             <CardContent className="py-12 text-center">
               <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Selecione um Condomínio
+                Selecione um Obra
               </h3>
               <p className="text-muted-foreground">
                 Escolha uma organização acima para gerenciar as funções habilitadas

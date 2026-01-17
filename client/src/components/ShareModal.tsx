@@ -16,17 +16,17 @@ interface ShareModalProps {
   itemId: number;
   itemTitulo: string;
   itemProtocolo: string;
-  condominioId: number;
+  obraId: number;
 }
 
-export function ShareModal({ isOpen, onClose, tipo, itemId, itemTitulo, itemProtocolo, condominioId }: ShareModalProps) {
+export function ShareModal({ isOpen, onClose, tipo, itemId, itemTitulo, itemProtocolo, obraId }: ShareModalProps) {
   
   const [editavel, setEditavel] = useState(false);
   const [linkGerado, setLinkGerado] = useState<{ token: string; id: number } | null>(null);
   const [selectedMembro, setSelectedMembro] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const { data: membros } = trpc.membroEquipe.list.useQuery({ condominioId });
+  const { data: membros } = trpc.membroEquipe.list.useQuery({ obraId });
   
   const createLinkMutation = trpc.linkCompartilhavel.create.useMutation({
     onSuccess: (data) => {
@@ -58,7 +58,7 @@ export function ShareModal({ isOpen, onClose, tipo, itemId, itemTitulo, itemProt
 
   const handleGerarLink = () => {
     createLinkMutation.mutate({
-      condominioId,
+      obraId,
       tipo,
       itemId,
       editavel,

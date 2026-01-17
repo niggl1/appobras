@@ -85,95 +85,95 @@ ChartJS.register(
 );
 
 interface RelatoriosPageProps {
-  condominioId?: number;
+  obraId?: number;
 }
 
-export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
+export default function RelatoriosPage({ obraId }: RelatoriosPageProps) {
   const [activeCategory, setActiveCategory] = useState("consolidado");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [filterStatus, setFilterStatus] = useState("todos");
-  const [selectedCondominioFilter, setSelectedCondominioFilter] = useState<number | null>(null);
+  const [selectedObraFilter, setSelectedObraFilter] = useState<number | null>(null);
   
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  // Usar o filtro selecionado, ou o condominioId passado, ou o primeiro da lista
-  const selectedCondominioId = selectedCondominioFilter || condominioId || condominios?.[0]?.id;
-  const selectedCondominio = condominios?.find(c => c.id === selectedCondominioId);
+  const { data: obras } = trpc.obra.list.useQuery();
+  // Usar o filtro selecionado, ou o obraId passado, ou o primeiro da lista
+  const selectedObraId = selectedObraFilter || obraId || obras?.[0]?.id;
+  const selectedObra = obras?.find(c => c.id === selectedObraId);
 
   // Queries para cada tipo de relatório
-  const { data: moradores, isLoading: loadingMoradores } = trpc.morador.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+  const { data: colaboradores, isLoading: loadingColaboradores } = trpc.colaborador.list.useQuery(
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: manutencoes, isLoading: loadingManutencoes } = trpc.manutencao.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: ocorrencias, isLoading: loadingOcorrencias } = trpc.ocorrencia.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: vistorias, isLoading: loadingVistorias } = trpc.vistoria.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: checklists, isLoading: loadingChecklists } = trpc.checklist.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: avisos, isLoading: loadingAvisos } = trpc.aviso.list.useQuery(
     { revistaId: 0 },
-    { enabled: !!selectedCondominioId }
+    { enabled: !!selectedObraId }
   );
 
   const { data: eventos, isLoading: loadingEventos } = trpc.evento.list.useQuery(
     { revistaId: 0 },
-    { enabled: !!selectedCondominioId }
+    { enabled: !!selectedObraId }
   );
 
   const { data: votacoes, isLoading: loadingVotacoes } = trpc.votacao.list.useQuery(
     { revistaId: 0 },
-    { enabled: !!selectedCondominioId }
+    { enabled: !!selectedObraId }
   );
 
   const { data: classificados, isLoading: loadingClassificados } = trpc.classificado.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: achados, isLoading: loadingAchados } = trpc.achadoPerdido.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: caronas, isLoading: loadingCaronas } = trpc.carona.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: vagas, isLoading: loadingVagas } = trpc.vagaEstacionamento.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: albuns, isLoading: loadingAlbuns } = trpc.album.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: ordensServico, isLoading: loadingOrdensServico } = trpc.ordensServico.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   // Categorias de relatórios
   const categories = [
     { id: "consolidado", label: "Consolidado", icon: BarChart3, color: "text-indigo-600" },
-    { id: "moradores", label: "Moradores", icon: Users, color: "text-blue-600" },
+    { id: "colaboradores", label: "Colaboradores", icon: Users, color: "text-blue-600" },
     { id: "operacional", label: "Operacional", icon: Wrench, color: "text-orange-600" },
     { id: "ordens", label: "Ordens de Serviço", icon: ClipboardCheck, color: "text-amber-600" },
     { id: "comunicacao", label: "Comunicação", icon: Megaphone, color: "text-green-600" },
@@ -261,13 +261,13 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
   const filteredEventos = filterEventosByDateRange(eventos);
   const filteredAlbuns = filterByDateRange(albuns);
 
-  // Estatísticas de moradores
-  const moradoresStats = {
-    total: moradores?.length || 0,
-    ativos: moradores?.filter(m => m.ativo !== false).length || 0,
-    inativos: moradores?.filter(m => m.ativo === false).length || 0,
-    comEmail: moradores?.filter(m => m.email).length || 0,
-    comTelefone: moradores?.filter(m => m.telefone).length || 0,
+  // Estatísticas de colaboradores
+  const colaboradoresStats = {
+    total: colaboradores?.length || 0,
+    ativos: colaboradores?.filter(m => m.ativo !== false).length || 0,
+    inativos: colaboradores?.filter(m => m.ativo === false).length || 0,
+    comEmail: colaboradores?.filter(m => m.email).length || 0,
+    comTelefone: colaboradores?.filter(m => m.telefone).length || 0,
   };
 
   // Estatísticas operacionais (usando dados filtrados)
@@ -437,7 +437,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
     eventos: calcularVariacao(dadosHistoricos.eventos),
   };
 
-  if (!selectedCondominioId) {
+  if (!selectedObraId) {
     return (
       <div className="space-y-6">
         <div>
@@ -463,7 +463,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
         <div>
           <h1 className="text-2xl font-serif font-bold text-foreground">Relatórios</h1>
           <p className="text-muted-foreground">
-            {selectedCondominio?.nome || "Condomínio"} - Sistema completo de relatórios
+            {selectedObra?.nome || "Obra"} - Sistema completo de relatórios
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -476,7 +476,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
             size="sm" 
             onClick={() => {
               const allData = {
-                moradores: moradores || [],
+                colaboradores: colaboradores || [],
                 manutencoes: filteredManutencoes,
                 ocorrencias: filteredOcorrencias,
                 vistorias: filteredVistorias,
@@ -488,7 +488,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
               // Exportar dados consolidados para CSV
               const headers = ["Categoria", "Total", "Pendentes", "Finalizados", "Taxa"];
               const csvData = [
-                { Categoria: "Moradores", Total: moradoresStats.total, Pendentes: moradoresStats.ativos + " ativos", Finalizados: moradoresStats.inativos + " inativos", Taxa: moradoresStats.total > 0 ? Math.round((moradoresStats.ativos / moradoresStats.total) * 100) + "%" : "0%" },
+                { Categoria: "Colaboradores", Total: colaboradoresStats.total, Pendentes: colaboradoresStats.ativos + " ativos", Finalizados: colaboradoresStats.inativos + " inativos", Taxa: colaboradoresStats.total > 0 ? Math.round((colaboradoresStats.ativos / colaboradoresStats.total) * 100) + "%" : "0%" },
                 { Categoria: "Manutenções", Total: operacionalStats.manutencoes.total, Pendentes: operacionalStats.manutencoes.pendentes, Finalizados: operacionalStats.manutencoes.finalizadas, Taxa: operacionalStats.manutencoes.total > 0 ? Math.round((operacionalStats.manutencoes.finalizadas / operacionalStats.manutencoes.total) * 100) + "%" : "0%" },
                 { Categoria: "Ocorrências", Total: operacionalStats.ocorrencias.total, Pendentes: operacionalStats.ocorrencias.pendentes, Finalizados: operacionalStats.ocorrencias.finalizadas, Taxa: operacionalStats.ocorrencias.total > 0 ? Math.round((operacionalStats.ocorrencias.finalizadas / operacionalStats.ocorrencias.total) * 100) + "%" : "0%" },
                 { Categoria: "Vistorias", Total: operacionalStats.vistorias.total, Pendentes: operacionalStats.vistorias.pendentes, Finalizados: operacionalStats.vistorias.realizadas, Taxa: operacionalStats.vistorias.total > 0 ? Math.round((operacionalStats.vistorias.realizadas / operacionalStats.vistorias.total) * 100) + "%" : "0%" },
@@ -505,7 +505,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
               const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
               const link = document.createElement("a");
               link.href = URL.createObjectURL(blob);
-              link.download = `relatorio_${selectedCondominio?.nome || "condominio"}_${new Date().toISOString().split("T")[0]}.csv`;
+              link.download = `relatorio_${selectedObra?.nome || "obra"}_${new Date().toISOString().split("T")[0]}.csv`;
               link.click();
               toast.success("Relatório exportado para Excel/CSV!");
             }}
@@ -543,19 +543,19 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
       <Card className="print:hidden">
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row md:items-end gap-4">
-            {/* Filtro por Condomínio */}
-            {condominios && condominios.length > 1 && (
+            {/* Filtro por Obra */}
+            {obras && obras.length > 1 && (
               <div className="flex-1">
-                <Label className="text-sm font-medium">Condomínio</Label>
+                <Label className="text-sm font-medium">Obra</Label>
                 <Select
-                  value={selectedCondominioId?.toString() || ""}
-                  onValueChange={(value) => setSelectedCondominioFilter(parseInt(value))}
+                  value={selectedObraId?.toString() || ""}
+                  onValueChange={(value) => setSelectedObraFilter(parseInt(value))}
                 >
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecionar condomínio" />
+                    <SelectValue placeholder="Selecionar obra" />
                   </SelectTrigger>
                   <SelectContent>
-                    {condominios.map((cond) => (
+                    {obras.map((cond) => (
                       <SelectItem key={cond.id} value={cond.id.toString()}>
                         {cond.nome}
                       </SelectItem>
@@ -619,7 +619,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div>
                     <h2 className="text-2xl font-bold">Relatório Executivo</h2>
                     <p className="text-white/80">
-                      {selectedCondominio?.nome || "Condomínio"} - Visão Geral
+                      {selectedObra?.nome || "Obra"} - Visão Geral
                     </p>
                     {(dateRange.start || dateRange.end) && (
                       <p className="text-sm text-white/70 mt-1">
@@ -638,7 +638,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                           "Relatório Executivo Consolidado",
                           "Visão geral de todas as áreas da organização",
                           [
-                            { label: "Moradores", valor: moradoresStats.total },
+                            { label: "Colaboradores", valor: colaboradoresStats.total },
                             { label: "Manutenções", valor: operacionalStats.manutencoes.total },
                             { label: "Ocorrências", valor: operacionalStats.ocorrencias.total },
                             { label: "Vistorias", valor: operacionalStats.vistorias.total },
@@ -663,7 +663,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                           {
                             colunas: ["Categoria", "Total", "Pendentes/Ativos", "Finalizados/Resolvidos", "Taxa"],
                             dados: [
-                              ["Moradores", String(moradoresStats.total), String(moradoresStats.ativos) + " ativos", String(moradoresStats.inativos) + " inativos", moradoresStats.total > 0 ? Math.round((moradoresStats.ativos / moradoresStats.total) * 100) + "%" : "0%"],
+                              ["Colaboradores", String(colaboradoresStats.total), String(colaboradoresStats.ativos) + " ativos", String(colaboradoresStats.inativos) + " inativos", colaboradoresStats.total > 0 ? Math.round((colaboradoresStats.ativos / colaboradoresStats.total) * 100) + "%" : "0%"],
                               ["Manutenções", String(operacionalStats.manutencoes.total), String(operacionalStats.manutencoes.pendentes) + " pendentes", String(operacionalStats.manutencoes.finalizadas) + " finalizadas", operacionalStats.manutencoes.total > 0 ? Math.round((operacionalStats.manutencoes.finalizadas / operacionalStats.manutencoes.total) * 100) + "%" : "0%"],
                               ["Ocorrências", String(operacionalStats.ocorrencias.total), String(operacionalStats.ocorrencias.pendentes) + " pendentes", String(operacionalStats.ocorrencias.finalizadas) + " finalizadas", operacionalStats.ocorrencias.total > 0 ? Math.round((operacionalStats.ocorrencias.finalizadas / operacionalStats.ocorrencias.total) * 100) + "%" : "0%"],
                               ["Vistorias", String(operacionalStats.vistorias.total), String(operacionalStats.vistorias.pendentes) + " pendentes", String(operacionalStats.vistorias.realizadas) + " realizadas", operacionalStats.vistorias.total > 0 ? Math.round((operacionalStats.vistorias.realizadas / operacionalStats.vistorias.total) * 100) + "%" : "0%"],
@@ -672,10 +672,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                               ["Eventos", String(agendaStats.eventos.total), String(agendaStats.eventos.proximos) + " próximos", String(agendaStats.eventos.realizados) + " realizados", agendaStats.eventos.total > 0 ? Math.round((agendaStats.eventos.realizados / agendaStats.eventos.total) * 100) + "%" : "0%"],
                             ],
                           },
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -700,11 +700,11 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground">Moradores</p>
-                      <p className="text-2xl font-bold text-blue-600">{moradoresStats.total}</p>
+                      <p className="text-xs text-muted-foreground">Colaboradores</p>
+                      <p className="text-2xl font-bold text-blue-600">{colaboradoresStats.total}</p>
                       <div className="flex items-center gap-1">
-                        <span className="text-xs text-green-600">{moradoresStats.ativos} ativos</span>
-                        {moradoresStats.ativos > 0 && (
+                        <span className="text-xs text-green-600">{colaboradoresStats.ativos} ativos</span>
+                        {colaboradoresStats.ativos > 0 && (
                           <TrendingUp className="w-3 h-3 text-green-500" />
                         )}
                       </div>
@@ -785,11 +785,11 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="h-64">
                     <Bar
                       data={{
-                        labels: ["Moradores", "Manutenções", "Ocorrências", "Vistorias", "Avisos", "Votações", "Eventos"],
+                        labels: ["Colaboradores", "Manutenções", "Ocorrências", "Vistorias", "Avisos", "Votações", "Eventos"],
                         datasets: [{
                           label: "Total",
                           data: [
-                            moradoresStats.total,
+                            colaboradoresStats.total,
                             operacionalStats.manutencoes.total,
                             operacionalStats.ocorrencias.total,
                             operacionalStats.vistorias.total,
@@ -1100,17 +1100,17 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                       <tr className="border-b hover:bg-muted/50">
                         <td className="py-2 px-3 flex items-center gap-2">
                           <Users className="w-4 h-4 text-blue-600" />
-                          Moradores
+                          Colaboradores
                         </td>
-                        <td className="text-center py-2 px-3">{moradoresStats.total}</td>
+                        <td className="text-center py-2 px-3">{colaboradoresStats.total}</td>
                         <td className="text-center py-2 px-3">
-                          <Badge variant="outline" className="bg-green-50 text-green-700">{moradoresStats.ativos} ativos</Badge>
-                        </td>
-                        <td className="text-center py-2 px-3">
-                          <Badge variant="outline" className="bg-red-50 text-red-700">{moradoresStats.inativos} inativos</Badge>
+                          <Badge variant="outline" className="bg-green-50 text-green-700">{colaboradoresStats.ativos} ativos</Badge>
                         </td>
                         <td className="text-center py-2 px-3">
-                          {moradoresStats.total > 0 ? Math.round((moradoresStats.ativos / moradoresStats.total) * 100) : 0}% ativos
+                          <Badge variant="outline" className="bg-red-50 text-red-700">{colaboradoresStats.inativos} inativos</Badge>
+                        </td>
+                        <td className="text-center py-2 px-3">
+                          {colaboradoresStats.total > 0 ? Math.round((colaboradoresStats.ativos / colaboradoresStats.total) * 100) : 0}% ativos
                         </td>
                       </tr>
                       <tr className="border-b hover:bg-muted/50">
@@ -1212,7 +1212,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
         )}
 
         {/* RELATÓRIOS DE MORADORES */}
-        {activeCategory === "moradores" && (
+        {activeCategory === "colaboradores" && (
           <div className="space-y-6">
             {/* Cards de Estatísticas */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -1221,7 +1221,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-muted-foreground">Total</p>
-                      <p className="text-2xl font-bold text-blue-600">{moradoresStats.total}</p>
+                      <p className="text-2xl font-bold text-blue-600">{colaboradoresStats.total}</p>
                     </div>
                     <Users className="w-8 h-8 text-blue-600/20" />
                   </div>
@@ -1232,7 +1232,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-muted-foreground">Ativos</p>
-                      <p className="text-2xl font-bold text-green-600">{moradoresStats.ativos}</p>
+                      <p className="text-2xl font-bold text-green-600">{colaboradoresStats.ativos}</p>
                     </div>
                     <UserCheck className="w-8 h-8 text-green-600/20" />
                   </div>
@@ -1243,7 +1243,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-muted-foreground">Inativos</p>
-                      <p className="text-2xl font-bold text-red-600">{moradoresStats.inativos}</p>
+                      <p className="text-2xl font-bold text-red-600">{colaboradoresStats.inativos}</p>
                     </div>
                     <UserX className="w-8 h-8 text-red-600/20" />
                   </div>
@@ -1254,7 +1254,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-muted-foreground">Com Email</p>
-                      <p className="text-2xl font-bold text-purple-600">{moradoresStats.comEmail}</p>
+                      <p className="text-2xl font-bold text-purple-600">{colaboradoresStats.comEmail}</p>
                     </div>
                     <Send className="w-8 h-8 text-purple-600/20" />
                   </div>
@@ -1265,7 +1265,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-muted-foreground">Com Telefone</p>
-                      <p className="text-2xl font-bold text-orange-600">{moradoresStats.comTelefone}</p>
+                      <p className="text-2xl font-bold text-orange-600">{colaboradoresStats.comTelefone}</p>
                     </div>
                     <MessageSquare className="w-8 h-8 text-orange-600/20" />
                   </div>
@@ -1277,7 +1277,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:hidden">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Status dos Moradores</CardTitle>
+                  <CardTitle className="text-sm font-medium">Status dos Colaboradores</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-48">
@@ -1285,7 +1285,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                       data={{
                         labels: ["Ativos", "Inativos"],
                         datasets: [{
-                          data: [moradoresStats.ativos, moradoresStats.inativos],
+                          data: [colaboradoresStats.ativos, colaboradoresStats.inativos],
                           backgroundColor: ["#22c55e", "#ef4444"],
                           borderWidth: 0,
                         }],
@@ -1311,11 +1311,11 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                       data={{
                         labels: ["Com Email", "Com Telefone", "Sem Contato"],
                         datasets: [{
-                          label: "Moradores",
+                          label: "Colaboradores",
                           data: [
-                            moradoresStats.comEmail,
-                            moradoresStats.comTelefone,
-                            moradoresStats.total - Math.max(moradoresStats.comEmail, moradoresStats.comTelefone)
+                            colaboradoresStats.comEmail,
+                            colaboradoresStats.comTelefone,
+                            colaboradoresStats.total - Math.max(colaboradoresStats.comEmail, colaboradoresStats.comTelefone)
                           ],
                           backgroundColor: ["#8b5cf6", "#f97316", "#94a3b8"],
                         }],
@@ -1364,7 +1364,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const filteredData = moradores?.filter(m => {
+                      const filteredData = colaboradores?.filter(m => {
                         if (filterStatus === "ativos") return m.ativo !== false;
                         if (filterStatus === "inativos") return m.ativo === false;
                         return true;
@@ -1378,7 +1378,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                           bloco: m.bloco || "",
                           status: m.ativo !== false ? "Ativo" : "Inativo",
                         })),
-                        "relatorio_moradores",
+                        "relatorio_colaboradores",
                         ["Nome", "Email", "Telefone", "Apartamento", "Bloco", "Status"]
                       );
                     }}
@@ -1390,7 +1390,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                     variant="default"
                     size="sm"
                     onClick={async () => {
-                      const filteredData = moradores?.filter(m => {
+                      const filteredData = colaboradores?.filter(m => {
                         if (filterStatus === "ativos") return m.ativo !== false;
                         if (filterStatus === "inativos") return m.ativo === false;
                         return true;
@@ -1398,14 +1398,14 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                       toast.loading("Gerando PDF...");
                       try {
                         await exportRelatorioComEstatisticas(
-                          "Relatório de Moradores",
+                          "Relatório de Colaboradores",
                           filterStatus === "todos" ? "Todos a equipa" : 
-                           filterStatus === "ativos" ? "Moradores ativos" : "Moradores inativos",
+                           filterStatus === "ativos" ? "Colaboradores ativos" : "Colaboradores inativos",
                           [
-                            { label: "Total", valor: moradoresStats.total },
-                            { label: "Ativos", valor: moradoresStats.ativos },
-                            { label: "Inativos", valor: moradoresStats.inativos },
-                            { label: "Com Email", valor: moradoresStats.comEmail },
+                            { label: "Total", valor: colaboradoresStats.total },
+                            { label: "Ativos", valor: colaboradoresStats.ativos },
+                            { label: "Inativos", valor: colaboradoresStats.inativos },
+                            { label: "Com Email", valor: colaboradoresStats.comEmail },
                           ],
                           ["Nome", "Apartamento", "Bloco", "Email", "Telefone", "Status"],
                           filteredData.map(m => [
@@ -1416,10 +1416,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             m.telefone || "-",
                             m.ativo !== false ? "Ativo" : "Inativo",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -1437,17 +1437,17 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
               </CardContent>
             </Card>
 
-            {/* Tabela de Moradores */}
+            {/* Tabela de Colaboradores */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Lista de Moradores</CardTitle>
+                <CardTitle className="text-base">Lista de Colaboradores</CardTitle>
                 <CardDescription>
                   {filterStatus === "todos" ? "Todos a equipa" : 
-                   filterStatus === "ativos" ? "Moradores ativos" : "Moradores inativos"}
+                   filterStatus === "ativos" ? "Colaboradores ativos" : "Colaboradores inativos"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {loadingMoradores ? (
+                {loadingColaboradores ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                   </div>
@@ -1465,31 +1465,31 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                         </tr>
                       </thead>
                       <tbody>
-                        {moradores
+                        {colaboradores
                           ?.filter(m => {
                             if (filterStatus === "ativos") return m.ativo !== false;
                             if (filterStatus === "inativos") return m.ativo === false;
                             return true;
                           })
-                          .map((morador) => (
-                            <tr key={morador.id} className="border-b last:border-0">
-                              <td className="py-2 px-2">{morador.nome}</td>
-                              <td className="py-2 px-2">{morador.apartamento || "-"}</td>
-                              <td className="py-2 px-2">{morador.bloco || "-"}</td>
-                              <td className="py-2 px-2">{morador.email || "-"}</td>
-                              <td className="py-2 px-2">{morador.telefone || "-"}</td>
+                          .map((colaborador) => (
+                            <tr key={colaborador.id} className="border-b last:border-0">
+                              <td className="py-2 px-2">{colaborador.nome}</td>
+                              <td className="py-2 px-2">{colaborador.apartamento || "-"}</td>
+                              <td className="py-2 px-2">{colaborador.bloco || "-"}</td>
+                              <td className="py-2 px-2">{colaborador.email || "-"}</td>
+                              <td className="py-2 px-2">{colaborador.telefone || "-"}</td>
                               <td className="py-2 px-2">
-                                <Badge variant={morador.ativo === false ? "destructive" : "default"} className="text-xs">
-                                  {morador.ativo !== false ? "Ativo" : "Inativo"}
+                                <Badge variant={colaborador.ativo === false ? "destructive" : "default"} className="text-xs">
+                                  {colaborador.ativo !== false ? "Ativo" : "Inativo"}
                                 </Badge>
                               </td>
                             </tr>
                           ))}
                       </tbody>
                     </table>
-                    {(!moradores || moradores.length === 0) && (
+                    {(!colaboradores || colaboradores.length === 0) && (
                       <p className="text-center py-8 text-muted-foreground">
-                        Nenhum morador cadastrado
+                        Nenhum colaborador cadastrado
                       </p>
                     )}
                   </div>
@@ -1986,10 +1986,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             m.prioridade === "alta" ? "Alta" : m.prioridade === "media" ? "Média" : "Baixa",
                             m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2113,10 +2113,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             o.status === "pendente" ? "Pendente" : o.status === "realizada" ? "Realizada" : o.status === "finalizada" ? "Finalizada" : (o.status || "-"),
                             o.createdAt ? new Date(o.createdAt).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2231,10 +2231,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             v.status === "pendente" ? "Pendente" : v.status === "realizada" ? "Realizada" : v.status,
                             v.createdAt ? new Date(v.createdAt).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2326,8 +2326,8 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground">Moradores Notificáveis</p>
-                      <p className="text-2xl font-bold text-purple-600">{moradoresStats.comTelefone}</p>
+                      <p className="text-xs text-muted-foreground">Colaboradores Notificáveis</p>
+                      <p className="text-2xl font-bold text-purple-600">{colaboradoresStats.comTelefone}</p>
                     </div>
                     <Send className="w-8 h-8 text-purple-600/20" />
                   </div>
@@ -2383,10 +2383,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             a.tipo || "-",
                             a.createdAt ? new Date(a.createdAt).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2616,10 +2616,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             v.tipo,
                             v.dataFim ? new Date(v.dataFim).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2728,10 +2728,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             c.preco || "-",
                             c.status === "aprovado" ? "Aprovado" : c.status === "pendente" ? "Pendente" : c.status || "Pendente",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -2877,10 +2877,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             e.dataEvento ? new Date(e.dataEvento).toLocaleDateString("pt-BR") : "-",
                             e.horaInicio || "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -3016,10 +3016,10 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
                             a.categoria || "outros",
                             a.createdAt ? new Date(a.createdAt).toLocaleDateString("pt-BR") : "-",
                           ]),
-                          selectedCondominio ? {
-                            nome: selectedCondominio.nome,
-                            logoUrl: selectedCondominio.logoUrl,
-                            endereco: selectedCondominio.endereco,
+                          selectedObra ? {
+                            nome: selectedObra.nome,
+                            logoUrl: selectedObra.logoUrl,
+                            endereco: selectedObra.endereco,
                           } : undefined
                         );
                         toast.dismiss();
@@ -3084,7 +3084,7 @@ export default function RelatoriosPage({ condominioId }: RelatoriosPageProps) {
       {/* Rodapé para impressão */}
       <div className="hidden print:block mt-8 pt-4 border-t text-xs text-muted-foreground text-center">
         <p>Relatório gerado em {new Date().toLocaleString("pt-BR")}</p>
-        <p>{selectedCondominio?.nome || "Condomínio"}</p>
+        <p>{selectedObra?.nome || "Obra"}</p>
       </div>
     </div>
   );

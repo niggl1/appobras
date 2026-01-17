@@ -67,10 +67,10 @@ import {
 } from "@/components/ui/form-modal";
 
 interface ManutencoesPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) {
+export default function ManutencoesPage({ obraId }: ManutencoesPageProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showManutencaoRapida, setShowManutencaoRapida] = useState(false);
@@ -109,23 +109,23 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
   const utils = trpc.useUtils();
   
   // Buscar dados da organização para obter o logo
-  const { data: condominio } = trpc.condominio.get.useQuery(
-    { id: condominioId },
-    { enabled: !!condominioId }
+  const { data: obra } = trpc.obra.get.useQuery(
+    { id: obraId },
+    { enabled: !!obraId }
   );
   
   const { data: manutencoes = [], isLoading } = trpc.manutencao.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: stats } = trpc.manutencao.getStats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: searchResults = [] } = trpc.manutencao.searchByProtocolo.useQuery(
-    { protocolo: searchProtocolo, condominioId },
+    { protocolo: searchProtocolo, obraId },
     { enabled: !!searchProtocolo && searchProtocolo.length >= 3 }
   );
   
@@ -320,7 +320,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
       toast.error("Título é obrigatório");
       return;
     }
-    createMutation.mutate({ ...formData, condominioId });
+    createMutation.mutate({ ...formData, obraId });
   };
 
   const handleStatusChange = (manutencaoId: number, newStatus: string) => {
@@ -570,7 +570,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Título *"
                   value={formData.titulo}
                   onChange={(v) => setFormData({ ...formData, titulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="titulo_manutencao"
                   placeholder="Ex: Reparo no Portão Principal"
                 />
@@ -578,7 +578,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Subtítulo"
                   value={formData.subtitulo}
                   onChange={(v) => setFormData({ ...formData, subtitulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="subtitulo_manutencao"
                   placeholder="Descrição breve da manutenção"
                 />
@@ -672,7 +672,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Responsável"
                   value={formData.responsavelNome}
                   onChange={(v) => setFormData({ ...formData, responsavelNome: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="responsavel"
                   placeholder="Nome do responsável"
                 />
@@ -680,7 +680,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Localização"
                   value={formData.localizacao}
                   onChange={(v) => setFormData({ ...formData, localizacao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="localizacao"
                   placeholder="Local da manutenção"
                 />
@@ -690,7 +690,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Fornecedor"
                   value={formData.fornecedor}
                   onChange={(v) => setFormData({ ...formData, fornecedor: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="fornecedor"
                   placeholder="Nome do fornecedor ou empresa"
                 />
@@ -772,7 +772,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Descrição"
                   value={formData.descricao}
                   onChange={(v) => setFormData({ ...formData, descricao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="descricao_manutencao"
                   placeholder="Descreva os detalhes da manutenção..."
                   multiline
@@ -782,7 +782,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
                   label="Observações"
                   value={formData.observacoes}
                   onChange={(v) => setFormData({ ...formData, observacoes: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="observacoes_manutencao"
                   placeholder="Observações adicionais..."
                   multiline
@@ -803,7 +803,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <ImageEditSection
                   label="Editar Imagem com Anotações"
-                  logoUrl={condominio?.logoUrl || undefined}
+                  logoUrl={obra?.logoUrl || undefined}
                   onSaveEditedImage={(editedImage) => {
                     setImagens(prev => [...prev, editedImage]);
                     toast.success("Imagem editada adicionada à galeria!");
@@ -1062,12 +1062,12 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
         itemId={selectedManutencao?.id || 0}
         itemTitulo={selectedManutencao?.titulo || ""}
         itemProtocolo={selectedManutencao?.protocolo || ""}
-        condominioId={condominioId}
+        obraId={obraId}
       />
 
       {/* Modal de Compartilhar com Equipe */}
       <CompartilharComEquipe
-        condominioId={condominioId}
+        obraId={obraId}
         tipo="manutencao"
         itemId={selectedManutencao?.id || 0}
         itemTitulo={selectedManutencao?.titulo || ""}
@@ -1080,7 +1080,7 @@ export default function ManutencoesPage({ condominioId }: ManutencoesPageProps) 
       <TarefasSimplesModal
         open={showManutencaoRapida}
         onOpenChange={setShowManutencaoRapida}
-        condominioId={condominioId}
+        obraId={obraId}
         tipoInicial="manutencao"
         onSuccess={() => {
           utils.manutencao.list.invalidate();

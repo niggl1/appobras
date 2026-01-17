@@ -43,10 +43,10 @@ import {
 
 
 interface TimelinePageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function TimelinePage({ condominioId }: TimelinePageProps) {
+export default function TimelinePage({ obraId }: TimelinePageProps) {
   const { user } = useAuth();
   const utils = trpc.useUtils();
 
@@ -80,12 +80,12 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
   const [timelineCriada, setTimelineCriada] = useState<{ id: number; protocolo: string; tokenPublico: string } | null>(null);
 
   // Queries para listas
-  const { data: responsaveis = [] } = trpc.timeline.listarResponsaveis.useQuery({ condominioId });
-  const { data: locais = [] } = trpc.timeline.listarLocais.useQuery({ condominioId });
-  const { data: statusList = [] } = trpc.timeline.listarStatus.useQuery({ condominioId });
-  const { data: prioridades = [] } = trpc.timeline.listarPrioridades.useQuery({ condominioId });
-  const { data: titulos = [] } = trpc.timeline.listarTitulos.useQuery({ condominioId });
-  const { data: membrosEquipe = [] } = trpc.membroEquipe.list.useQuery({ condominioId });
+  const { data: responsaveis = [] } = trpc.timeline.listarResponsaveis.useQuery({ obraId });
+  const { data: locais = [] } = trpc.timeline.listarLocais.useQuery({ obraId });
+  const { data: statusList = [] } = trpc.timeline.listarStatus.useQuery({ obraId });
+  const { data: prioridades = [] } = trpc.timeline.listarPrioridades.useQuery({ obraId });
+  const { data: titulos = [] } = trpc.timeline.listarTitulos.useQuery({ obraId });
+  const { data: membrosEquipe = [] } = trpc.membroEquipe.list.useQuery({ obraId });
 
   // Mutations para criar configurações
   const criarResponsavelMutation = trpc.timeline.criarResponsavel.useMutation({
@@ -271,7 +271,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
     }
 
     criarTimelineMutation.mutate({
-      condominioId,
+      obraId,
       responsavelId: Number(responsavelId),
       titulo: titulo.trim(),
       localId: localId ? Number(localId) : undefined,
@@ -292,7 +292,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
     }
 
     criarTimelineMutation.mutate({
-      condominioId,
+      obraId,
       responsavelId: Number(responsavelId),
       titulo: titulo.trim(),
       localId: localId ? Number(localId) : undefined,
@@ -734,7 +734,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               <Input
                 value={novoResponsavel.cargo}
                 onChange={(e) => setNovoResponsavel({ ...novoResponsavel, cargo: e.target.value })}
-                placeholder="Ex: Zelador, Síndico"
+                placeholder="Ex: Zelador, Engenheiro"
               />
             </div>
             <div>
@@ -760,7 +760,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               Cancelar
             </Button>
             <Button
-              onClick={() => criarResponsavelMutation.mutate({ condominioId, ...novoResponsavel })}
+              onClick={() => criarResponsavelMutation.mutate({ obraId, ...novoResponsavel })}
               disabled={!novoResponsavel.nome || criarResponsavelMutation.isPending}
               className="bg-orange-500"
             >
@@ -803,7 +803,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               Cancelar
             </Button>
             <Button
-              onClick={() => criarLocalMutation.mutate({ condominioId, ...novoLocal })}
+              onClick={() => criarLocalMutation.mutate({ obraId, ...novoLocal })}
               disabled={!novoLocal.nome || criarLocalMutation.isPending}
               className="bg-orange-500"
             >
@@ -850,7 +850,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               Cancelar
             </Button>
             <Button
-              onClick={() => criarStatusMutation.mutate({ condominioId, ...novoStatus })}
+              onClick={() => criarStatusMutation.mutate({ obraId, ...novoStatus })}
               disabled={!novoStatus.nome || criarStatusMutation.isPending}
               className="bg-orange-500"
             >
@@ -906,7 +906,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               Cancelar
             </Button>
             <Button
-              onClick={() => criarPrioridadeMutation.mutate({ condominioId, ...novaPrioridade })}
+              onClick={() => criarPrioridadeMutation.mutate({ obraId, ...novaPrioridade })}
               disabled={!novaPrioridade.nome || criarPrioridadeMutation.isPending}
               className="bg-orange-500"
             >
@@ -945,7 +945,7 @@ export default function TimelinePage({ condominioId }: TimelinePageProps) {
               Cancelar
             </Button>
             <Button
-              onClick={() => criarTituloMutation.mutate({ condominioId, ...novoTitulo })}
+              onClick={() => criarTituloMutation.mutate({ obraId, ...novoTitulo })}
               disabled={!novoTitulo.titulo || criarTituloMutation.isPending}
               className="bg-orange-500"
             >

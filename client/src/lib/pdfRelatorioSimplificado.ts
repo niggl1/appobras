@@ -116,7 +116,7 @@ export async function gerarRelatorioSimplificado(
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
     doc.text(
-      config.rodapeTexto || "App Manutenção - Sistema Universal de Manutenção",
+      config.rodapeTexto || "AppObras - Sistema Universal de Manutenção",
       margin,
       pageHeight - 10
     );

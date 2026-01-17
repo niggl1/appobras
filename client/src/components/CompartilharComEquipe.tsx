@@ -31,7 +31,7 @@ interface MembroEquipe {
 }
 
 interface CompartilharComEquipeProps {
-  condominioId: number;
+  obraId: number;
   tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois" | "ordem_servico" | "tarefa_simples";
   itemId: number;
   itemTitulo: string;
@@ -42,7 +42,7 @@ interface CompartilharComEquipeProps {
 }
 
 export function CompartilharComEquipe({
-  condominioId,
+  obraId,
   tipo,
   itemId,
   itemTitulo,
@@ -59,7 +59,7 @@ export function CompartilharComEquipe({
   const [rastreamentoAtivo, setRastreamentoAtivo] = useState(true);
 
   const { data: membros, isLoading } = trpc.membroEquipe.list.useQuery(
-    { condominioId },
+    { obraId },
     { enabled: open }
   );
 
@@ -110,7 +110,7 @@ export function CompartilharComEquipe({
     if (mensagemPersonalizada) {
       mensagem += `\n💬 *Mensagem:* ${mensagemPersonalizada}\n`;
     }
-    mensagem += `\n_Compartilhado via App Manutenção_`;
+    mensagem += `\n_Compartilhado via AppObras_`;
     return mensagem;
   };
 
@@ -143,7 +143,7 @@ export function CompartilharComEquipe({
     if (rastreamentoAtivo) {
       try {
         const result = await criarCompartilhamentoMutation.mutateAsync({
-          condominioId,
+          obraId,
           destinatarioId: membro.id,
           destinatarioNome: membro.nome,
           destinatarioEmail: membro.email || undefined,
@@ -170,7 +170,7 @@ export function CompartilharComEquipe({
         }
         mensagem += `\n🔗 *Ver detalhes:* ${linkRastreavel}`;
         mensagem += `\n\n_Você será notificado quando visualizar._`;
-        mensagem += `\n_Compartilhado via App Manutenção_`;
+        mensagem += `\n_Compartilhado via AppObras_`;
 
         const numeroLimpo = membro.whatsapp.replace(/\D/g, "");
         const url = `https://wa.me/${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
@@ -203,7 +203,7 @@ export function CompartilharComEquipe({
       if (rastreamentoAtivo) {
         // Criar compartilhamento com rastreamento
         const compartilhamento = await criarCompartilhamentoMutation.mutateAsync({
-          condominioId,
+          obraId,
           destinatarioId: membro.id,
           destinatarioNome: membro.nome,
           destinatarioEmail: membro.email,
@@ -529,7 +529,7 @@ export function CompartilharComEquipe({
 
 // Botão de compartilhar para usar nas páginas
 interface BotaoCompartilharProps {
-  condominioId: number;
+  obraId: number;
   tipo: "vistoria" | "manutencao" | "ocorrencia" | "checklist" | "antes_depois" | "ordem_servico" | "tarefa_simples";
   itemId: number;
   itemTitulo: string;
@@ -541,7 +541,7 @@ interface BotaoCompartilharProps {
 }
 
 export function BotaoCompartilhar({
-  condominioId,
+  obraId,
   tipo,
   itemId,
   itemTitulo,
@@ -566,7 +566,7 @@ export function BotaoCompartilhar({
       </Button>
       
       <CompartilharComEquipe
-        condominioId={condominioId}
+        obraId={obraId}
         tipo={tipo}
         itemId={itemId}
         itemTitulo={itemTitulo}

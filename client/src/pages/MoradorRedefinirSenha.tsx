@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Building2, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2, Loader2, XCircle } from "lucide-react";
 
-export default function MoradorRedefinirSenha() {
+export default function ColaboradorRedefinirSenha() {
   const { token } = useParams<{ token: string }>();
   const [, setLocation] = useLocation();
   const [novaSenha, setNovaSenha] = useState("");
@@ -17,23 +17,23 @@ export default function MoradorRedefinirSenha() {
   const [sucesso, setSucesso] = useState(false);
 
   // Validar token
-  const { data: validacao, isLoading: validando } = (trpc.morador as any).validarTokenRecuperacao.useQuery(
+  const { data: validacao, isLoading: validando } = (trpc.colaborador as any).validarTokenRecuperacao.useQuery(
     { token: token || "" },
     { enabled: !!token }
   );
 
   // Redefinir senha
-  const redefinirSenha = (trpc.morador as any).redefinirSenha.useMutation({
+  const redefinirSenha = (trpc.colaborador as any).redefinirSenha.useMutation({
     onSuccess: (data: any) => {
       setSucesso(true);
       toast.success("Senha redefinida com sucesso!");
       
       // Salvar token de sessão
       if (data.token) {
-        localStorage.setItem("moradorToken", data.token);
-        localStorage.setItem("moradorData", JSON.stringify(data.morador));
-        if (data.condominio) {
-          localStorage.setItem("moradorCondominio", JSON.stringify(data.condominio));
+        localStorage.setItem("colaboradorToken", data.token);
+        localStorage.setItem("colaboradorData", JSON.stringify(data.colaborador));
+        if (data.obra) {
+          localStorage.setItem("colaboradorObra", JSON.stringify(data.obra));
         }
       }
     },
@@ -78,12 +78,12 @@ export default function MoradorRedefinirSenha() {
             </p>
             
             <div className="flex flex-col gap-2">
-              <Link href="/morador/recuperar-senha">
+              <Link href="/colaborador/recuperar-senha">
                 <Button className="w-full">
                   Solicitar Novo Link
                 </Button>
               </Link>
-              <Link href="/morador/login">
+              <Link href="/colaborador/login">
                 <Button variant="ghost" className="w-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao login
@@ -111,9 +111,9 @@ export default function MoradorRedefinirSenha() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/morador">
+            <Link href="/colaborador">
               <Button className="w-full">
-                Acessar Portal do Morador
+                Acessar Portal do Colaborador
               </Button>
             </Link>
           </CardContent>
@@ -214,7 +214,7 @@ export default function MoradorRedefinirSenha() {
             </Button>
 
             <div className="text-center">
-              <Link href="/morador/login">
+              <Link href="/colaborador/login">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar ao login

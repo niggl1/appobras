@@ -92,26 +92,26 @@ type TipoCampoOS = "responsavel_os" | "titulo_os";
 
 // Componente para botão de salvar/selecionar template de OS
 interface OSTemplateSelectorProps {
-  condominioId: number;
+  obraId: number;
   tipoCampo: TipoCampoOS;
   valorAtual: string;
   onSelect: (valor: string) => void;
 }
 
-function OSTemplateSelector({ condominioId, tipoCampo, valorAtual, onSelect }: OSTemplateSelectorProps) {
+function OSTemplateSelector({ obraId, tipoCampo, valorAtual, onSelect }: OSTemplateSelectorProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const utils = trpc.useUtils();
 
   // Buscar templates salvos
   const { data: templates, isLoading } = trpc.camposRapidosTemplates.listar.useQuery(
-    { condominioId, tipoCampo },
-    { enabled: popoverOpen && condominioId > 0 }
+    { obraId, tipoCampo },
+    { enabled: popoverOpen && obraId > 0 }
   );
 
   // Mutations
   const criarTemplateMutation = trpc.camposRapidosTemplates.criar.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
       toast.success("Valor salvo para reutilização!");
     },
     onError: () => {
@@ -123,13 +123,13 @@ function OSTemplateSelector({ condominioId, tipoCampo, valorAtual, onSelect }: O
   
   const toggleFavoritoMutation = trpc.camposRapidosTemplates.toggleFavorito.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
     }
   });
 
   const deletarTemplateMutation = trpc.camposRapidosTemplates.deletar.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
       toast.success("Template removido");
     }
   });
@@ -140,7 +140,7 @@ function OSTemplateSelector({ condominioId, tipoCampo, valorAtual, onSelect }: O
       return;
     }
     criarTemplateMutation.mutate({
-      condominioId,
+      obraId,
       tipoCampo,
       valor: valorAtual.trim(),
     });
@@ -250,7 +250,7 @@ function OSTemplateSelector({ condominioId, tipoCampo, valorAtual, onSelect }: O
 }
 
 export default function OrdensServico() {
-  const { condominioAtivo } = useCondominioAtivo();
+  const { obraAtivo } = useCondominioAtivo();
   const [, setLocation] = useLocation();
   const search = useSearch();
   const params = new URLSearchParams(search);
@@ -258,31 +258,31 @@ export default function OrdensServico() {
 
   // Queries
   const { data: ordensServico, isLoading } = trpc.ordensServico.list.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: categorias } = trpc.ordensServico.getCategorias.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: prioridades } = trpc.ordensServico.getPrioridades.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   const { data: setores } = trpc.ordensServico.getSetores.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
   const { data: funcionarios } = trpc.funcionario.list.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
-  const { data: moradores } = trpc.morador.list.useQuery(
-    { condominioId: condominioAtivo?.id || 0 },
-    { enabled: !!condominioAtivo?.id }
+  const { data: colaboradores } = trpc.colaborador.list.useQuery(
+    { obraId: obraAtivo?.id || 0 },
+    { enabled: !!obraAtivo?.id }
   );
 
   // Mutations
@@ -328,7 +328,7 @@ export default function OrdensServico() {
     if (!novaCategoria.trim()) return;
     try {
       await createCategoria.mutateAsync({
-        condominioId: condominioAtivo?.id || 0,
+        obraId: obraAtivo?.id || 0,
         nome: novaCategoria,
       });
       setNovaCategoria("");
@@ -343,7 +343,7 @@ export default function OrdensServico() {
     if (!novaPrioridade.trim()) return;
     try {
       await createPrioridade.mutateAsync({
-        condominioId: condominioAtivo?.id || 0,
+        obraId: obraAtivo?.id || 0,
         nome: novaPrioridade,
       });
       setNovaPrioridade("");
@@ -358,7 +358,7 @@ export default function OrdensServico() {
     if (!novoSetor.trim()) return;
     try {
       await createSetor.mutateAsync({
-        condominioId: condominioAtivo?.id || 0,
+        obraId: obraAtivo?.id || 0,
         nome: novoSetor,
       });
       setNovoSetor("");
@@ -497,7 +497,7 @@ export default function OrdensServico() {
       // Gerar protocolo automático se não foi preenchido
       const protocoloFinal = novaOS.protocolo.trim() || String(Math.floor(100000 + Math.random() * 900000));
       const result = await createOS.mutateAsync({
-        condominioId: condominioAtivo?.id || 0,
+        obraId: obraAtivo?.id || 0,
         solicitanteNome: novaOS.responsavelPrincipal,
         titulo: novaOS.titulo,
         descricao: novaOS.descricao,
@@ -539,7 +539,7 @@ export default function OrdensServico() {
     }
   };
 
-  if (!condominioAtivo) {
+  if (!obraAtivo) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-gray-500">Selecione uma organização</p>
@@ -588,7 +588,7 @@ export default function OrdensServico() {
                           <Label className="text-sm font-medium">Responsável Principal</Label>
                           <div className="flex gap-2 mt-1">
                             <OSTemplateSelector
-                              condominioId={condominioAtivo?.id || 0}
+                              obraId={obraAtivo?.id || 0}
                               tipoCampo="responsavel_os"
                               valorAtual={novaOS.responsavelPrincipal}
                               onSelect={(valor) => setNovaOS({ ...novaOS, responsavelPrincipal: valor })}
@@ -646,7 +646,7 @@ export default function OrdensServico() {
                         <Label className="text-sm font-medium">Título *</Label>
                         <div className="flex gap-2 mt-1">
                           <OSTemplateSelector
-                            condominioId={condominioAtivo?.id || 0}
+                            obraId={obraAtivo?.id || 0}
                             tipoCampo="titulo_os"
                             valorAtual={novaOS.titulo}
                             onSelect={(valor) => setNovaOS({ ...novaOS, titulo: valor })}

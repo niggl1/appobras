@@ -46,21 +46,21 @@ const CORES_PRIORIDADE = {
 };
 
 interface TimelineDashboardPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function TimelineDashboardPage({ condominioId }: TimelineDashboardPageProps) {
+export default function TimelineDashboardPage({ obraId }: TimelineDashboardPageProps) {
   const { user } = useAuth();
   const [periodo, setPeriodo] = useState<"7dias" | "30dias" | "90dias" | "ano" | "todos">("30dias");
 
   const { data: estatisticas, isLoading: loadingEstatisticas, refetch: refetchEstatisticas } = 
-    trpc.timeline.estatisticas.useQuery({ condominioId, periodo });
+    trpc.timeline.estatisticas.useQuery({ obraId, periodo });
   
   const { data: alertas, isLoading: loadingAlertas, refetch: refetchAlertas } = 
-    trpc.timeline.alertas.useQuery({ condominioId, limite: 10 });
+    trpc.timeline.alertas.useQuery({ obraId, limite: 10 });
   
   const { data: resumo, isLoading: loadingResumo, refetch: refetchResumo } = 
-    trpc.timeline.resumoRapido.useQuery({ condominioId });
+    trpc.timeline.resumoRapido.useQuery({ obraId });
 
   const handleRefresh = () => {
     refetchEstatisticas();

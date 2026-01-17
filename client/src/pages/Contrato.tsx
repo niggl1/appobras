@@ -99,7 +99,7 @@ export default function Contrato() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Contrato App Manutenção",
+          title: "Contrato AppObras",
           text: `Contrato para ${formData.nomeCliente}`,
           url: window.location.href,
         });
@@ -408,7 +408,7 @@ export default function Contrato() {
                       CONTRATO DE PRESTAÇÃO DE SERVIÇOS
                     </h1>
                     <p className="text-gray-600">
-                      Plataforma de Gestão de Manutenção - App Manutenção
+                      Plataforma de Gestão de Manutenção - AppObras
                     </p>
                   </div>
 
@@ -492,7 +492,7 @@ export default function Contrato() {
                     </h2>
                     <p className="text-justify">
                       A {EMPRESA.nome} se compromete a fornecer acesso à plataforma
-                      de gestão de manutenção "App Manutenção", incluindo funcionalidades de ordens de serviço, vistorias, checklists,
+                      de gestão de manutenção "AppObras", incluindo funcionalidades de ordens de serviço, vistorias, checklists,
                       relatórios profissionais, aplicativo mobile e suporte técnico, conforme especificado no plano contratado.
                     </p>
                   </div>

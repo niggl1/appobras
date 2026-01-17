@@ -20,7 +20,7 @@ interface MagazineWithTemplateProps {
   revista: {
     titulo: string;
     edicao?: string;
-    condominioNome?: string;
+    obraNome?: string;
   };
   conteudo?: {
     estatisticas?: {
@@ -206,7 +206,7 @@ function CoverPage({ template, revista }: { template: TemplateConfig; revista: a
               fontFamily: template.typography.headingFont,
             }}
           >
-            {revista.condominioNome || revista.titulo}
+            {revista.obraNome || revista.titulo}
           </h1>
           <div
             className="w-20 h-1 mt-4 rounded-full"

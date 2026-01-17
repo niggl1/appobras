@@ -50,7 +50,7 @@ type TipoCampo = "titulo" | "descricao" | "local" | "observacao";
 interface TarefasSimplesModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  condominioId: number;
+  obraId: number;
   tipoInicial?: TipoTarefa;
   onSuccess?: () => void;
 }
@@ -90,28 +90,28 @@ const tipoConfig = {
 
 // Componente para botão de salvar/selecionar template
 interface TemplateSelectorProps {
-  condominioId: number;
+  obraId: number;
   tipoCampo: TipoCampo;
   tipoTarefa: TipoTarefa;
   valorAtual: string;
   onSelect: (valor: string) => void;
 }
 
-function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onSelect }: TemplateSelectorProps) {
+function TemplateSelector({ obraId, tipoCampo, tipoTarefa, valorAtual, onSelect }: TemplateSelectorProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const utils = trpc.useUtils();
 
   // Buscar templates salvos - ignorar checklist pois não usa templates
   const tipoTarefaParaTemplate = tipoTarefa === "checklist" ? undefined : tipoTarefa;
   const { data: templates, isLoading } = trpc.camposRapidosTemplates.listar.useQuery(
-    { condominioId, tipoCampo, tipoTarefa: tipoTarefaParaTemplate },
-    { enabled: popoverOpen && condominioId > 0 }
+    { obraId, tipoCampo, tipoTarefa: tipoTarefaParaTemplate },
+    { enabled: popoverOpen && obraId > 0 }
   );
 
   // Mutations
   const criarTemplateMutation = trpc.camposRapidosTemplates.criar.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
       toast.success("Valor salvo para reutilização!");
     },
     onError: () => {
@@ -123,13 +123,13 @@ function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onS
   
   const toggleFavoritoMutation = trpc.camposRapidosTemplates.toggleFavorito.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
     }
   });
 
   const deletarTemplateMutation = trpc.camposRapidosTemplates.deletar.useMutation({
     onSuccess: () => {
-      utils.camposRapidosTemplates.listar.invalidate({ condominioId, tipoCampo });
+      utils.camposRapidosTemplates.listar.invalidate({ obraId, tipoCampo });
       toast.success("Template removido");
     }
   });
@@ -140,7 +140,7 @@ function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onS
       return;
     }
     criarTemplateMutation.mutate({
-      condominioId,
+      obraId,
       tipoCampo,
       tipoTarefa: tipoTarefaParaTemplate,
       valor: valorAtual.trim(),
@@ -254,7 +254,7 @@ function TemplateSelector({ condominioId, tipoCampo, tipoTarefa, valorAtual, onS
 export function TarefasSimplesModal({
   open,
   onOpenChange,
-  condominioId,
+  obraId,
   tipoInicial = "vistoria",
   onSuccess,
 }: TarefasSimplesModalProps) {
@@ -280,14 +280,14 @@ export function TarefasSimplesModal({
 
   // Buscar status personalizados
   const { data: statusList } = trpc.statusPersonalizados.listar.useQuery(
-    { condominioId },
-    { enabled: open && condominioId > 0 }
+    { obraId },
+    { enabled: open && obraId > 0 }
   );
 
   // Contar rascunhos pendentes
   const { data: rascunhosCount } = trpc.tarefasSimples.contarRascunhos.useQuery(
-    { condominioId, tipo: tipo as any },
-    { enabled: open && condominioId > 0 }
+    { obraId, tipo: tipo as any },
+    { enabled: open && obraId > 0 }
   );
 
   // Mutations
@@ -384,12 +384,12 @@ export function TarefasSimplesModal({
     
     try {
       await criarStatusMutation.mutateAsync({
-        condominioId,
+        obraId,
         nome: novoStatus.trim(),
       });
       setStatusPersonalizado(novoStatus.trim());
       setNovoStatus("");
-      utils.statusPersonalizados.listar.invalidate({ condominioId });
+      utils.statusPersonalizados.listar.invalidate({ obraId });
       toast.success("Status criado com sucesso!");
     } catch (error) {
       toast.error("Erro ao criar status");
@@ -400,7 +400,7 @@ export function TarefasSimplesModal({
     setSalvando(true);
     try {
       await criarTarefaMutation.mutateAsync({
-        condominioId,
+        obraId,
         tipo: tipo as any,
         protocolo,
         titulo: titulo || undefined,
@@ -428,7 +428,7 @@ export function TarefasSimplesModal({
       setNovoItemChecklist("");
       await gerarNovoProtocolo();
       
-      utils.tarefasSimples.contarRascunhos.invalidate({ condominioId });
+      utils.tarefasSimples.contarRascunhos.invalidate({ obraId });
     } catch (error) {
       toast.error("Erro ao salvar registro");
     } finally {
@@ -445,7 +445,7 @@ export function TarefasSimplesModal({
     setEnviando(true);
     try {
       await enviarTodasMutation.mutateAsync({
-        condominioId,
+        obraId,
         tipo: tipo as any,
       });
 
@@ -453,8 +453,8 @@ export function TarefasSimplesModal({
         description: "Os rascunhos foram enviados com sucesso.",
       });
 
-      utils.tarefasSimples.listar.invalidate({ condominioId });
-      utils.tarefasSimples.contarRascunhos.invalidate({ condominioId });
+      utils.tarefasSimples.listar.invalidate({ obraId });
+      utils.tarefasSimples.contarRascunhos.invalidate({ obraId });
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
@@ -540,7 +540,7 @@ export function TarefasSimplesModal({
                 Título (opcional)
               </Label>
               <TemplateSelector
-                condominioId={condominioId}
+                obraId={obraId}
                 tipoCampo="titulo"
                 tipoTarefa={tipo}
                 valorAtual={titulo}
@@ -563,7 +563,7 @@ export function TarefasSimplesModal({
                 Local (opcional)
               </Label>
               <TemplateSelector
-                condominioId={condominioId}
+                obraId={obraId}
                 tipoCampo="local"
                 tipoTarefa={tipo}
                 valorAtual={local}
@@ -853,7 +853,7 @@ export function TarefasSimplesModal({
             <div className="flex items-center justify-between">
               <Label className="text-gray-700 font-medium">Descrição (opcional)</Label>
               <TemplateSelector
-                condominioId={condominioId}
+                obraId={obraId}
                 tipoCampo="descricao"
                 tipoTarefa={tipo}
                 valorAtual={descricao}

@@ -114,7 +114,7 @@ export default function FuncionarioLogin() {
 
             <div className="mt-6 pt-4 border-t border-slate-100">
               <p className="text-xs text-center text-slate-500">
-                Problemas para acessar? Entre em contacto com o síndico ou administrador da organização.
+                Problemas para acessar? Entre em contacto com o engenheiro ou administrador da organização.
               </p>
             </div>
           </CardContent>
@@ -123,7 +123,7 @@ export default function FuncionarioLogin() {
         {/* Link para login do gestor */}
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-500">
-            É síndico ou administrador?{" "}
+            É engenheiro ou administrador?{" "}
             <a href="/" className="text-blue-600 hover:text-blue-700 font-medium">
               Acesse aqui
             </a>

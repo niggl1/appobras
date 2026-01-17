@@ -20,31 +20,31 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-// Hook para gerenciar sessão do morador
-export function useMoradorAuth() {
+// Hook para gerenciar sessão do colaborador
+export function useColaboradorAuth() {
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("morador_token");
+    return localStorage.getItem("colaborador_token");
   });
   
-  const { data: sessao, isLoading } = trpc.morador.verificarSessao.useQuery(
+  const { data: sessao, isLoading } = trpc.colaborador.verificarSessao.useQuery(
     { token: token || "" },
     { enabled: !!token }
   );
   
   const login = (novoToken: string) => {
-    localStorage.setItem("morador_token", novoToken);
+    localStorage.setItem("colaborador_token", novoToken);
     setToken(novoToken);
   };
   
   const logout = () => {
-    localStorage.removeItem("morador_token");
+    localStorage.removeItem("colaborador_token");
     setToken(null);
   };
   
   return {
     token,
-    morador: sessao?.valido ? sessao.morador : null,
-    condominio: sessao?.valido ? sessao.condominio : null,
+    colaborador: sessao?.valido ? sessao.colaborador : null,
+    obra: sessao?.valido ? sessao.obra : null,
     isLoading,
     isLoggedIn: sessao?.valido || false,
     login,
@@ -52,7 +52,7 @@ export function useMoradorAuth() {
   };
 }
 
-export default function MoradorLogin() {
+export default function ColaboradorLogin() {
   const [, navigate] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const tokenParam = searchParams.get("token");
@@ -65,21 +65,21 @@ export default function MoradorLogin() {
   const [tokenRecebido, setTokenRecebido] = useState<string | null>(tokenParam);
   const [mostrarDefinirSenha, setMostrarDefinirSenha] = useState(false);
   
-  const { login, isLoggedIn } = useMoradorAuth();
+  const { login, isLoggedIn } = useColaboradorAuth();
   
   // Mutations
-  const loginMutation = trpc.morador.login.useMutation({
+  const loginMutation = trpc.colaborador.login.useMutation({
     onSuccess: (data) => {
       login(data.token);
-      toast.success(`Bem-vindo(a), ${data.morador.nome}!`);
-      navigate("/morador");
+      toast.success(`Bem-vindo(a), ${data.colaborador.nome}!`);
+      navigate("/colaborador");
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
   
-  const linkMagicoMutation = trpc.morador.solicitarLinkMagico.useMutation({
+  const linkMagicoMutation = trpc.colaborador.solicitarLinkMagico.useMutation({
     onSuccess: (data) => {
       toast.success(data.message);
       // Em modo debug, mostrar o token
@@ -94,11 +94,11 @@ export default function MoradorLogin() {
     },
   });
   
-  const loginComTokenMutation = trpc.morador.loginComToken.useMutation({
+  const loginComTokenMutation = trpc.colaborador.loginComToken.useMutation({
     onSuccess: (data) => {
       login(data.token);
-      toast.success(`Bem-vindo(a), ${data.morador.nome}!`);
-      navigate("/morador");
+      toast.success(`Bem-vindo(a), ${data.colaborador.nome}!`);
+      navigate("/colaborador");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -106,11 +106,11 @@ export default function MoradorLogin() {
     },
   });
   
-  const definirSenhaMutation = trpc.morador.definirSenha.useMutation({
+  const definirSenhaMutation = trpc.colaborador.definirSenha.useMutation({
     onSuccess: (data) => {
       login(data.token);
       toast.success("Senha definida com sucesso!");
-      navigate("/morador");
+      navigate("/colaborador");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -120,7 +120,7 @@ export default function MoradorLogin() {
   // Se já está logado, redirecionar
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/morador");
+      navigate("/colaborador");
     }
   }, [isLoggedIn, navigate]);
   
@@ -177,7 +177,7 @@ export default function MoradorLogin() {
             </div>
             <CardTitle className="text-2xl">Definir Senha</CardTitle>
             <CardDescription>
-              Crie uma senha para acessar o portal do morador
+              Crie uma senha para acessar o portal do colaborador
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -234,7 +234,7 @@ export default function MoradorLogin() {
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center">
               <Building2 className="w-8 h-8 text-emerald-600" />
             </div>
-            <CardTitle className="text-2xl">Portal do Morador</CardTitle>
+            <CardTitle className="text-2xl">Portal do Colaborador</CardTitle>
             <CardDescription>
               Acesse sua área exclusiva para criar classificados, caronas e muito mais
             </CardDescription>
@@ -295,7 +295,7 @@ export default function MoradorLogin() {
                     )}
                   </Button>
                   <div className="text-center mt-3">
-                    <Link href="/morador/recuperar-senha">
+                    <Link href="/colaborador/recuperar-senha">
                       <Button variant="link" size="sm" className="text-emerald-600 hover:text-emerald-700">
                         Esqueci minha senha
                       </Button>
@@ -345,16 +345,16 @@ export default function MoradorLogin() {
                 Primeiro acesso? Use o <strong>Link Mágico</strong> para criar sua senha.
               </p>
               <p className="text-xs text-muted-foreground mt-2">
-                Seu email deve estar cadastrado pelo síndico da organização.
+                Seu email deve estar cadastrado pelo engenheiro da organização.
               </p>
             </div>
           </CardContent>
         </Card>
         
-        {/* Link para síndico */}
+        {/* Link para engenheiro */}
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
-            É síndico?{" "}
+            É engenheiro?{" "}
             <Link href="/dashboard" className="text-emerald-600 hover:underline">
               Acesse o painel administrativo
             </Link>

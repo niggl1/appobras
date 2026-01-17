@@ -61,29 +61,29 @@ export default function RelatoriosManutencaoPage() {
   const [filterResponsavel, setFilterResponsavel] = useState("");
   const [filterPrioridade, setFilterPrioridade] = useState("");
   const [filterProtocolo, setFilterProtocolo] = useState("");
-  const [selectedCondominioFilter, setSelectedCondominioFilter] = useState<number | null>(null);
+  const [selectedObraFilter, setSelectedObraFilter] = useState<number | null>(null);
   
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const selectedCondominioId = selectedCondominioFilter || condominios?.[0]?.id;
+  const { data: obras } = trpc.obra.list.useQuery();
+  const selectedObraId = selectedObraFilter || obras?.[0]?.id;
 
   const { data: manutencoes, isLoading: loadingManutencoes } = trpc.manutencao.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: ocorrencias, isLoading: loadingOcorrencias } = trpc.ocorrencia.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: vistorias, isLoading: loadingVistorias } = trpc.vistoria.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const { data: checklists, isLoading: loadingChecklists } = trpc.checklist.list.useQuery(
-    { condominioId: selectedCondominioId || 0 },
-    { enabled: !!selectedCondominioId }
+    { obraId: selectedObraId || 0 },
+    { enabled: !!selectedObraId }
   );
 
   const filterByDateRange = (items: any[] | undefined) => {
@@ -187,16 +187,16 @@ export default function RelatoriosManutencaoPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="condominio">Condomínio/Organização</Label>
+                <Label htmlFor="obra">Obra/Organização</Label>
                 <Select 
-                  value={String(selectedCondominioId || "")} 
-                  onValueChange={(v) => setSelectedCondominioFilter(parseInt(v))}
+                  value={String(selectedObraId || "")} 
+                  onValueChange={(v) => setSelectedObraFilter(parseInt(v))}
                 >
-                  <SelectTrigger id="condominio">
-                    <SelectValue placeholder="Selecione um condomínio" />
+                  <SelectTrigger id="obra">
+                    <SelectValue placeholder="Selecione um obra" />
                   </SelectTrigger>
                   <SelectContent>
-                    {condominios?.map((c) => (
+                    {obras?.map((c) => (
                       <SelectItem key={c.id} value={String(c.id)}>
                         {c.nome}
                       </SelectItem>
@@ -523,7 +523,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={async () => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           await exportManutencoesPDF(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
                           toast.success("Relatório exportado com sucesso!");
                         } catch (error) {
@@ -539,7 +539,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={() => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           exportManutencoesExcel(filteredManutencoes || [], org ? { nome: org.nome } : undefined);
                           toast.success("Exportado para Excel com sucesso!");
                         } catch (error) {
@@ -633,7 +633,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={async () => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           await exportOcorrenciasPDF(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
                           toast.success("Relatório exportado com sucesso!");
                         } catch (error) {
@@ -649,7 +649,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={() => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           exportOcorrenciasExcel(filteredOcorrencias || [], org ? { nome: org.nome } : undefined);
                           toast.success("Exportado para Excel com sucesso!");
                         } catch (error) {
@@ -731,7 +731,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={async () => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           await exportVistoriasPDF(filteredVistorias || [], org ? { nome: org.nome } : undefined);
                           toast.success("Relatório exportado com sucesso!");
                         } catch (error) {
@@ -747,7 +747,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={() => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           exportVistoriasExcel(filteredVistorias || [], org ? { nome: org.nome } : undefined);
                           toast.success("Exportado para Excel com sucesso!");
                         } catch (error) {
@@ -829,7 +829,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={async () => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           await exportChecklistsPDF(filteredChecklists || [], org ? { nome: org.nome } : undefined);
                           toast.success("Relatório exportado com sucesso!");
                         } catch (error) {
@@ -845,7 +845,7 @@ export default function RelatoriosManutencaoPage() {
                       size="sm"
                       onClick={() => {
                         try {
-                          const org = condominios?.find(c => c.id === selectedCondominioId);
+                          const org = obras?.find(c => c.id === selectedObraId);
                           exportChecklistsExcel(filteredChecklists || [], org ? { nome: org.nome } : undefined);
                           toast.success("Exportado para Excel com sucesso!");
                         } catch (error) {

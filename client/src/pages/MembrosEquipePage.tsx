@@ -14,7 +14,7 @@ import ImageUpload from "@/components/ImageUpload";
 import { MembroHistoricoAcessos } from "@/components/MembroHistoricoAcessos";
 
 interface MembrosEquipePageProps {
-  condominioId: number;
+  obraId: number;
 }
 
 // Lista de módulos disponíveis para permissões
@@ -36,7 +36,7 @@ const MODULOS_DISPONIVEIS = [
   { id: "equipe_gestao", nome: "Equipe de Gestão", categoria: "admin" },
 ];
 
-export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
+export function MembrosEquipePage({ obraId }: MembrosEquipePageProps) {
   
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -56,7 +56,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
     permissoes: [] as string[],
   });
 
-  const { data: membros, refetch } = trpc.membroEquipe.list.useQuery({ condominioId });
+  const { data: membros, refetch } = trpc.membroEquipe.list.useQuery({ obraId });
   const createMutation = trpc.membroEquipe.create.useMutation({
     onSuccess: () => {
       toast.success("Membro adicionado com sucesso!");
@@ -114,7 +114,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
     }
     
     const submitData = {
-      condominioId,
+      obraId,
       nome: formData.nome,
       whatsapp: formData.whatsapp,
       descricao: formData.descricao || undefined,
@@ -726,7 +726,7 @@ export function MembrosEquipePage({ condominioId }: MembrosEquipePageProps) {
         <MembroHistoricoAcessos
           membroId={historicoMembroId}
           membroNome={historicoMembroNome}
-          condominioId={condominioId}
+          obraId={obraId}
           open={!!historicoMembroId}
           onOpenChange={(open) => {
             if (!open) {

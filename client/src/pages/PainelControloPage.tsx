@@ -32,31 +32,31 @@ import {
 } from "lucide-react";
 
 interface PainelControloPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export function PainelControloPage({ condominioId }: PainelControloPageProps) {
+export function PainelControloPage({ obraId }: PainelControloPageProps) {
   const [periodo, setPeriodo] = useState<number>(30);
   
   // Queries
   const { data: estatisticas, isLoading: loadingStats } = trpc.painelControlo.getEstatisticasGerais.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: evolucao, isLoading: loadingEvolucao } = trpc.painelControlo.getEvolucaoTemporal.useQuery(
-    { condominioId, dias: periodo },
-    { enabled: !!condominioId }
+    { obraId, dias: periodo },
+    { enabled: !!obraId }
   );
   
   const { data: prioridades, isLoading: loadingPrioridades } = trpc.painelControlo.getDistribuicaoPrioridade.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: itensRecentes, isLoading: loadingRecentes } = trpc.painelControlo.getItensRecentes.useQuery(
-    { condominioId, limite: 10 },
-    { enabled: !!condominioId }
+    { obraId, limite: 10 },
+    { enabled: !!obraId }
   );
 
   const isLoading = loadingStats || loadingEvolucao || loadingPrioridades || loadingRecentes;

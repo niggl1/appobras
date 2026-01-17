@@ -41,21 +41,21 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
-  sindico: "Síndico",
+  engenheiro: "Engenheiro",
   user: "Usuário",
-  morador: "Morador",
+  colaborador: "Colaborador",
 };
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "bg-red-100 text-red-700 border-red-200",
-  sindico: "bg-blue-100 text-blue-700 border-blue-200",
+  engenheiro: "bg-blue-100 text-blue-700 border-blue-200",
   user: "bg-gray-100 text-gray-700 border-gray-200",
-  morador: "bg-green-100 text-green-700 border-green-200",
+  colaborador: "bg-green-100 text-green-700 border-green-200",
 };
 
 const TIPO_CONTA_LABELS: Record<string, string> = {
-  sindico: "Síndico",
-  administradora: "Administradora",
+  engenheiro: "Engenheiro",
+  construtora: "Construtora",
   admin: "Admin Sistema",
 };
 
@@ -376,9 +376,9 @@ export default function AdminUsuariosPage() {
                 <SelectContent>
                   <SelectItem value="all">Todos os perfis</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
-                  <SelectItem value="sindico">Síndico</SelectItem>
+                  <SelectItem value="engenheiro">Engenheiro</SelectItem>
                   <SelectItem value="user">Usuário</SelectItem>
-                  <SelectItem value="morador">Morador</SelectItem>
+                  <SelectItem value="colaborador">Colaborador</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={tipoContaFilter || "all"} onValueChange={(v) => { setTipoContaFilter(v === "all" ? "" : v); setPage(1); }}>
@@ -387,8 +387,8 @@ export default function AdminUsuariosPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os tipos</SelectItem>
-                  <SelectItem value="sindico">Síndico</SelectItem>
-                  <SelectItem value="administradora">Administradora</SelectItem>
+                  <SelectItem value="engenheiro">Engenheiro</SelectItem>
+                  <SelectItem value="construtora">Construtora</SelectItem>
                   <SelectItem value="admin">Admin Sistema</SelectItem>
                 </SelectContent>
               </Select>
@@ -675,8 +675,8 @@ export default function AdminUsuariosPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="user">Usuário</SelectItem>
-                        <SelectItem value="sindico">Síndico</SelectItem>
-                        <SelectItem value="morador">Morador</SelectItem>
+                        <SelectItem value="engenheiro">Engenheiro</SelectItem>
+                        <SelectItem value="colaborador">Colaborador</SelectItem>
                         <SelectItem value="admin">Administrador</SelectItem>
                       </SelectContent>
                     </Select>
@@ -684,15 +684,15 @@ export default function AdminUsuariosPage() {
                   <div className="space-y-2">
                     <Label>Tipo de Conta</Label>
                     <Select
-                      value={editingUser.tipoConta || "sindico"}
+                      value={editingUser.tipoConta || "engenheiro"}
                       onValueChange={(v) => setEditingUser({ ...editingUser, tipoConta: v })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="sindico">Síndico</SelectItem>
-                        <SelectItem value="administradora">Administradora</SelectItem>
+                        <SelectItem value="engenheiro">Engenheiro</SelectItem>
+                        <SelectItem value="construtora">Construtora</SelectItem>
                         <SelectItem value="admin">Admin Sistema</SelectItem>
                       </SelectContent>
                     </Select>

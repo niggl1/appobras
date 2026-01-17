@@ -66,10 +66,10 @@ import {
 } from "@/components/ui/form-modal";
 
 interface VistoriasPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
+export default function VistoriasPage({ obraId }: VistoriasPageProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showVistoriaRapida, setShowVistoriaRapida] = useState(false);
@@ -105,23 +105,23 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
   const utils = trpc.useUtils();
   
   // Buscar dados da organização para obter o logo
-  const { data: condominio } = trpc.condominio.get.useQuery(
-    { id: condominioId },
-    { enabled: !!condominioId }
+  const { data: obra } = trpc.obra.get.useQuery(
+    { id: obraId },
+    { enabled: !!obraId }
   );
   
   const { data: vistorias = [], isLoading } = trpc.vistoria.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: stats } = trpc.vistoria.getStats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   const { data: searchResults = [] } = trpc.vistoria.searchByProtocolo.useQuery(
-    { protocolo: searchProtocolo, condominioId },
+    { protocolo: searchProtocolo, obraId },
     { enabled: !!searchProtocolo && searchProtocolo.length >= 3 }
   );
   
@@ -304,7 +304,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
       toast.error("Título é obrigatório");
       return;
     }
-    createMutation.mutate({ ...formData, condominioId });
+    createMutation.mutate({ ...formData, obraId });
   };
 
   const handleStatusChange = (vistoriaId: number, newStatus: string) => {
@@ -540,7 +540,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Título *"
                   value={formData.titulo}
                   onChange={(v) => setFormData({ ...formData, titulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="titulo_vistoria"
                   placeholder="Ex: Vistoria de Elevadores"
                 />
@@ -548,7 +548,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Subtítulo"
                   value={formData.subtitulo}
                   onChange={(v) => setFormData({ ...formData, subtitulo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="subtitulo_vistoria"
                   placeholder="Ex: Manutenção preventiva mensal"
                 />
@@ -562,7 +562,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Tipo de Vistoria"
                   value={formData.tipo}
                   onChange={(v) => setFormData({ ...formData, tipo: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="tipo_vistoria"
                   placeholder="Ex: Elétrica, Hidráulica"
                 />
@@ -570,7 +570,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Categoria"
                   value={formData.categoria || ""}
                   onChange={(v) => setFormData({ ...formData, categoria: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="categoria_vistoria"
                   placeholder="Ex: Preventiva, Corretiva"
                 />
@@ -584,7 +584,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Responsável"
                   value={formData.responsavelNome}
                   onChange={(v) => setFormData({ ...formData, responsavelNome: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="responsavel"
                   placeholder="Nome do responsável"
                 />
@@ -592,7 +592,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Localização"
                   value={formData.localizacao}
                   onChange={(v) => setFormData({ ...formData, localizacao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="localizacao"
                   placeholder="Ex: Bloco A - Térreo"
                 />
@@ -658,7 +658,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Descrição"
                   value={formData.descricao}
                   onChange={(v) => setFormData({ ...formData, descricao: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="descricao_vistoria"
                   placeholder="Descreva os detalhes da vistoria..."
                   multiline
@@ -668,7 +668,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
                   label="Observações"
                   value={formData.observacoes}
                   onChange={(v) => setFormData({ ...formData, observacoes: v })}
-                  condominioId={condominioId}
+                  obraId={obraId}
                   tipo="observacoes_vistoria"
                   placeholder="Observações adicionais..."
                   multiline
@@ -689,7 +689,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <ImageEditSection
                   label="Editar Imagem com Anotações"
-                  logoUrl={condominio?.logoUrl || undefined}
+                  logoUrl={obra?.logoUrl || undefined}
                   onSaveEditedImage={(editedImage) => {
                     setImagens(prev => [...prev, editedImage]);
                     toast.success("Imagem editada adicionada à galeria!");
@@ -991,12 +991,12 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
         itemId={selectedVistoria?.id || 0}
         itemTitulo={selectedVistoria?.titulo || ""}
         itemProtocolo={selectedVistoria?.protocolo || ""}
-        condominioId={condominioId}
+        obraId={obraId}
       />
 
       {/* Modal de Compartilhar com Equipe */}
       <CompartilharComEquipe
-        condominioId={condominioId}
+        obraId={obraId}
         tipo="vistoria"
         itemId={selectedVistoria?.id || 0}
         itemTitulo={selectedVistoria?.titulo || ""}
@@ -1009,7 +1009,7 @@ export default function VistoriasPage({ condominioId }: VistoriasPageProps) {
       <TarefasSimplesModal
         open={showVistoriaRapida}
         onOpenChange={setShowVistoriaRapida}
-        condominioId={condominioId}
+        obraId={obraId}
         tipoInicial="vistoria"
         onSuccess={() => {
           utils.vistoria.list.invalidate();

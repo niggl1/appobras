@@ -31,14 +31,14 @@ import {
   Trash2
 } from "lucide-react";
 
-export default function NotificarMoradorPage() {
+export default function NotificarColaboradorPage() {
   const { user } = useAuth();
-  const [condominioId, setCondominioId] = useState<number | null>(null);
-  const [condominio, setCondominio] = useState<any>(null);
+  const [obraId, setObraId] = useState<number | null>(null);
+  const [obra, setObra] = useState<any>(null);
 
-  // Estados de busca de morador
+  // Estados de busca de colaborador
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMorador, setSelectedMorador] = useState<any>(null);
+  const [selectedColaborador, setSelectedColaborador] = useState<any>(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   // Estados de tipo de infração
@@ -62,14 +62,14 @@ export default function NotificarMoradorPage() {
   const [notificacaoCriada, setNotificacaoCriada] = useState<{ id: number; linkPublico: string } | null>(null);
 
   // Queries
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const { data: moradores } = trpc.morador.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+  const { data: obras } = trpc.obra.list.useQuery();
+  const { data: colaboradores } = trpc.colaborador.list.useQuery(
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
   const { data: tiposInfracao, refetch: refetchTipos } = trpc.tiposInfracao.list.useQuery(
-    { condominioId: condominioId! },
-    { enabled: !!condominioId }
+    { obraId: obraId! },
+    { enabled: !!obraId }
   );
 
   // Mutations
@@ -120,7 +120,7 @@ export default function NotificarMoradorPage() {
       setNotificacaoCriada({ id: data.id, linkPublico: data.linkPublico });
       setShowEnvioModal(true);
       // Limpar formulário
-      setSelectedMorador(null);
+      setSelectedColaborador(null);
       setSelectedTipoId(null);
       setTitulo("");
       setDescricao("");
@@ -137,22 +137,22 @@ export default function NotificarMoradorPage() {
 
   // Selecionar primeira organização
   useEffect(() => {
-    if (condominios && condominios.length > 0 && !condominioId) {
-      setCondominioId(condominios[0].id);
-      setCondominio(condominios[0]);
+    if (obras && obras.length > 0 && !obraId) {
+      setObraId(obras[0].id);
+      setObra(obras[0]);
     }
-  }, [condominios, condominioId]);
+  }, [obras, obraId]);
 
-  // Filtrar moradores pela busca
-  const filteredMoradores = useMemo(() => {
-    if (!moradores || !searchTerm.trim()) return [];
+  // Filtrar colaboradores pela busca
+  const filteredColaboradores = useMemo(() => {
+    if (!colaboradores || !searchTerm.trim()) return [];
     const term = searchTerm.toLowerCase();
-    return moradores.filter(m => 
+    return colaboradores.filter(m => 
       m.nome.toLowerCase().includes(term) ||
       m.apartamento.toLowerCase().includes(term) ||
       (m.bloco && m.bloco.toLowerCase().includes(term))
     ).slice(0, 10);
-  }, [moradores, searchTerm]);
+  }, [colaboradores, searchTerm]);
 
   // Atualizar título e descrição quando selecionar tipo
   useEffect(() => {
@@ -169,18 +169,18 @@ export default function NotificarMoradorPage() {
     }
   }, [selectedTipoId, tiposInfracao, tituloManual, descricaoManual]);
 
-  // Selecionar morador
-  const handleSelectMorador = (morador: any) => {
-    setSelectedMorador(morador);
+  // Selecionar colaborador
+  const handleSelectColaborador = (colaborador: any) => {
+    setSelectedColaborador(colaborador);
     setSearchTerm("");
     setShowSearchResults(false);
   };
 
   // Criar tipo de infração
   const handleCreateTipo = () => {
-    if (!condominioId || !novoTipoTitulo.trim()) return;
+    if (!obraId || !novoTipoTitulo.trim()) return;
     createTipoMutation.mutate({
-      condominioId,
+      obraId,
       titulo: novoTipoTitulo.trim(),
       descricaoPadrao: novoTipoDescricao.trim() || undefined,
     });
@@ -220,14 +220,14 @@ export default function NotificarMoradorPage() {
 
   // Registrar notificação
   const handleSubmit = () => {
-    if (!condominioId || !selectedMorador || !titulo.trim() || !descricao.trim()) {
+    if (!obraId || !selectedColaborador || !titulo.trim() || !descricao.trim()) {
       toast.error("Preencha todos os campos obrigatórios");
       return;
     }
 
     createNotificacaoMutation.mutate({
-      condominioId,
-      moradorId: selectedMorador.id,
+      obraId,
+      colaboradorId: selectedColaborador.id,
       tipoInfracaoId: selectedTipoId || undefined,
       titulo: titulo.trim(),
       descricao: descricao.trim(),
@@ -252,7 +252,7 @@ export default function NotificarMoradorPage() {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <AlertTriangle className="h-6 w-6 text-amber-500" />
-              Notificar Morador
+              Notificar Colaborador
             </h1>
             <p className="text-gray-500 text-sm">
               Registre e envie notificações de infrações para a equipa
@@ -263,12 +263,12 @@ export default function NotificarMoradorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Coluna Principal - Formulário */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Card de Busca de Morador */}
+            {/* Card de Busca de Colaborador */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Search className="h-5 w-5" />
-                  Buscar Morador
+                  Buscar Colaborador
                 </CardTitle>
                 <CardDescription>
                   Busque por nome ou número do apartamento
@@ -289,20 +289,20 @@ export default function NotificarMoradorPage() {
                   <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   
                   {/* Resultados da busca */}
-                  {showSearchResults && filteredMoradores.length > 0 && (
+                  {showSearchResults && filteredColaboradores.length > 0 && (
                     <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-900 border rounded-lg shadow-lg max-h-60 overflow-auto">
-                      {filteredMoradores.map((morador) => (
+                      {filteredColaboradores.map((colaborador) => (
                         <button
-                          key={morador.id}
+                          key={colaborador.id}
                           className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-3"
-                          onClick={() => handleSelectMorador(morador)}
+                          onClick={() => handleSelectColaborador(colaborador)}
                         >
                           <User className="h-4 w-4 text-gray-400" />
                           <div>
-                            <p className="font-medium">{morador.nome}</p>
+                            <p className="font-medium">{colaborador.nome}</p>
                             <p className="text-xs text-gray-500">
-                              {morador.bloco ? `Bloco ${morador.bloco} - ` : ""}
-                              Apto {morador.apartamento}
+                              {colaborador.bloco ? `Bloco ${colaborador.bloco} - ` : ""}
+                              Apto {colaborador.apartamento}
                             </p>
                           </div>
                         </button>
@@ -311,8 +311,8 @@ export default function NotificarMoradorPage() {
                   )}
                 </div>
 
-                {/* Card do morador selecionado */}
-                {selectedMorador && (
+                {/* Card do colaborador selecionado */}
+                {selectedColaborador && (
                   <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -320,30 +320,30 @@ export default function NotificarMoradorPage() {
                           <User className="h-6 w-6 text-blue-600" />
                         </div>
                         <div>
-                          <p className="font-semibold text-lg">{selectedMorador.nome}</p>
+                          <p className="font-semibold text-lg">{selectedColaborador.nome}</p>
                           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {selectedMorador.bloco && (
+                            {selectedColaborador.bloco && (
                               <span className="flex items-center gap-1">
                                 <Building2 className="h-3 w-3" />
-                                Bloco {selectedMorador.bloco}
+                                Bloco {selectedColaborador.bloco}
                               </span>
                             )}
                             <span className="flex items-center gap-1">
                               <Home className="h-3 w-3" />
-                              Apto {selectedMorador.apartamento}
+                              Apto {selectedColaborador.apartamento}
                             </span>
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {selectedMorador.celular && (
+                            {selectedColaborador.celular && (
                               <span className="flex items-center gap-1">
                                 <Phone className="h-3 w-3" />
-                                {selectedMorador.celular}
+                                {selectedColaborador.celular}
                               </span>
                             )}
-                            {selectedMorador.email && (
+                            {selectedColaborador.email && (
                               <span className="flex items-center gap-1">
                                 <Mail className="h-3 w-3" />
-                                {selectedMorador.email}
+                                {selectedColaborador.email}
                               </span>
                             )}
                           </div>
@@ -352,7 +352,7 @@ export default function NotificarMoradorPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setSelectedMorador(null)}
+                        onClick={() => setSelectedColaborador(null)}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -404,7 +404,7 @@ export default function NotificarMoradorPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => condominioId && createDefaultsTiposMutation.mutate({ condominioId })}
+                      onClick={() => obraId && createDefaultsTiposMutation.mutate({ obraId })}
                       disabled={createDefaultsTiposMutation.isPending}
                     >
                       {createDefaultsTiposMutation.isPending ? (
@@ -583,7 +583,7 @@ export default function NotificarMoradorPage() {
               className="w-full"
               size="lg"
               onClick={handleSubmit}
-              disabled={!selectedMorador || !titulo.trim() || !descricao.trim() || createNotificacaoMutation.isPending}
+              disabled={!selectedColaborador || !titulo.trim() || !descricao.trim() || createNotificacaoMutation.isPending}
             >
               {createNotificacaoMutation.isPending ? (
                 <>
@@ -608,13 +608,13 @@ export default function NotificarMoradorPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    {selectedMorador ? (
+                    {selectedColaborador ? (
                       <CheckCircle className="h-5 w-5 text-green-500" />
                     ) : (
                       <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
                     )}
-                    <span className={selectedMorador ? "text-green-700" : "text-gray-500"}>
-                      Morador selecionado
+                    <span className={selectedColaborador ? "text-green-700" : "text-gray-500"}>
+                      Colaborador selecionado
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -669,7 +669,7 @@ export default function NotificarMoradorPage() {
                     </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
                       Ao registrar a notificação, um email será enviado automaticamente 
-                      para o morador. Você também poderá enviar via WhatsApp.
+                      para o colaborador. Você também poderá enviar via WhatsApp.
                     </p>
                   </div>
                 </div>
@@ -729,24 +729,24 @@ export default function NotificarMoradorPage() {
       </Dialog>
 
       {/* Modal de Envio Multicanal */}
-      {selectedMorador && notificacaoCriada && condominio && (
+      {selectedColaborador && notificacaoCriada && obra && (
         <EnvioMulticanalModal
           open={showEnvioModal}
           onOpenChange={setShowEnvioModal}
           destinatario={{
-            nome: selectedMorador.nome,
-            whatsapp: selectedMorador.celular,
-            email: selectedMorador.email,
-            bloco: selectedMorador.bloco,
-            apartamento: selectedMorador.apartamento,
+            nome: selectedColaborador.nome,
+            whatsapp: selectedColaborador.celular,
+            email: selectedColaborador.email,
+            bloco: selectedColaborador.bloco,
+            apartamento: selectedColaborador.apartamento,
           }}
           notificacao={{
             titulo: titulo,
             descricao: descricao,
             linkPublico: notificacaoCriada.linkPublico,
           }}
-          condominio={{
-            nome: condominio.nome,
+          obra={{
+            nome: obra.nome,
           }}
           onPrint={handlePrint}
       />

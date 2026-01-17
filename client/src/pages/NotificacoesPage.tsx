@@ -50,10 +50,10 @@ import {
 } from "@/lib/pushNotifications";
 
 interface NotificacoesPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
-export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
+export function NotificacoesPage({ obraId }: NotificacoesPageProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushPermission, setPushPermission] = useState<NotificationPermission>("default");
@@ -78,45 +78,45 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
   
   // Queries
   // @ts-ignore - tRPC types may not be updated yet
-  const { data: subscriptions } = trpc.pushNotifications.listByCondominio.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+  const { data: subscriptions } = trpc.pushNotifications.listByObra.useQuery(
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: lembretes, refetch: refetchLembretes } = trpc.lembretes.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: historico } = trpc.historicoNotificacoes.list.useQuery(
-    { condominioId, limit: 20 },
-    { enabled: !!condominioId }
+    { obraId, limit: 20 },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: stats } = trpc.historicoNotificacoes.getStats.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: emailConfig } = trpc.configEmail.get.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: pushConfig, refetch: refetchPushConfig } = trpc.configPush.get.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // @ts-ignore
   const { data: templates, refetch: refetchTemplates } = trpc.templatesNotificacao.list.useQuery(
-    { condominioId },
-    { enabled: !!condominioId }
+    { obraId },
+    { enabled: !!obraId }
   );
   
   // Estados para templates
@@ -277,7 +277,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
       });
     } else {
       createTemplateMutation.mutate({
-        condominioId,
+        obraId,
         nome: templateNome,
         titulo: templateTitulo,
         mensagem: templateMensagem,
@@ -338,24 +338,24 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
   
   // @ts-ignore
   const { data: blocos } = trpc.pushNotifications.getBlocos.useQuery(
-    { condominioId },
-    { enabled: !!condominioId && showBroadcastModal }
+    { obraId },
+    { enabled: !!obraId && showBroadcastModal }
   );
   
   // @ts-ignore
   const { data: apartamentos } = trpc.pushNotifications.getApartamentos.useQuery(
-    { condominioId, blocos: selectedBlocos.length > 0 ? selectedBlocos : undefined },
-    { enabled: !!condominioId && showBroadcastModal }
+    { obraId, blocos: selectedBlocos.length > 0 ? selectedBlocos : undefined },
+    { enabled: !!obraId && showBroadcastModal }
   );
   
   // @ts-ignore
   const { data: destinatariosCount } = trpc.pushNotifications.countDestinatarios.useQuery(
     { 
-      condominioId, 
+      obraId, 
       blocos: selectedBlocos.length > 0 ? selectedBlocos : undefined,
       apartamentos: selectedApartamentos.length > 0 ? selectedApartamentos : undefined,
     },
-    { enabled: !!condominioId && showBroadcastModal }
+    { enabled: !!obraId && showBroadcastModal }
   );
   
   // @ts-ignore
@@ -426,7 +426,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
         if (subscription) {
           const data = extractSubscriptionData(subscription);
           await subscribeMutation.mutateAsync({
-            condominioId,
+            obraId,
             ...data,
             userAgent: navigator.userAgent
           });
@@ -451,7 +451,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
     try {
       // Registrar no histórico
       await createHistoricoMutation.mutateAsync({
-        condominioId,
+        obraId,
         tipo: notifChannel,
         titulo: notifTitle,
         mensagem: notifMessage,
@@ -481,7 +481,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
     }
     
     await createLembreteMutation.mutateAsync({
-      condominioId,
+      obraId,
       tipo: lembreteTipo,
       titulo: lembreteTitulo,
       mensagem: lembreteMensagem,
@@ -584,7 +584,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                         <Users className="h-4 w-4" />
                         <strong>{destinatariosCount?.comPush || subscriptions?.length || 0}</strong> dispositivos 
                         {(selectedBlocos.length > 0 || selectedApartamentos.length > 0) && (
-                          <span className="text-xs">({destinatariosCount?.total || 0} moradores filtrados)</span>
+                          <span className="text-xs">({destinatariosCount?.total || 0} colaboradores filtrados)</span>
                         )}
                       </p>
                       <Button 
@@ -786,7 +786,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                         
                         setIsSendingBroadcast(true);
                         sendBroadcastMutation.mutate({
-                          condominioId,
+                          obraId,
                           titulo: broadcastTitle,
                           mensagem: broadcastMessage,
                           url: broadcastUrl || undefined,
@@ -1564,7 +1564,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                   <Label>Email Remetente</Label>
                   <Input 
                     type="email"
-                    placeholder="noreply@seucondominio.com"
+                    placeholder="noreply@seuobra.com"
                     defaultValue={emailConfig?.emailRemetente || ""}
                   />
                 </div>
@@ -1572,7 +1572,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                 <div className="space-y-2">
                   <Label>Nome do Remetente</Label>
                   <Input 
-                    placeholder="Condomínio Residencial"
+                    placeholder="Obra Residencial"
                     defaultValue={emailConfig?.nomeRemetente || ""}
                   />
                 </div>
@@ -1652,7 +1652,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                   <Label>Subject (Email de Contato)</Label>
                   <Input 
                     id="vapidSubject"
-                    placeholder="mailto:admin@seucondominio.com"
+                    placeholder="mailto:admin@seuobra.com"
                     defaultValue={pushConfig?.vapidSubject || ''}
                   />
                   <p className="text-xs text-gray-500">
@@ -1696,7 +1696,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                       }
                       
                       savePushConfigMutation.mutate({
-                        condominioId,
+                        obraId,
                         vapidPublicKey: publicKey,
                         vapidPrivateKey: privateKey || undefined, // Só enviar se preenchido
                         vapidSubject: subject,
@@ -1717,7 +1717,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                       
                       setIsSendingTestPush(true);
                       sendTestPushMutation.mutate({
-                        condominioId,
+                        obraId,
                         vapidPublicKey: pushConfig.vapidPublicKey,
                         vapidPrivateKey: pushConfig.vapidPrivateKeyFull,
                         vapidSubject: pushConfig.vapidSubject,
@@ -1765,7 +1765,7 @@ export function NotificacoesPage({ condominioId }: NotificacoesPageProps) {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => createDefaultsMutation.mutate({ condominioId })}
+                      onClick={() => createDefaultsMutation.mutate({ obraId })}
                       disabled={createDefaultsMutation.isPending}
                     >
                       {createDefaultsMutation.isPending ? "Criando..." : "Criar Templates Padrão"}

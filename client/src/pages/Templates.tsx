@@ -251,7 +251,7 @@ export default function Templates() {
                     revista={{
                       titulo: "Revista Digital",
                       edicao: "Edição Dezembro 2024",
-                      condominioNome: "Residencial Jardins",
+                      obraNome: "Residencial Jardins",
                     }}
                     className="max-w-md mx-auto"
                   />

@@ -2623,3 +2623,484 @@ export const osAnexos = mysqlTable("os_anexos", {
 export type OsAnexo = typeof osAnexos.$inferSelect;
 export type InsertOsAnexo = typeof osAnexos.$inferInsert;
 
+
+
+// ==================== MÓDULO DE OBRAS - AppObras ====================
+
+// ==================== OBRAS ====================
+export const obras = mysqlTable("obras", {
+  id: int("id").autoincrement().primaryKey(),
+  usuarioId: int("usuarioId").references(() => users.id).notNull(),
+  codigo: varchar("codigo", { length: 50 }),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", ["residencial", "comercial", "industrial", "reforma", "infraestrutura", "projeto_especial"]).default("residencial").notNull(),
+  status: mysqlEnum("status", ["planejamento", "em_andamento", "pausada", "finalizada", "cancelada"]).default("planejamento").notNull(),
+  // Localização
+  endereco: text("endereco"),
+  cidade: varchar("cidade", { length: 100 }),
+  estado: varchar("estado", { length: 50 }),
+  cep: varchar("cep", { length: 10 }),
+  latitude: varchar("latitude", { length: 20 }),
+  longitude: varchar("longitude", { length: 20 }),
+  // Datas
+  dataInicio: timestamp("dataInicio"),
+  dataPrevisaoFim: timestamp("dataPrevisaoFim"),
+  dataFim: timestamp("dataFim"),
+  // Valores
+  orcamentoTotal: decimal("orcamentoTotal", { precision: 15, scale: 2 }),
+  valorRealizado: decimal("valorRealizado", { precision: 15, scale: 2 }).default("0"),
+  // Responsáveis
+  responsavelNome: varchar("responsavelNome", { length: 255 }),
+  responsavelTelefone: varchar("responsavelTelefone", { length: 20 }),
+  responsavelEmail: varchar("responsavelEmail", { length: 255 }),
+  // Cliente
+  clienteNome: varchar("clienteNome", { length: 255 }),
+  clienteTelefone: varchar("clienteTelefone", { length: 20 }),
+  clienteEmail: varchar("clienteEmail", { length: 255 }),
+  // Imagens
+  imagemCapaUrl: text("imagemCapaUrl"),
+  // Progresso
+  progressoFisico: decimal("progressoFisico", { precision: 5, scale: 2 }).default("0"),
+  progressoFinanceiro: decimal("progressoFinanceiro", { precision: 5, scale: 2 }).default("0"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Obra = typeof obras.$inferSelect;
+export type InsertObra = typeof obras.$inferInsert;
+
+// ==================== ORÇAMENTOS DE OBRA ====================
+export const obraOrcamentos = mysqlTable("obra_orcamentos", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  categoria: mysqlEnum("categoria", [
+    "mao_de_obra",
+    "materiais",
+    "equipamentos",
+    "servicos_terceiros",
+    "taxas_licencas",
+    "transporte",
+    "administrativo",
+    "contingencia",
+    "outros"
+  ]).default("outros").notNull(),
+  valorPrevisto: decimal("valorPrevisto", { precision: 15, scale: 2 }).notNull(),
+  valorRealizado: decimal("valorRealizado", { precision: 15, scale: 2 }).default("0"),
+  status: mysqlEnum("status", ["pendente", "aprovado", "em_execucao", "finalizado", "cancelado"]).default("pendente").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraOrcamento = typeof obraOrcamentos.$inferSelect;
+export type InsertObraOrcamento = typeof obraOrcamentos.$inferInsert;
+
+// ==================== ITENS DE ORÇAMENTO ====================
+export const obraOrcamentoItens = mysqlTable("obra_orcamento_itens", {
+  id: int("id").autoincrement().primaryKey(),
+  orcamentoId: int("orcamentoId").references(() => obraOrcamentos.id).notNull(),
+  descricao: varchar("descricao", { length: 255 }).notNull(),
+  unidade: varchar("unidade", { length: 20 }).default("un"),
+  quantidade: decimal("quantidade", { precision: 10, scale: 2 }).notNull(),
+  valorUnitario: decimal("valorUnitario", { precision: 15, scale: 2 }).notNull(),
+  valorTotal: decimal("valorTotal", { precision: 15, scale: 2 }).notNull(),
+  valorRealizado: decimal("valorRealizado", { precision: 15, scale: 2 }).default("0"),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ObraOrcamentoItem = typeof obraOrcamentoItens.$inferSelect;
+export type InsertObraOrcamentoItem = typeof obraOrcamentoItens.$inferInsert;
+
+// ==================== MÃO DE OBRA ====================
+export const obraTrabalhadores = mysqlTable("obra_trabalhadores", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  cpf: varchar("cpf", { length: 14 }),
+  funcao: mysqlEnum("funcao", [
+    "pedreiro",
+    "servente",
+    "eletricista",
+    "encanador",
+    "pintor",
+    "carpinteiro",
+    "armador",
+    "soldador",
+    "mestre_obras",
+    "engenheiro",
+    "arquiteto",
+    "tecnico_seguranca",
+    "operador_maquinas",
+    "ajudante_geral",
+    "outro"
+  ]).default("ajudante_geral").notNull(),
+  telefone: varchar("telefone", { length: 20 }),
+  email: varchar("email", { length: 255 }),
+  salarioHora: decimal("salarioHora", { precision: 10, scale: 2 }),
+  salarioMensal: decimal("salarioMensal", { precision: 10, scale: 2 }),
+  tipoContrato: mysqlEnum("tipoContrato", ["clt", "pj", "diaria", "empreitada"]).default("diaria"),
+  dataAdmissao: timestamp("dataAdmissao"),
+  dataDemissao: timestamp("dataDemissao"),
+  ativo: boolean("ativo").default(true),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraTrabalhador = typeof obraTrabalhadores.$inferSelect;
+export type InsertObraTrabalhador = typeof obraTrabalhadores.$inferInsert;
+
+// ==================== REGISTRO DE HORAS ====================
+export const obraHorasTrabalhadas = mysqlTable("obra_horas_trabalhadas", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  trabalhadorId: int("trabalhadorId").references(() => obraTrabalhadores.id).notNull(),
+  data: timestamp("data").notNull(),
+  horaEntrada: varchar("horaEntrada", { length: 5 }),
+  horaSaida: varchar("horaSaida", { length: 5 }),
+  horasNormais: decimal("horasNormais", { precision: 5, scale: 2 }).default("0"),
+  horasExtras: decimal("horasExtras", { precision: 5, scale: 2 }).default("0"),
+  valorDia: decimal("valorDia", { precision: 10, scale: 2 }),
+  observacoes: text("observacoes"),
+  aprovado: boolean("aprovado").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ObraHorasTrabalhadas = typeof obraHorasTrabalhadas.$inferSelect;
+export type InsertObraHorasTrabalhadas = typeof obraHorasTrabalhadas.$inferInsert;
+
+// ==================== FORNECEDORES ====================
+export const obraFornecedores = mysqlTable("obra_fornecedores", {
+  id: int("id").autoincrement().primaryKey(),
+  usuarioId: int("usuarioId").references(() => users.id).notNull(),
+  razaoSocial: varchar("razaoSocial", { length: 255 }).notNull(),
+  nomeFantasia: varchar("nomeFantasia", { length: 255 }),
+  cnpj: varchar("cnpj", { length: 20 }),
+  cpf: varchar("cpf", { length: 14 }),
+  categoria: mysqlEnum("categoria", [
+    "materiais_construcao",
+    "ferragens",
+    "eletrica",
+    "hidraulica",
+    "acabamentos",
+    "equipamentos",
+    "mao_de_obra",
+    "transporte",
+    "outros"
+  ]).default("outros").notNull(),
+  telefone: varchar("telefone", { length: 20 }),
+  celular: varchar("celular", { length: 20 }),
+  email: varchar("email", { length: 255 }),
+  endereco: text("endereco"),
+  cidade: varchar("cidade", { length: 100 }),
+  estado: varchar("estado", { length: 50 }),
+  cep: varchar("cep", { length: 10 }),
+  website: varchar("website", { length: 255 }),
+  avaliacao: int("avaliacao").default(0), // 1-5 estrelas
+  observacoes: text("observacoes"),
+  ativo: boolean("ativo").default(true),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraFornecedor = typeof obraFornecedores.$inferSelect;
+export type InsertObraFornecedor = typeof obraFornecedores.$inferInsert;
+
+// ==================== CONTRATOS COM FORNECEDORES ====================
+export const obraContratos = mysqlTable("obra_contratos", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  fornecedorId: int("fornecedorId").references(() => obraFornecedores.id).notNull(),
+  numero: varchar("numero", { length: 50 }),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", ["fornecimento", "servico", "empreitada", "locacao", "misto"]).default("fornecimento").notNull(),
+  valorTotal: decimal("valorTotal", { precision: 15, scale: 2 }).notNull(),
+  valorPago: decimal("valorPago", { precision: 15, scale: 2 }).default("0"),
+  dataInicio: timestamp("dataInicio"),
+  dataFim: timestamp("dataFim"),
+  status: mysqlEnum("status", ["rascunho", "ativo", "suspenso", "finalizado", "cancelado"]).default("rascunho").notNull(),
+  arquivoUrl: text("arquivoUrl"),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraContrato = typeof obraContratos.$inferSelect;
+export type InsertObraContrato = typeof obraContratos.$inferInsert;
+
+// ==================== DIÁRIO DE OBRA ====================
+export const obraDiarios = mysqlTable("obra_diarios", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  data: timestamp("data").notNull(),
+  // Condições climáticas
+  clima: mysqlEnum("clima", ["ensolarado", "nublado", "chuvoso", "tempestade", "frio", "quente"]).default("ensolarado"),
+  temperaturaMin: int("temperaturaMin"),
+  temperaturaMax: int("temperaturaMax"),
+  choveu: boolean("choveu").default(false),
+  horasParadas: decimal("horasParadas", { precision: 5, scale: 2 }).default("0"),
+  motivoParada: text("motivoParada"),
+  // Mão de obra presente
+  qtdPedreiros: int("qtdPedreiros").default(0),
+  qtdServentes: int("qtdServentes").default(0),
+  qtdEletricistas: int("qtdEletricistas").default(0),
+  qtdEncanadores: int("qtdEncanadores").default(0),
+  qtdPintores: int("qtdPintores").default(0),
+  qtdCarpinteiros: int("qtdCarpinteiros").default(0),
+  qtdOutros: int("qtdOutros").default(0),
+  totalTrabalhadores: int("totalTrabalhadores").default(0),
+  // Atividades
+  atividadesRealizadas: text("atividadesRealizadas"),
+  atividadesPrevistas: text("atividadesPrevistas"),
+  // Materiais
+  materiaisRecebidos: text("materiaisRecebidos"),
+  materiaisUtilizados: text("materiaisUtilizados"),
+  // Equipamentos
+  equipamentosUtilizados: text("equipamentosUtilizados"),
+  // Ocorrências
+  ocorrencias: text("ocorrencias"),
+  observacoesGerais: text("observacoesGerais"),
+  // Responsável pelo registro
+  registradoPor: varchar("registradoPor", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraDiario = typeof obraDiarios.$inferSelect;
+export type InsertObraDiario = typeof obraDiarios.$inferInsert;
+
+// ==================== ETAPAS DA OBRA ====================
+export const obraEtapas = mysqlTable("obra_etapas", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  ordem: int("ordem").default(0),
+  pesoPercentual: decimal("pesoPercentual", { precision: 5, scale: 2 }).default("0"),
+  dataInicioPrevista: timestamp("dataInicioPrevista"),
+  dataFimPrevista: timestamp("dataFimPrevista"),
+  dataInicioReal: timestamp("dataInicioReal"),
+  dataFimReal: timestamp("dataFimReal"),
+  status: mysqlEnum("status", ["pendente", "em_andamento", "concluida", "atrasada"]).default("pendente").notNull(),
+  progressoAtual: decimal("progressoAtual", { precision: 5, scale: 2 }).default("0"),
+  valorPrevisto: decimal("valorPrevisto", { precision: 15, scale: 2 }),
+  valorRealizado: decimal("valorRealizado", { precision: 15, scale: 2 }).default("0"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraEtapa = typeof obraEtapas.$inferSelect;
+export type InsertObraEtapa = typeof obraEtapas.$inferInsert;
+
+// ==================== MEDIÇÕES ====================
+export const obraMedicoes = mysqlTable("obra_medicoes", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  etapaId: int("etapaId").references(() => obraEtapas.id),
+  numero: int("numero").notNull(),
+  dataReferencia: timestamp("dataReferencia").notNull(),
+  descricao: text("descricao"),
+  // Avanço físico
+  percentualAnterior: decimal("percentualAnterior", { precision: 5, scale: 2 }).default("0"),
+  percentualAtual: decimal("percentualAtual", { precision: 5, scale: 2 }).notNull(),
+  percentualAcumulado: decimal("percentualAcumulado", { precision: 5, scale: 2 }).notNull(),
+  // Valores
+  valorMedicao: decimal("valorMedicao", { precision: 15, scale: 2 }),
+  valorAcumulado: decimal("valorAcumulado", { precision: 15, scale: 2 }),
+  // Aprovação
+  status: mysqlEnum("status", ["rascunho", "enviada", "aprovada", "rejeitada"]).default("rascunho").notNull(),
+  aprovadoPor: varchar("aprovadoPor", { length: 255 }),
+  dataAprovacao: timestamp("dataAprovacao"),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraMedicao = typeof obraMedicoes.$inferSelect;
+export type InsertObraMedicao = typeof obraMedicoes.$inferInsert;
+
+// ==================== FOTOS DA OBRA ====================
+export const obraFotos = mysqlTable("obra_fotos", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  etapaId: int("etapaId").references(() => obraEtapas.id),
+  diarioId: int("diarioId").references(() => obraDiarios.id),
+  url: text("url").notNull(),
+  thumbnailUrl: text("thumbnailUrl"),
+  titulo: varchar("titulo", { length: 255 }),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", ["antes", "durante", "depois", "problema", "entrega", "geral"]).default("geral").notNull(),
+  dataFoto: timestamp("dataFoto"),
+  latitude: varchar("latitude", { length: 20 }),
+  longitude: varchar("longitude", { length: 20 }),
+  tags: text("tags"), // JSON array
+  uploadPor: varchar("uploadPor", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ObraFoto = typeof obraFotos.$inferSelect;
+export type InsertObraFoto = typeof obraFotos.$inferInsert;
+
+// ==================== OCORRÊNCIAS ====================
+export const obraOcorrencias = mysqlTable("obra_ocorrencias", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  etapaId: int("etapaId").references(() => obraEtapas.id),
+  titulo: varchar("titulo", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", [
+    "acidente",
+    "problema_tecnico",
+    "atraso",
+    "falta_material",
+    "clima",
+    "qualidade",
+    "seguranca",
+    "outros"
+  ]).default("outros").notNull(),
+  gravidade: mysqlEnum("gravidade", ["baixa", "media", "alta", "critica"]).default("media").notNull(),
+  status: mysqlEnum("status", ["aberta", "em_analise", "resolvida", "fechada"]).default("aberta").notNull(),
+  dataOcorrencia: timestamp("dataOcorrencia").notNull(),
+  dataResolucao: timestamp("dataResolucao"),
+  acaoTomada: text("acaoTomada"),
+  responsavel: varchar("responsavel", { length: 255 }),
+  custoImpacto: decimal("custoImpacto", { precision: 15, scale: 2 }),
+  diasImpacto: int("diasImpacto"),
+  registradoPor: varchar("registradoPor", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraOcorrencia = typeof obraOcorrencias.$inferSelect;
+export type InsertObraOcorrencia = typeof obraOcorrencias.$inferInsert;
+
+// ==================== MATERIAIS ====================
+export const obraMateriais = mysqlTable("obra_materiais", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  fornecedorId: int("fornecedorId").references(() => obraFornecedores.id),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  categoria: mysqlEnum("categoria", [
+    "cimento",
+    "areia",
+    "brita",
+    "tijolos",
+    "ferro",
+    "madeira",
+    "eletrico",
+    "hidraulico",
+    "acabamento",
+    "ferramentas",
+    "epi",
+    "outros"
+  ]).default("outros").notNull(),
+  unidade: varchar("unidade", { length: 20 }).default("un"),
+  quantidadePrevista: decimal("quantidadePrevista", { precision: 10, scale: 2 }),
+  quantidadeRecebida: decimal("quantidadeRecebida", { precision: 10, scale: 2 }).default("0"),
+  quantidadeUtilizada: decimal("quantidadeUtilizada", { precision: 10, scale: 2 }).default("0"),
+  quantidadeEstoque: decimal("quantidadeEstoque", { precision: 10, scale: 2 }).default("0"),
+  valorUnitario: decimal("valorUnitario", { precision: 10, scale: 2 }),
+  valorTotal: decimal("valorTotal", { precision: 15, scale: 2 }),
+  dataEntrega: timestamp("dataEntrega"),
+  notaFiscal: varchar("notaFiscal", { length: 50 }),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraMaterial = typeof obraMateriais.$inferSelect;
+export type InsertObraMaterial = typeof obraMateriais.$inferInsert;
+
+// ==================== PAGAMENTOS ====================
+export const obraPagamentos = mysqlTable("obra_pagamentos", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  contratoId: int("contratoId").references(() => obraContratos.id),
+  fornecedorId: int("fornecedorId").references(() => obraFornecedores.id),
+  trabalhadorId: int("trabalhadorId").references(() => obraTrabalhadores.id),
+  descricao: varchar("descricao", { length: 255 }).notNull(),
+  tipo: mysqlEnum("tipo", ["fornecedor", "mao_de_obra", "servico", "taxa", "outros"]).default("outros").notNull(),
+  valor: decimal("valor", { precision: 15, scale: 2 }).notNull(),
+  dataVencimento: timestamp("dataVencimento"),
+  dataPagamento: timestamp("dataPagamento"),
+  status: mysqlEnum("status", ["pendente", "pago", "atrasado", "cancelado"]).default("pendente").notNull(),
+  formaPagamento: mysqlEnum("formaPagamento", ["dinheiro", "pix", "transferencia", "boleto", "cartao", "cheque"]),
+  comprovante: text("comprovante"),
+  notaFiscal: varchar("notaFiscal", { length: 50 }),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraPagamento = typeof obraPagamentos.$inferSelect;
+export type InsertObraPagamento = typeof obraPagamentos.$inferInsert;
+
+// ==================== CHECKLISTS DE OBRA ====================
+export const obraChecklists = mysqlTable("obra_checklists", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  etapaId: int("etapaId").references(() => obraEtapas.id),
+  titulo: varchar("titulo", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", ["seguranca", "qualidade", "entrega", "vistoria", "geral"]).default("geral").notNull(),
+  status: mysqlEnum("status", ["pendente", "em_andamento", "concluido"]).default("pendente").notNull(),
+  dataExecucao: timestamp("dataExecucao"),
+  executadoPor: varchar("executadoPor", { length: 255 }),
+  observacoes: text("observacoes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ObraChecklist = typeof obraChecklists.$inferSelect;
+export type InsertObraChecklist = typeof obraChecklists.$inferInsert;
+
+// ==================== ITENS DE CHECKLIST ====================
+export const obraChecklistItens = mysqlTable("obra_checklist_itens", {
+  id: int("id").autoincrement().primaryKey(),
+  checklistId: int("checklistId").references(() => obraChecklists.id).notNull(),
+  descricao: varchar("descricao", { length: 255 }).notNull(),
+  ordem: int("ordem").default(0),
+  obrigatorio: boolean("obrigatorio").default(true),
+  concluido: boolean("concluido").default(false),
+  conformidade: mysqlEnum("conformidade", ["conforme", "nao_conforme", "nao_aplicavel"]),
+  observacao: text("observacao"),
+  fotoUrl: text("fotoUrl"),
+  dataVerificacao: timestamp("dataVerificacao"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ObraChecklistItem = typeof obraChecklistItens.$inferSelect;
+export type InsertObraChecklistItem = typeof obraChecklistItens.$inferInsert;
+
+// ==================== DOCUMENTOS DA OBRA ====================
+export const obraDocumentos = mysqlTable("obra_documentos", {
+  id: int("id").autoincrement().primaryKey(),
+  obraId: int("obraId").references(() => obras.id).notNull(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  tipo: mysqlEnum("tipo", [
+    "projeto",
+    "alvara",
+    "art",
+    "contrato",
+    "orcamento",
+    "nota_fiscal",
+    "relatorio",
+    "planta",
+    "memorial",
+    "outros"
+  ]).default("outros").notNull(),
+  url: text("url").notNull(),
+  tamanho: int("tamanho"),
+  mimeType: varchar("mimeType", { length: 100 }),
+  versao: int("versao").default(1),
+  uploadPor: varchar("uploadPor", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ObraDocumento = typeof obraDocumentos.$inferSelect;
+export type InsertObraDocumento = typeof obraDocumentos.$inferInsert;

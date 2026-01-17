@@ -269,9 +269,9 @@ export default function AppBuilder() {
   const [showAcessoConfig, setShowAcessoConfig] = useState(false);
   const [savedAppId, setSavedAppId] = useState<number | null>(null);
   
-  // Buscar condomínio do usuário
-  const { data: condominios } = trpc.condominio.list.useQuery();
-  const condominioId = condominios?.[0]?.id;
+  // Buscar obra do usuário
+  const { data: obras } = trpc.obra.list.useQuery();
+  const obraId = obras?.[0]?.id;
   
   // Mutation para criar app
   const createApp = trpc.apps.create.useMutation({
@@ -342,9 +342,9 @@ export default function AppBuilder() {
   const activeModule = activeId ? modules.find((m) => m.id === activeId) : null;
 
   const handleSave = async () => {
-    if (!condominioId) {
+    if (!obraId) {
       toast.error("Você precisa cadastrar uma organização primeiro");
-      setLocation("/dashboard/condominio");
+      setLocation("/dashboard/obra");
       return;
     }
     
@@ -361,7 +361,7 @@ export default function AppBuilder() {
     setIsSaving(true);
     
     createApp.mutate({
-      condominioId,
+      obraId,
       nome: appName,
       modulos: enabledModules.map((m, index) => ({
         moduloKey: m.key,

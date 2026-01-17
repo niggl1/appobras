@@ -38,7 +38,7 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface HistoricoAtividadesPageProps {
-  condominioId: number;
+  obraId: number;
 }
 
 // Mapeamento de tipos para ícones e cores
@@ -88,7 +88,7 @@ const statusCores: Record<string, string> = {
   enviado: "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300",
 };
 
-export default function HistoricoAtividadesPage({ condominioId }: HistoricoAtividadesPageProps) {
+export default function HistoricoAtividadesPage({ obraId }: HistoricoAtividadesPageProps) {
   // Estados dos filtros
   const [busca, setBusca] = useState("");
   const [tipo, setTipo] = useState<string>("todos");
@@ -100,7 +100,7 @@ export default function HistoricoAtividadesPage({ condominioId }: HistoricoAtivi
 
   // Query para buscar histórico unificado
   const { data: historico, isLoading, refetch } = trpc.historicoAtividades.buscarUnificado.useQuery({
-    condominioId,
+    obraId,
     busca: busca || undefined,
     tipo: tipo as any,
     status: status !== "todos" ? status : undefined,

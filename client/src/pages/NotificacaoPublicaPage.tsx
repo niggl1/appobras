@@ -47,7 +47,7 @@ export default function NotificacaoPublicaPage() {
   );
 
   // Mutation para enviar resposta
-  const enviarRespostaMutation = trpc.respostasInfracao.createMorador.useMutation({
+  const enviarRespostaMutation = trpc.respostasInfracao.createColaborador.useMutation({
     onSuccess: () => {
       toast.success("Resposta enviada com sucesso!");
       setMensagem("");
@@ -172,7 +172,7 @@ export default function NotificacaoPublicaPage() {
     );
   }
 
-  const { notificacao, morador, tipoInfracao, condominio } = data;
+  const { notificacao, colaborador, tipoInfracao, obra } = data;
 
   return (
     <div className="min-h-screen bg-gray-50 print:bg-white">
@@ -181,15 +181,15 @@ export default function NotificacaoPublicaPage() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {condominio?.logoUrl && (
+              {obra?.logoUrl && (
                 <img 
-                  src={condominio.logoUrl} 
-                  alt={condominio.nome} 
+                  src={obra.logoUrl} 
+                  alt={obra.nome} 
                   className="h-12 w-12 object-contain"
                 />
               )}
               <div>
-                <h1 className="text-xl font-bold">{condominio?.nome}</h1>
+                <h1 className="text-xl font-bold">{obra?.nome}</h1>
                 <p className="text-sm text-gray-500">Notificação de Infração</p>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function NotificacaoPublicaPage() {
             </div>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
-            {/* Dados do Morador */}
+            {/* Dados do Colaborador */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-medium mb-2 flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -234,13 +234,13 @@ export default function NotificacaoPublicaPage() {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-500">Nome:</span>
-                  <p className="font-medium">{morador?.nome}</p>
+                  <p className="font-medium">{colaborador?.nome}</p>
                 </div>
                 <div>
                   <span className="text-gray-500">Unidade:</span>
                   <p className="font-medium">
-                    {morador?.bloco ? `Bloco ${morador.bloco} - ` : ""}
-                    Apto {morador?.apartamento}
+                    {colaborador?.bloco ? `Bloco ${colaborador.bloco} - ` : ""}
+                    Apto {colaborador?.apartamento}
                   </p>
                 </div>
               </div>
@@ -305,11 +305,11 @@ export default function NotificacaoPublicaPage() {
                 respostas.map((resposta) => (
                   <div
                     key={resposta.id}
-                    className={`flex ${resposta.autorTipo === 'morador' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${resposta.autorTipo === 'colaborador' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
                       className={`max-w-[80%] rounded-lg p-3 ${
-                        resposta.autorTipo === 'morador'
+                        resposta.autorTipo === 'colaborador'
                           ? 'bg-blue-100 dark:bg-blue-900'
                           : 'bg-gray-100 dark:bg-gray-800'
                       }`}
@@ -319,7 +319,7 @@ export default function NotificacaoPublicaPage() {
                           {resposta.autorNome}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {resposta.autorTipo === 'sindico' ? '(Administração)' : '(Morador)'}
+                          {resposta.autorTipo === 'engenheiro' ? '(Administração)' : '(Colaborador)'}
                         </span>
                       </div>
                       <p className="text-sm whitespace-pre-wrap">{resposta.mensagem}</p>
@@ -443,7 +443,7 @@ export default function NotificacaoPublicaPage() {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium">{resposta.autorNome}</span>
                         <span className="text-gray-500">
-                          ({resposta.autorTipo === 'sindico' ? 'Administração' : 'Morador'})
+                          ({resposta.autorTipo === 'engenheiro' ? 'Administração' : 'Colaborador'})
                         </span>
                         <span className="text-gray-400 text-sm ml-auto">
                           {formatDate(resposta.createdAt)}
@@ -464,7 +464,7 @@ export default function NotificacaoPublicaPage() {
       {/* Footer para impressão */}
       <div className="hidden print:block mt-8 text-center text-xs text-gray-400">
         <p>Documento gerado em {new Date().toLocaleDateString("pt-BR")}</p>
-        <p>{condominio?.nome}</p>
+        <p>{obra?.nome}</p>
       </div>
     </div>
   );
